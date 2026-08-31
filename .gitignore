@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+dist/
+target/
+coverage/
+playwright-report/
+test-results/
+*.wasm
+*.map
+
+# Local data and private lyric content
+*.lyricbook
+*.lyricbook.json
+*backup*.json
+*含歌词*.html
+*lyrics-private*
+private/
+.local-data/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Logs and temporary files
+*.log
+.tmp/
+tmp/
+.cache/

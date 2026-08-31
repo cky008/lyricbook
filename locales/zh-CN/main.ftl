@@ -1,0 +1,41 @@
+# LyricBook 简体中文界面文案。
+# 键名必须与 locales/en-US/main.ftl 和 apps/web/src/i18n.ts 保持一致。
+
+library = 曲库
+setlist = 歌单
+theme = 主题
+import = 导入
+export = 导出
+print = 打印
+search = 搜索歌曲
+lyrics = 歌词
+translation = 翻译
+emptyLyrics = 在此粘贴你有权使用的歌词。
+saveLocal = 已保存到本机
+immersive = 沉浸模式
+previous = 上一首
+next = 下一首
+nextSong = 下一首
+choosePreset = 选择预设
+source = 来源
+confidence = 置信度
+optional = 可选
+editTheme = 主题编辑器
+accent = 强调色
+background = 背景
+surface = 卡片
+text = 文字
+close = 关闭
+load = 载入
+noSong = 请选择歌曲
+github = 在 GitHub 点 Star
+privacy = 歌词默认只保存在当前浏览器，除非你主动导出。
+project = 项目
+allSongs = 全部歌曲
+activeSetlist = 当前歌单
+uploadHelp = 支持 .lyricbook、JSON、Markdown 或 TXT。
+exportHelp = 导出文件含毫秒时间与随机后缀，不会反复出现 (1)(2)。
+printHelp = 通过系统打印对话框保存为 PDF。
+urlImport = 导入 HTTPS 链接
+urlPlaceholder = https://example.com/project.json
+language = 语言

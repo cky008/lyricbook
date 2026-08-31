@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 1,
+  "id": "dior-kampung-girl-london",
+  "title": {
+    "zh-Hans": "DIOR 大颖 2026 伦敦站预测",
+    "en": "DIOR 2026 London Prediction"
+  },
+  "songs": [
+    {
+      "id": "dior-better",
+      "titles": {
+        "zh-Hans": "你最近过得好吗？",
+        "en": "I’ve Been Better"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-phone",
+      "titles": {
+        "zh-Hans": "如果那通电话有接通",
+        "en": "If That Phone Call Had Been Answered"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-see-you",
+      "titles": {
+        "zh-Hans": "有天会再相见",
+        "en": "See You"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-slow",
+      "titles": {
+        "zh-Hans": "慢慢走才能走得快",
+        "en": "Go Slow To Go Fast"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-yolo",
+      "titles": {
+        "zh-Hans": "大人的快乐",
+        "en": "YOLO"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-lifetime",
+      "titles": {
+        "zh-Hans": "人醒着不过一万多天",
+        "en": "This Lifetime of Ours"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-save",
+      "titles": {
+        "zh-Hans": "节约用爱",
+        "en": "Save Some"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-mutual",
+      "titles": {
+        "zh-Hans": "共同好友",
+        "en": "Mutual Friends"
+      },
+      "aliases": [],
+      "tags": [
+        "high-confidence"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-ghana",
+      "titles": {
+        "zh-Hans": "在加纳共和国离婚",
+        "en": "Divorce in the Republic of Ghana"
+      },
+      "aliases": [],
+      "tags": [
+        "rotation"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-bloom",
+      "titles": {
+        "zh-Hans": "花期不同",
+        "en": "Different Blooming Seasons"
+      },
+      "aliases": [],
+      "tags": [
+        "rotation"
+      ],
+      "sourceRefs": [
+        "dior-london-venue"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "setlists": [
+    {
+      "id": "dior-london-core",
+      "title": {
+        "zh-Hans": "伦敦站高置信度核心",
+        "en": "London High-Confidence Core"
+      },
+      "status": "prediction",
+      "items": [
+        {
+          "type": "song",
+          "songId": "dior-better",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-phone",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-see-you",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-slow",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-yolo",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-save",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-mutual",
+          "optional": false,
+          "confidence": 0.88
+        }
+      ]
+    },
+    {
+      "id": "dior-london-likely",
+      "title": {
+        "zh-Hans": "伦敦站综合预测",
+        "en": "London Composite Prediction"
+      },
+      "status": "prediction",
+      "items": [
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "伦敦站综合预测",
+            "en": "London Composite Prediction"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "dior-better",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-phone",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-see-you",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-slow",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-yolo",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-save",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-mutual",
+          "optional": false,
+          "confidence": 0.88
+        },
+        {
+          "type": "song",
+          "songId": "dior-ghana",
+          "optional": false,
+          "confidence": 0.62
+        },
+        {
+          "type": "song",
+          "songId": "dior-bloom",
+          "optional": false,
+          "confidence": 0.62
+        }
+      ]
+    },
+    {
+      "id": "dior-london-rotation",
+      "title": {
+        "zh-Hans": "轮换与候选池",
+        "en": "Rotation Pool"
+      },
+      "status": "rotation",
+      "items": [
+        {
+          "type": "song",
+          "songId": "dior-ghana",
+          "optional": false,
+          "confidence": 0.62
+        },
+        {
+          "type": "song",
+          "songId": "dior-bloom",
+          "optional": false,
+          "confidence": 0.62
+        }
+      ]
+    }
+  ],
+  "themes": [
+    {
+      "id": "kampung-girl",
+      "name": {
+        "zh-Hans": "KAMPUNG GIRL 田野暖光",
+        "en": "KAMPUNG GIRL Field Glow"
+      },
+      "tokens": {
+        "accent": "#e79a3b",
+        "background": "#13241f",
+        "surface": "#24382e",
+        "text": "#fff8e7",
+        "radius": "20px"
+      }
+    }
+  ],
+  "activeSetlistId": "dior-london-likely",
+  "activeThemeId": "kampung-girl",
+  "sources": [
+    {
+      "id": "dior-london-venue",
+      "kind": "official-venue",
+      "title": "DIOR 2026 KAMPUNG GIRL World Tour in London",
+      "publisher": "Clapham Grand / promoter listing",
+      "url": "https://claphamgrand.com/",
+      "retrievedAt": "2026-08-31T00:00:00Z",
+      "confidence": 0.8,
+      "notes": "The preset is a prediction and must not be represented as a confirmed final running order."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+# LyricBook English UI messages.
+# Keep this key set in sync with locales/zh-CN/main.ftl and apps/web/src/i18n.ts.
+
+library = Library
+setlist = Setlist
+theme = Theme
+import = Import
+export = Export
+print = Print
+search = Search songs
+lyrics = Lyrics
+translation = Translation
+emptyLyrics = Paste lyrics you are allowed to use.
+saveLocal = Saved locally
+immersive = Immersive mode
+previous = Previous
+next = Next
+nextSong = Next song
+choosePreset = Choose preset
+source = Sources
+confidence = Confidence
+optional = Optional
+editTheme = Theme editor
+accent = Accent
+background = Background
+surface = Surface
+text = Text
+close = Close
+load = Load
+noSong = Select a song
+github = Star on GitHub
+privacy = Your lyrics stay in this browser unless you export them.
+project = Project
+allSongs = All songs
+activeSetlist = Active setlist
+uploadHelp = Upload .lyricbook, JSON, Markdown, or TXT.
+exportHelp = Exports include millisecond timestamps and a random suffix.
+printHelp = Use the browser print dialog to save PDF.
+urlImport = Import HTTPS URL
+urlPlaceholder = https://example.com/project.json
+language = Language

@@ -1,0 +1,268 @@
+{
+  "id": "gem-gloria-core",
+  "title": {
+    "zh-Hans": "GLORIA 主流程示例",
+    "en": "GLORIA Core Example"
+  },
+  "status": "prediction",
+  "items": [
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Part 1",
+        "en": "Part 1"
+      },
+      "optional": false
+    },
+    {
+      "type": "song",
+      "songId": "gem-zoo",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-wolf",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-devil",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-lightyears",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Part 2",
+        "en": "Part 2"
+      },
+      "optional": false
+    },
+    {
+      "type": "song",
+      "songId": "gem-miss-similar",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-transparent",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-loneliness",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-ice-age",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-therefore",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-goodbye",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Part 3",
+        "en": "Part 3"
+      },
+      "optional": false
+    },
+    {
+      "type": "song",
+      "songId": "gem-not-first",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-sleeping-princess",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-ainy",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-where",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-drunk",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-not-happy",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-tornado",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-rose",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-only",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-period",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Part 4",
+        "en": "Part 4"
+      },
+      "optional": false
+    },
+    {
+      "type": "song",
+      "songId": "gem-gloria",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-raise",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-pause",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-oldsea",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-together",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-find",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-like-you",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Part 5",
+        "en": "Part 5"
+      },
+      "optional": false
+    },
+    {
+      "type": "song",
+      "songId": "gem-kingdom",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-night-end",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-countdown",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-heartbeat",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-moving",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "song",
+      "songId": "gem-water",
+      "optional": false,
+      "confidence": 0.82
+    },
+    {
+      "type": "section",
+      "label": {
+        "zh-Hans": "Encore",
+        "en": "Encore"
+      },
+      "optional": true
+    },
+    {
+      "type": "song",
+      "songId": "gem-bubble",
+      "optional": false,
+      "confidence": 0.72
+    },
+    {
+      "type": "song",
+      "songId": "gem-sky",
+      "optional": false,
+      "confidence": 0.72
+    }
+  ]
+}
