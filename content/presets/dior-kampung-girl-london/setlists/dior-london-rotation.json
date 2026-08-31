@@ -10,13 +10,15 @@
       "type": "song",
       "songId": "dior-ghana",
       "optional": false,
-      "confidence": 0.62
+      "confidence": 0.62,
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
     },
     {
       "type": "song",
       "songId": "dior-bloom",
       "optional": false,
-      "confidence": 0.62
+      "confidence": 0.62,
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
     }
   ]
 }

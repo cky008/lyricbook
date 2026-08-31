@@ -1,9 +1,18 @@
 name: Feature request
-description: Propose a user-visible improvement
-title: "[Feature]: "
+description: Propose a user-facing improvement
+title: "feat: "
+labels: [enhancement]
 body:
   - type: textarea
-    attributes: { label: User problem }
-    validations: { required: true }
+    attributes:
+      label: Problem to solve
+    validations:
+      required: true
   - type: textarea
-    attributes: { label: Proposed behavior }
+    attributes:
+      label: Proposed experience
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Privacy, copyright, offline, and accessibility considerations

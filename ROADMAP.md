@@ -1,27 +1,57 @@
 # Roadmap
 
-## Near term
+This document records approved future ideas. Items here are **not implemented promises** and must not appear as working production controls until delivered and tested.
 
-- Native browser-measured pagination and saddle-stitch imposition.
-- Full multi-version editor and per-export version selection.
-- More complete Fluent localization pipeline.
-- Accessible setlist reordering; desktop drag-and-drop first, iOS touch reordering later.
-- Signed content-pack registry with checksums and rollback.
+## Import and editing
 
-## Planned / evaluated, not implemented in 0.0.1
+- Native iOS long-press drag ordering with accessible keyboard fallback.
+- LRC import, timestamp removal, song matching, and optional synchronized reading.
+- Richer Markdown content-pack authoring.
+- Bulk alias/tag/source editing.
+- Prediction-versus-observed setlist diff and post-concert archive.
+- Automatic draft recovery and browser-storage capacity warnings.
 
-- Image-to-setlist LLM extraction and source reconciliation.
-- Agent-assisted web research with user-funded model usage.
-- LRC and richer timed-lyrics import.
-- Google Drive, OneDrive, Dropbox, WebDAV, and other backup providers.
-- Social-media image and card generation.
-- Translation contribution workflow and licensing metadata.
-- Bluetooth clicker, keyboard page-turning, wake-lock, concert countdown, familiarity queues.
-- Talking/interlude cue sheets, QR sharing, pack signatures, diff previews, theme marketplace.
-- High-contrast and color-vision themes, cover designer, automatic volume splitting, print-cost estimates.
-- Prediction-vs-actual setlist comparison and post-show archival.
-- Storage quota warning, crash recovery, lyric line numbering, and stage annotations.
+## AI and paid services
 
-## Remote preset evaluation
+- Image/screenshot OCR plus LLM-assisted setlist extraction.
+- Agent-assisted web research and cross-source verification.
+- AI source reconciliation and confidence updates.
+- Paid model quotas, billing, and abuse controls.
+- Human review queues before AI output can replace a project.
 
-0.0.1 uses versioned built-in snapshots plus explicit local or HTTPS import. A future registry should publish release-pinned URLs, schema versions, SHA-256 hashes, signatures, compatibility ranges, and rollback metadata. Do not fetch mutable `raw/main` content automatically.
+These features require a separately designed backend, secrets management, cost controls, privacy policy, and explicit user consent. They must not be implemented by embedding provider keys in the web app.
+
+## Remote preset registry — evaluated, not implemented
+
+The initial version ships versioned presets at build time and accepts explicit local/HTTPS imports. A future registry may publish signed release assets containing schema version, download URL, SHA-256, and optional signature. The client must never trust mutable `raw/main` content without compatibility and integrity checks.
+
+## Backup and portability
+
+- Google Drive, OneDrive, Dropbox, iCloud Drive, and WebDAV backup.
+- Version history, restore points, and project diff preview.
+- Optional encrypted project archives.
+- QR sharing of metadata-only setlists.
+
+## Publishing and live use
+
+- Social-media image/card generator.
+- PDF cover designer and multi-volume split.
+- Print paper/cost estimate.
+- Wake Lock support for live concert reading.
+- Bluetooth presenter and keyboard page controls.
+- Concert countdown and rehearsal queue.
+- Familiarity tracking and spaced review.
+- Talking/interlude cue sheets, line numbers, and stage notes.
+- High-contrast, dyslexia-aware, and color-vision-safe themes.
+- Theme marketplace with signed, data-only packages.
+
+## Suggestions added during architecture review
+
+These are maintainer suggestions, not original requirements:
+
+- deterministic content-pack signatures;
+- storage health checks before large imports;
+- offline package repair/inspection CLI;
+- user-controlled crash report export that never uploads automatically;
+- a print regression corpus covering system-font substitution;
+- project-level redaction before sharing research files.

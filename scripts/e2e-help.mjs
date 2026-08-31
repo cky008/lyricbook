@@ -1,1 +1,0 @@
-console.log(`Playwright source tests are included in tests/e2e.\nRun on a networked development machine:\n  npm install --no-save @playwright/test@1.55.0\n  npx playwright install --with-deps chromium webkit\n  npx playwright test`);

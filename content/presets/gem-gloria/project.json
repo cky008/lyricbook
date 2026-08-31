@@ -13,12 +13,8 @@
         "en": "City Zoo"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -45,12 +41,8 @@
         "en": "Grey Wolf"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -77,12 +69,8 @@
         "en": "Away"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -109,12 +97,8 @@
         "en": "Light Years Away"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -141,12 +125,8 @@
         "en": "Miss Similar"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -173,12 +153,8 @@
         "en": "Transparent"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -205,12 +181,8 @@
         "en": "Loneliness"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -237,12 +209,8 @@
         "en": "Ice Age"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -269,12 +237,8 @@
         "en": "Therefore"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -301,12 +265,8 @@
         "en": "Goodbye"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -333,12 +293,8 @@
         "en": "You Are Not the First One to Leave"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -365,12 +321,8 @@
         "en": "Sleeping Beauty"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -397,12 +349,8 @@
         "en": "A.I.N.Y."
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -429,12 +377,8 @@
         "en": "Where Did U Go"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -461,12 +405,8 @@
         "en": "Intoxicated"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -493,12 +433,8 @@
         "en": "You Are Not Truly Happy"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -525,12 +461,8 @@
         "en": "Tornado"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -557,12 +489,8 @@
         "en": "Red Rose White Rose"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -589,12 +517,8 @@
         "en": "The One"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -621,12 +545,8 @@
         "en": "Full Stop"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -653,12 +573,8 @@
         "en": "GLORIA"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -685,12 +601,8 @@
         "en": "You Raise Me Up"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -717,12 +629,8 @@
         "en": "Pause the World for a Minute"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -749,12 +657,8 @@
         "en": "The Old Man and the Sea"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -781,12 +685,8 @@
         "en": "Long Distance"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -813,12 +713,8 @@
         "en": "FIND YOU"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -845,12 +741,8 @@
         "en": "Like You"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -877,12 +769,8 @@
         "en": "Kingdom Come"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -909,12 +797,8 @@
         "en": "The End of Night"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -941,12 +825,8 @@
         "en": "Countdown"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -973,12 +853,8 @@
         "en": "New Heartbeat"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -1005,12 +881,8 @@
         "en": "Get Everybody Moving"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -1037,12 +909,8 @@
         "en": "Walk On Water"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -1069,12 +937,8 @@
         "en": "Bubble"
       },
       "aliases": [],
-      "tags": [
-        "core"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["core"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",
@@ -1101,12 +965,8 @@
         "en": "Sky Has No Limits"
       },
       "aliases": [],
-      "tags": [
-        "encore"
-      ],
-      "sourceRefs": [
-        "gem-setlist-reference"
-      ],
+      "tags": ["encore"],
+      "sourceRefs": ["gem-setlist-reference"],
       "lyricVersions": [
         {
           "id": "default",

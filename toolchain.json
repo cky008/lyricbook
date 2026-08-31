@@ -1,0 +1,21 @@
+{
+  "application": "0.0.3",
+  "node": "26.8.1",
+  "npm": "12.0.2",
+  "rust": "1.98.0",
+  "react": "19.2.8",
+  "reactDom": "19.2.8",
+  "vite": "8.2.2",
+  "typescript": "7.0.2",
+  "tailwindCss": "4.3.3",
+  "viteReactPlugin": "6.1.1",
+  "rolldownBabelPlugin": "0.2.3",
+  "babelCore": "8.0.1",
+  "reactCompiler": "1.0.0",
+  "radixUi": "1.6.7",
+  "vitest": "4.1.11",
+  "playwright": "1.62.1",
+  "biome": "2.5.11",
+  "wasmPack": "0.15.0",
+  "wasmBindgen": "0.2.127"
+}

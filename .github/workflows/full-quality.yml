@@ -1,27 +1,59 @@
 name: Full quality
+
 on:
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
   workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: full-quality-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   browser:
+    name: Browser, mobile, accessibility, and print
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run validate:repo
-      - run: npm install --no-save @playwright/test@1.55.0
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npx playwright test --project=chromium --project=webkit --project=iphone
-      - uses: actions/upload-artifact@v4
+          node-version: 26.8.1
+      - name: Pin npm 12.0.2
+        run: npm install --global npm@12.0.2
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          else
+            echo "package-lock.json is absent on this bootstrap commit; generating it with npm install."
+            npm install --no-audit --no-fund
+          fi
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Formatting, lint, unit, and build gate
+        run: |
+          npm run format:check
+          npm run lint
+          npm run typecheck
+          npm run test:unit
+          npm run validate:content
+          npm run validate:repo
+          npm run build
+      - name: Cross-browser end-to-end tests
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report
+            test-results
           if-no-files-found: ignore
+          retention-days: 14

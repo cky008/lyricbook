@@ -1,10 +1,29 @@
 # Deployment
 
-GitHub Pages deploys only from `main` through `.github/workflows/deploy-pages.yml`. The workflow must pass repository validation, content validation, tests, and production build before uploading `dist/`.
+## GitHub Pages
 
-Recommended URLs:
+Set Pages source to GitHub Actions. Pushes to `main` run web and Rust quality gates, build `dist`, upload the Pages artifact, and deploy.
 
-- Custom domain: `https://lyricbook.iocky.com/`
-- GitHub Pages fallback: `https://cky008.github.io/lyricbook/`
+The build uses relative asset URLs and includes `public/CNAME` for `lyricbook.iocky.com`.
 
-Configure Pages to use GitHub Actions. Add the custom domain in repository Pages settings, then point the `lyricbook` CNAME in Cloudflare to `cky008.github.io`. Keep DNS-only until GitHub issues HTTPS, then optionally enable Cloudflare proxying.
+## Cloudflare
+
+Recommended DNS:
+
+```text
+CNAME lyricbook -> cky008.github.io
+```
+
+Start DNS-only until GitHub HTTPS is issued, then optionally proxy. Use Full (strict), avoid long-lived `Cache Everything` on `index.html`, `sw.js`, or `version.json`, and purge after releases when necessary.
+
+`frame-ancestors` is ignored in meta CSP. Add it as an HTTP response header, for example:
+
+```text
+Content-Security-Policy: frame-ancestors 'none'
+```
+
+A broader edge CSP may include `default-src 'self'`, `object-src 'none'`, `base-uri 'self'`, and the required app directives.
+
+## Verification
+
+Check `/version.json`, favicon, manifest, locale catalogs, preset index, theme files, and a clean browser session after each deployment.

@@ -1,20 +1,17 @@
 # Testing
 
-Run the complete local gate:
+LyricBook uses TDD and multiple layers:
+
+- Vitest: domain, archive, migration, filename, theme, setlist, and print planning.
+- Rust tests/proptest: validation, booklet invariants, and deterministic helpers.
+- Playwright: Chromium, Firefox, WebKit, iPhone profile, accessibility, overlays, immersive navigation, and print preview.
+- Repository/content validators: required files, pinned modern stack, aligned Fluent keys, valid preset references, no React 16/vendor runtime, and no private lyric files.
+
+Run:
 
 ```bash
-npm ci
 npm run check
+npm run test:e2e
 ```
 
-The gate performs syntax checks, lightweight type checks, Node tests, optional Rust tests, repository-structure validation, preset validation, and a production build.
-
-On a Rust-enabled machine also run:
-
-```bash
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-```
-
-Browser regression tests live under `tests/e2e` and run in GitHub Actions with Chromium, WebKit, and an iPhone profile.
+The first dependency installation must create and commit `package-lock.json`.

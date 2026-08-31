@@ -1,13 +1,9 @@
-# Localization contributions
+# Localization catalogs
 
-LyricBook keeps user-interface translations in one folder per locale:
+LyricBook keeps reviewable Fluent-style catalogs in this directory so that a locale is represented by a real tracked file rather than an empty directory.
 
-```text
-locales/
-├── en-US/main.ftl
-└── zh-CN/main.ftl
-```
+- `en-US/main.ftl` is the English reference catalog.
+- `zh-CN/main.ftl` is the Simplified Chinese catalog.
+- Both catalogs must expose the same message keys.
 
-To add a locale, copy `en-US`, translate only the values after `=`, and keep every message key unchanged. Run `npm run validate:repo` and `npm test` before opening a pull request. Missing or extra keys fail CI.
-
-The browser currently ships a synchronous fallback table in `apps/web/src/i18n.ts`; the Fluent files are the reviewable contribution source and are copied into every production build. A later schema-compatible release may load them directly at runtime.
+The 0.0.1 browser bundle still carries a small built-in message map in `apps/web/src/i18n.ts`. The catalogs are the contribution surface and the migration target for the fuller Fluent runtime tracked in `ROADMAP.md`. When UI copy changes, update both the runtime map and these catalogs in the same pull request.

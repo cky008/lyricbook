@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LyricBook">
+  <defs>
+    <linearGradient id="bg" x1="48" y1="32" x2="464" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9B7BFF"/>
+      <stop offset="0.52" stop-color="#8058EF"/>
+      <stop offset="1" stop-color="#FF7CAB"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="144" y1="138" x2="368" y2="386" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F0EAFE"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="#17132B"/>
+  <rect x="42" y="42" width="428" height="428" rx="112" fill="url(#bg)"/>
+  <path d="M111 165c0-24 19-43 43-43h75c17 0 33 7 44 19l3 3 3-3c11-12 27-19 44-19h35c24 0 43 19 43 43v209c0 10-8 18-18 18h-57c-22 0-42 9-57 24l-12 12-12-12c-15-15-35-24-57-24h-59c-10 0-18-8-18-18V165Z" fill="url(#paper)"/>
+  <path d="M256 164v232" stroke="#6F4DD7" stroke-width="16" stroke-linecap="round"/>
+  <path d="M151 202h64M151 249h64M151 296h45M297 202h64M297 249h64" stroke="#6F4DD7" stroke-width="15" stroke-linecap="round"/>
+  <path d="M338 291v47c0 18-14 32-32 32s-32-14-32-32 14-32 32-32c6 0 12 2 17 5v-54l62-15v42l-47 11Z" fill="#FF6FA8"/>
+</svg>

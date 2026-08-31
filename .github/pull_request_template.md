@@ -1,14 +1,18 @@
 ## Summary
 
-## Test evidence
+## User-visible behavior
 
+## Privacy, copyright, and data migration impact
+
+## Tests
+
+- [ ] Focused failing test was added/updated before implementation
 - [ ] `npm run check`
-- [ ] Rust checks when Rust code changed
-- [ ] Chromium/WebKit tests when browser behavior changed
-- [ ] A4/A5/booklet evidence when print behavior changed
-- [ ] No private lyrics, exports, or credentials are included
+- [ ] `npm run test:e2e` when UI/storage/import/print behavior changed
+- [ ] Rust tests/clippy when domain logic changed
+- [ ] No private lyrics or user archives were added
+- [ ] Screenshots/PDF artifacts attached when visual or print behavior changed
 
-## Documentation and compatibility
+## Documentation
 
-- [ ] Schema/migration impact documented
-- [ ] README/CHANGELOG/docs updated as applicable
+- [ ] README / CHANGELOG / specs / user guides updated as needed
