@@ -1,0 +1,13 @@
+[package]
+name = "lyricbook-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+lyricbook-core = { path = "../lyricbook-core" }
+serde_json = "1"
+
+[lints]
+workspace = true

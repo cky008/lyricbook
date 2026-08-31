@@ -1,0 +1,22 @@
+{
+  "id": "dior-london-rotation",
+  "title": {
+    "zh-Hans": "轮换与候选池",
+    "en": "Rotation Pool"
+  },
+  "status": "rotation",
+  "items": [
+    {
+      "type": "song",
+      "songId": "dior-ghana",
+      "optional": false,
+      "confidence": 0.62
+    },
+    {
+      "type": "song",
+      "songId": "dior-bloom",
+      "optional": false,
+      "confidence": 0.62
+    }
+  ]
+}

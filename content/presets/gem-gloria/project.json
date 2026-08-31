@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": 1,
+  "id": "gem-gloria",
+  "title": {
+    "zh-Hans": "G.E.M. GLORIA 演唱会歌词本",
+    "en": "G.E.M. GLORIA Concert LyricBook"
+  },
+  "songs": [
+    {
+      "id": "gem-zoo",
+      "titles": {
+        "zh-Hans": "摩天动物园",
+        "en": "City Zoo"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-wolf",
+      "titles": {
+        "zh-Hans": "灰狼",
+        "en": "Grey Wolf"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-devil",
+      "titles": {
+        "zh-Hans": "来自天堂的魔鬼",
+        "en": "Away"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-lightyears",
+      "titles": {
+        "zh-Hans": "光年之外",
+        "en": "Light Years Away"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-miss-similar",
+      "titles": {
+        "zh-Hans": "差不多姑娘",
+        "en": "Miss Similar"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-transparent",
+      "titles": {
+        "zh-Hans": "透明",
+        "en": "Transparent"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-loneliness",
+      "titles": {
+        "zh-Hans": "孤独",
+        "en": "Loneliness"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-ice-age",
+      "titles": {
+        "zh-Hans": "冰河时代",
+        "en": "Ice Age"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-therefore",
+      "titles": {
+        "zh-Hans": "于是",
+        "en": "Therefore"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-goodbye",
+      "titles": {
+        "zh-Hans": "再见",
+        "en": "Goodbye"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-not-first",
+      "titles": {
+        "zh-Hans": "你不是第一个离开的人",
+        "en": "You Are Not the First One to Leave"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-sleeping-princess",
+      "titles": {
+        "zh-Hans": "睡公主",
+        "en": "Sleeping Beauty"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-ainy",
+      "titles": {
+        "zh-Hans": "A.I.N.Y.",
+        "en": "A.I.N.Y."
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-where",
+      "titles": {
+        "zh-Hans": "Where Did U Go",
+        "en": "Where Did U Go"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-drunk",
+      "titles": {
+        "zh-Hans": "你把我灌醉",
+        "en": "Intoxicated"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-not-happy",
+      "titles": {
+        "zh-Hans": "你不是真正的快乐",
+        "en": "You Are Not Truly Happy"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-tornado",
+      "titles": {
+        "zh-Hans": "龙卷风",
+        "en": "Tornado"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-rose",
+      "titles": {
+        "zh-Hans": "红蔷薇白玫瑰",
+        "en": "Red Rose White Rose"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-only",
+      "titles": {
+        "zh-Hans": "唯一",
+        "en": "The One"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-period",
+      "titles": {
+        "zh-Hans": "句号",
+        "en": "Full Stop"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-gloria",
+      "titles": {
+        "zh-Hans": "GLORIA",
+        "en": "GLORIA"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-raise",
+      "titles": {
+        "zh-Hans": "You Raise Me Up",
+        "en": "You Raise Me Up"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-pause",
+      "titles": {
+        "zh-Hans": "让世界暂停一分钟",
+        "en": "Pause the World for a Minute"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-oldsea",
+      "titles": {
+        "zh-Hans": "老人与海",
+        "en": "The Old Man and the Sea"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-together",
+      "titles": {
+        "zh-Hans": "多远都要在一起",
+        "en": "Long Distance"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-find",
+      "titles": {
+        "zh-Hans": "FIND YOU",
+        "en": "FIND YOU"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-like-you",
+      "titles": {
+        "zh-Hans": "喜欢你",
+        "en": "Like You"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-kingdom",
+      "titles": {
+        "zh-Hans": "Kingdom Come",
+        "en": "Kingdom Come"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-night-end",
+      "titles": {
+        "zh-Hans": "夜的尽头",
+        "en": "The End of Night"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-countdown",
+      "titles": {
+        "zh-Hans": "倒数",
+        "en": "Countdown"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-heartbeat",
+      "titles": {
+        "zh-Hans": "新的心跳",
+        "en": "New Heartbeat"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-moving",
+      "titles": {
+        "zh-Hans": "G.E.M.",
+        "en": "Get Everybody Moving"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-water",
+      "titles": {
+        "zh-Hans": "Walk On Water",
+        "en": "Walk On Water"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-bubble",
+      "titles": {
+        "zh-Hans": "泡沫",
+        "en": "Bubble"
+      },
+      "aliases": [],
+      "tags": [
+        "core"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gem-sky",
+      "titles": {
+        "zh-Hans": "天空没有极限",
+        "en": "Sky Has No Limits"
+      },
+      "aliases": [],
+      "tags": [
+        "encore"
+      ],
+      "sourceRefs": [
+        "gem-setlist-reference"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "setlists": [
+    {
+      "id": "gem-gloria-core",
+      "title": {
+        "zh-Hans": "GLORIA 主流程示例",
+        "en": "GLORIA Core Example"
+      },
+      "status": "prediction",
+      "items": [
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Part 1",
+            "en": "Part 1"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-zoo",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-wolf",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-devil",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-lightyears",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Part 2",
+            "en": "Part 2"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-miss-similar",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-transparent",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-loneliness",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-ice-age",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-therefore",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-goodbye",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Part 3",
+            "en": "Part 3"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-not-first",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-sleeping-princess",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-ainy",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-where",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-drunk",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-not-happy",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-tornado",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-rose",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-only",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-period",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Part 4",
+            "en": "Part 4"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-gloria",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-raise",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-pause",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-oldsea",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-together",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-find",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-like-you",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Part 5",
+            "en": "Part 5"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-kingdom",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-night-end",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-countdown",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-heartbeat",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-moving",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "song",
+          "songId": "gem-water",
+          "optional": false,
+          "confidence": 0.82
+        },
+        {
+          "type": "section",
+          "label": {
+            "zh-Hans": "Encore",
+            "en": "Encore"
+          },
+          "optional": true
+        },
+        {
+          "type": "song",
+          "songId": "gem-bubble",
+          "optional": false,
+          "confidence": 0.72
+        },
+        {
+          "type": "song",
+          "songId": "gem-sky",
+          "optional": false,
+          "confidence": 0.72
+        }
+      ]
+    }
+  ],
+  "themes": [
+    {
+      "id": "gloria",
+      "name": {
+        "zh-Hans": "GLORIA 紫粉星光",
+        "en": "GLORIA Violet Starlight"
+      },
+      "tokens": {
+        "accent": "#d66cff",
+        "background": "#120c1c",
+        "surface": "#24152e",
+        "text": "#fbf6ff",
+        "radius": "24px"
+      }
+    }
+  ],
+  "activeSetlistId": "gem-gloria-core",
+  "activeThemeId": "gloria",
+  "sources": [
+    {
+      "id": "gem-setlist-reference",
+      "kind": "user-research",
+      "title": "G.E.M. GLORIA setlist reference",
+      "publisher": "LyricBook example",
+      "retrievedAt": "2026-08-31T00:00:00Z",
+      "confidence": 0.55,
+      "notes": "Example metadata only; not an official final setlist."
+    }
+  ]
+}

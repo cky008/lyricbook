@@ -1,0 +1,14 @@
+{
+  "id": "gloria",
+  "name": {
+    "zh-Hans": "GLORIA 紫粉星光",
+    "en": "GLORIA Violet Starlight"
+  },
+  "tokens": {
+    "accent": "#d66cff",
+    "background": "#120c1c",
+    "surface": "#24152e",
+    "text": "#fbf6ff",
+    "radius": "24px"
+  }
+}

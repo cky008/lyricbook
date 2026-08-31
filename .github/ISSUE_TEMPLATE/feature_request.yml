@@ -1,0 +1,9 @@
+name: Feature request
+description: Propose a user-visible improvement
+title: "[Feature]: "
+body:
+  - type: textarea
+    attributes: { label: User problem }
+    validations: { required: true }
+  - type: textarea
+    attributes: { label: Proposed behavior }

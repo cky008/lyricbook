@@ -1,0 +1,18 @@
+[
+  {
+    "id": "gem-gloria",
+    "title": {
+      "zh-Hans": "G.E.M. GLORIA",
+      "en": "G.E.M. GLORIA"
+    },
+    "path": "./content/presets/gem-gloria/project.json"
+  },
+  {
+    "id": "dior-kampung-girl-london",
+    "title": {
+      "zh-Hans": "DIOR 大颖伦敦预测",
+      "en": "DIOR London Prediction"
+    },
+    "path": "./content/presets/dior-kampung-girl-london/project.json"
+  }
+]

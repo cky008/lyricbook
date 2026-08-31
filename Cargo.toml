@@ -1,0 +1,21 @@
+[workspace]
+members = [
+  "crates/lyricbook-core",
+  "crates/lyricbook-cli",
+  "crates/lyricbook-wasm"
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.1"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["iocky.com"]
+repository = "https://github.com/cky008/lyricbook"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
