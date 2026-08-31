@@ -2,6 +2,15 @@
 
 All notable changes follow Keep a Changelog principles.
 
+## [Unreleased]
+
+### Fixed
+
+- Removed the closed mobile sidebar from the DOM so hidden controls cannot remain focusable.
+- Made immersive next-song navigation reset scroll position synchronously and deterministically.
+- Made the print portal a static direct child of `body` to prevent duplicate or timing-sensitive portals.
+- Updated Playwright assertions to target persistent locale state, the visible print preview, and scoped mobile controls.
+
 ## [0.0.3] - 2026-08-31
 
 ### Changed

@@ -407,7 +407,6 @@ export default function App() {
       />
       {selectedSong && immersive ? (
         <ImmersiveReader
-          key={selectedSong.id}
           song={selectedSong}
           locale={locale}
           selectedVersionId={selectedVersion}

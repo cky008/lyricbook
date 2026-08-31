@@ -123,6 +123,13 @@ add(
   "no-vendored-react",
   !walk(root).some((file) => /react(?:-dom)?\.production\.min\.js$/i.test(file)),
 );
+const appHtml = readFileSync(path.join(root, "apps/web/index.html"), "utf8");
+const mainSource = readFileSync(path.join(root, "apps/web/src/main.tsx"), "utf8");
+add(
+  "static-print-portal",
+  /<div\s+id=["']print-portal["']\s+data-print-portal=["']true["']><\/div>/.test(appHtml) &&
+    !/document\.createElement\(["']div["']\)[\s\S]{0,200}print-portal/.test(mainSource),
+);
 add(
   "print-portal-outside-react-root",
   !readFileSync(path.join(root, "apps/web/src/App.tsx"), "utf8").includes('id="print-portal"'),

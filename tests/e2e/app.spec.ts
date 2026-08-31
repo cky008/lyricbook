@@ -12,42 +12,69 @@ test("loads a preset and renders the modern React application", async ({ page })
   await expect(page.locator("script[src*='vendor']")).toHaveCount(0);
 });
 
-test("keeps exactly one print portal as a direct body child", async ({ page }) => {
-  await expect(page.locator("#print-portal")).toHaveCount(1);
-  await expect(page.locator("body > #print-portal")).toHaveCount(1);
+test("keeps exactly one static print portal as a direct body child", async ({ page }) => {
+  const portal = page.locator("body > #print-portal");
+  await expect(portal).toHaveCount(1);
+  await expect(portal).toHaveAttribute("data-print-portal", "true");
   await expect(page.locator("#root #print-portal")).toHaveCount(0);
 });
 
-test("switches language and keeps a user-selectable UI locale", async ({ page }) => {
+test("switches language and persists the user-selected UI locale", async ({ page }) => {
+  const html = page.locator("html");
+  const initialLanguage = await html.getAttribute("lang");
+  const expectedLanguage = initialLanguage === "zh-CN" ? "en" : "zh-CN";
+  const expectedStoredLocale = expectedLanguage === "zh-CN" ? "zh-CN" : "en-US";
+
   await page
     .getByRole("button", { name: /Language|语言/i })
     .last()
     .click();
-  await expect(page.getByText("曲库", { exact: true })).toBeVisible();
+
+  await expect(html).toHaveAttribute("lang", expectedLanguage);
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-ui-locale")))
+    .toBe(expectedStoredLocale);
+
+  await page.reload();
+  await expect(page.getByText("LyricBook", { exact: true }).first()).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", expectedLanguage);
 });
 
-test("immersive next-song navigation scrolls the next song to the top", async ({ page }) => {
-  const immersive = page.getByRole("button", { name: /Immersive mode|沉浸模式/i }).first();
-  await immersive.click();
+test("immersive next-song navigation resets the next song to the top", async ({ page }) => {
+  await page.addStyleTag({ content: ".immersive-content { min-height: 220vh; }" });
+  await page
+    .getByRole("button", { name: /Immersive mode|沉浸模式/i })
+    .first()
+    .click();
+
   const shell = page.locator(".immersive-shell");
   await expect(shell).toBeVisible();
-  await shell.evaluate((element) => element.scrollTo(0, element.scrollHeight));
-  const next = page.locator(".immersive-shell .next-song-card");
-  if (await next.count()) {
-    await next.click();
-    await expect.poll(() => shell.evaluate((element) => element.scrollTop)).toBeLessThan(10);
-  }
+
+  const next = shell.locator(".next-song-card");
+  await expect(next).toBeVisible();
+  const nextTitle = (await next.locator("strong").innerText()).trim();
+
+  await shell.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  await expect.poll(() => shell.evaluate((element) => element.scrollTop)).toBeGreaterThan(100);
+  await next.click();
+
+  await expect(shell.locator(".reader-title")).toHaveText(nextTitle);
+  await expect.poll(() => shell.evaluate((element) => element.scrollTop)).toBeLessThanOrEqual(1);
 });
 
 test("mobile sidebar and setlist dialog release document scrolling", async ({ page, isMobile }) => {
   test.skip(!isMobile, "mobile-only regression");
 
+  await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
   await page.getByRole("button", { name: /Open menu|打开菜单/i }).click();
-  await expect(page.locator(".mobile-sidebar.open")).toBeVisible();
 
-  // Reproduce the historic overlay handoff: close the sidebar, then open and close a Radix dialog.
-  await page.getByRole("button", { name: /Close menu|关闭菜单/i }).click();
-  await expect(page.locator(".mobile-sidebar.open")).toHaveCount(0);
+  const sidebar = page.locator(".mobile-sidebar.open");
+  await expect(sidebar).toBeVisible();
+  await sidebar.getByRole("button", { name: /Close menu|关闭菜单/i }).click();
+  await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
+
   await page
     .getByRole("button", { name: /Setlist editor|演出歌单/i })
     .first()
@@ -80,8 +107,11 @@ test("print studio creates measurable A4 pages without marked overflow", async (
     .first()
     .click();
   await page.getByRole("button", { name: /Build preview|生成预览/i }).click();
-  await expect(page.locator(".print-page.a4").first()).toBeVisible();
-  await expect(page.locator("body > #print-portal .print-page.a4").first()).toBeAttached();
+
+  const visiblePreview = page.locator(".print-preview-shell .print-page.a4").first();
+  const printPortalPage = page.locator("body > #print-portal .print-page.a4").first();
+  await expect(visiblePreview).toBeVisible();
+  await expect(printPortalPage).toBeAttached();
 
   const metrics = await page
     .locator("body > #print-portal .print-page-content")
@@ -92,12 +122,14 @@ test("print studio creates measurable A4 pages without marked overflow", async (
         overflow: element.getAttribute("data-overflow"),
       })),
     );
+
   expect(metrics.length).toBeGreaterThan(0);
   expect(metrics.every((metric) => metric.clientHeight > 0)).toBe(true);
   expect(metrics.every((metric) => metric.overflow !== "true")).toBe(true);
 });
 
 test("has no serious accessibility violations", async ({ page }) => {
+  await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
   const results = await new AxeBuilder({ page }).exclude("#print-portal").analyze();
   expect(
     results.violations.filter((violation) =>

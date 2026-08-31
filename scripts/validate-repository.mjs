@@ -212,6 +212,13 @@ if (/frame-ancestors/i.test(html))
   throw new Error("frame-ancestors must be delivered as an HTTP header, not meta CSP");
 if (/react\.production\.min|window\.React|vendor\/react/i.test(html))
   throw new Error("index.html must not load a vendored React runtime");
+if (!/<div\s+id=["']print-portal["']\s+data-print-portal=["']true["']><\/div>/.test(html)) {
+  throw new Error("apps/web/index.html must provide one static direct-body #print-portal");
+}
+const mainSource = await readFile(path.join(root, "apps/web/src/main.tsx"), "utf8");
+if (/document\.createElement\(["']div["']\)[\s\S]*print-portal/.test(mainSource)) {
+  throw new Error("main.tsx must not create the print portal at runtime");
+}
 
 const viteConfig = await readFile(path.join(root, "vite.config.ts"), "utf8");
 for (const requiredText of [

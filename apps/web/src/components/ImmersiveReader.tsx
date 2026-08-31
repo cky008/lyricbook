@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { getLocalized, type Song, type UiLocale } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
 import { lockBodyScroll } from "@app/lib/scrollLock";
@@ -34,9 +34,12 @@ export function ImmersiveReader({
   const tracks = version?.tracks.filter((track) => track.text.trim()) ?? [];
 
   useEffect(() => lockBodyScroll(), []);
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  useLayoutEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    container.dataset.songId = song.id;
+    container.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [song.id]);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();

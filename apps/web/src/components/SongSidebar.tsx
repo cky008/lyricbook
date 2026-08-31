@@ -135,12 +135,12 @@ export function SongSidebar(props: SongSidebarProps) {
       </aside>
     );
   }
+  if (!open) return null;
+
   return (
     <>
-      {open ? (
-        <button type="button" className="overlay" onClick={onClose} aria-label={t("close-menu")} />
-      ) : null}
-      <aside className={`mobile-sidebar${open ? " open" : ""}`} aria-hidden={!open}>
+      <button type="button" className="overlay" onClick={onClose} aria-label={t("close-menu")} />
+      <aside className="mobile-sidebar open">
         <div className="mobile-sidebar-header">
           <div className="brand">
             <span className="brand-mark">

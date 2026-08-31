@@ -9,10 +9,10 @@ import "./styles.css";
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");
 
-const existingPrintPortal = document.getElementById("print-portal");
-const printPortal = existingPrintPortal ?? document.createElement("div");
-printPortal.id = "print-portal";
-if (!existingPrintPortal) document.body.append(printPortal);
+const printPortal = document.getElementById("print-portal");
+if (!printPortal || printPortal.parentElement !== document.body) {
+  throw new Error("Missing direct body child #print-portal element");
+}
 
 createRoot(root).render(
   <StrictMode>
