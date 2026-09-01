@@ -32,6 +32,12 @@ function archiveBytes(
   });
 }
 
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -84,7 +90,7 @@ describe(".lyricbook archive", () => {
 
   it("imports archive, JSON, and text files while enforcing the size limit", async () => {
     const project = createBlankProject("en-US");
-    const archiveFile = new File([archiveBytes(project)], "project.lyricbook");
+    const archiveFile = new File([toArrayBuffer(archiveBytes(project))], "project.lyricbook");
     await expect(importProjectFile(archiveFile)).resolves.toMatchObject({ id: project.id });
 
     const jsonFile = new File([JSON.stringify({ hello: "world" })], "data.json");
@@ -113,13 +119,15 @@ describe(".lyricbook archive", () => {
     await expect(importHttpsUrl("https://example.test/large")).rejects.toThrow(/too large/);
 
     fetchMock.mockResolvedValueOnce(
-      new Response(archiveBytes(project), { headers: { "content-type": "application/zip" } }),
+      new Response(toArrayBuffer(archiveBytes(project)), {
+        headers: { "content-type": "application/zip" },
+      }),
     );
     await expect(importHttpsUrl("https://example.test/project.bin")).resolves.toMatchObject({
       id: project.id,
     });
 
-    fetchMock.mockResolvedValueOnce(new Response(archiveBytes(project)));
+    fetchMock.mockResolvedValueOnce(new Response(toArrayBuffer(archiveBytes(project))));
     await expect(importHttpsUrl("https://example.test/project.lyricbook")).resolves.toMatchObject({
       id: project.id,
     });
