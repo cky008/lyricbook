@@ -23,3 +23,14 @@ The first dependency installation must create and commit `package-lock.json`.
 - Closed mobile overlays must be unmounted or inert; an `aria-hidden` container must never retain focusable descendants.
 - The visible print preview lives under `.print-preview-shell`; the system-print copy lives under the hidden direct-body `#print-portal`. Visibility assertions target the former, while geometry and attachment assertions may target the latter.
 - Immersive navigation tests must force a scrollable fixture, confirm the old song is scrolled, select the next song, and then verify both the title change and a synchronous return to the top.
+
+## Coverage and warning policy
+
+The committed global gates are:
+
+- statements: 70%
+- branches: 60%
+- functions: 65%
+- lines: 70%
+
+Do not lower these numbers, broaden coverage exclusions, or add ignore directives to pass CI. Add tests that execute real behavior and failure paths. Repository validation enforces these minimums. Biome must complete with zero errors and zero warnings; print-specific cascade overrides must be expressed through ordering and specificity rather than blanket lint suppressions.

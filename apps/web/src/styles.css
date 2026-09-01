@@ -1142,7 +1142,7 @@ a {
 
 @media (min-width: 821px) {
   .mobile-only {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -1204,22 +1204,22 @@ a {
 
   html,
   body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
+    margin: 0;
+    padding: 0;
+    background: white;
   }
 
   body > *:not(#print-portal) {
-    display: none !important;
+    display: none;
   }
 
   #print-portal {
-    position: static !important;
-    width: auto !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-    contain: none !important;
-    display: block !important;
+    position: static;
+    width: auto;
+    visibility: visible;
+    pointer-events: auto;
+    contain: none;
+    display: block;
   }
 
   .print-preview-shell {
@@ -1236,8 +1236,8 @@ a {
   .print-page,
   .print-logical-page,
   .booklet-sheet {
-    margin: 0 !important;
-    box-shadow: none !important;
+    margin: 0;
+    box-shadow: none;
     break-after: page;
     page-break-after: always;
   }
@@ -1250,12 +1250,15 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition-duration: 0.001ms !important;
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
+  html {
+    scroll-behavior: auto;
+  }
+
+  body [class],
+  body [class]::before,
+  body [class]::after {
+    transition-duration: 0.001ms;
+    animation-duration: 0.001ms;
+    animation-iteration-count: 1;
   }
 }

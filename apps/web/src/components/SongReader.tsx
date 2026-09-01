@@ -7,6 +7,7 @@ import {
   type UiLocale,
 } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
+import { keyedLyricTracks } from "@app/lib/renderKeys";
 
 interface SongReaderProps {
   song: Song;
@@ -42,6 +43,7 @@ export function SongReader({
   const { t } = useI18n();
   const version = activeVersion(song, selectedVersionId);
   const tracks = version?.tracks.filter((track) => track.text.trim()) ?? [];
+  const renderedTracks = keyedLyricTracks(tracks);
   return (
     <article className="reader-card" id={`song-${song.id}`}>
       <div className="reader-kicker">
@@ -86,8 +88,8 @@ export function SongReader({
       ) : null}
       {tracks.length ? (
         <div className={`lyric-layout${tracks.length > 1 ? " bilingual" : ""}`}>
-          {tracks.map((track, index) => (
-            <section key={track.id ?? `${track.role}-${track.language}-${index}`}>
+          {renderedTracks.map(({ track, key }) => (
+            <section key={key}>
               {tracks.length > 1 ? (
                 <div className="lyric-track-heading">
                   <span>{getLocalized(track.label, locale) || t(track.role)}</span>

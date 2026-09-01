@@ -1,6 +1,6 @@
 {
   "name": "@iocky/lyricbook",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "Privacy-first, local-first concert lyric book and printable booklet generator.",
   "license": "Apache-2.0",
@@ -25,7 +25,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "lint": "biome lint . --max-diagnostics=none",
+    "lint": "biome lint . --max-diagnostics=none --error-on-warnings",
     "typecheck": "tsc --build --pretty false",
     "test": "npm run test:unit && npm run test:rust",
     "test:unit": "vitest run --coverage",

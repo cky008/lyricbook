@@ -8,6 +8,8 @@ const required = [
   ".nvmrc",
   "package.json",
   "toolchain.json",
+  "vitest.config.ts",
+  ".github/dependabot.yml",
   "Cargo.toml",
   "rust-toolchain.toml",
   "AGENTS.md",
@@ -74,7 +76,6 @@ for (const section of ["dependencies", "devDependencies", "overrides"]) {
     }
   }
 }
-if (packageJson.version !== "0.0.3") throw new Error("Application version must be 0.0.3");
 if (packageJson.engines?.node !== ">=26.8.1 <27")
   throw new Error("Node engine must pin the current 26.x line");
 if (packageJson.packageManager !== "npm@12.0.2")
@@ -89,6 +90,103 @@ if (
 }
 if (toolchain.babelCore !== packageJson.devDependencies["@babel/core"]) {
   throw new Error("toolchain.json Babel version is out of sync");
+}
+
+const workflowVersionRequirements = new Map([
+  ["actions/checkout", "v7"],
+  ["actions/setup-node", "v7"],
+  ["actions/configure-pages", "v6"],
+  ["actions/upload-pages-artifact", "v5"],
+  ["actions/deploy-pages", "v5"],
+  ["actions/upload-artifact", "v6"],
+  ["actions/dependency-review-action", "v4"],
+]);
+const workflowDirectory = path.join(root, ".github/workflows");
+for (const entry of await readdir(workflowDirectory, { withFileTypes: true })) {
+  if (!entry.isFile() || !/\.ya?ml$/i.test(entry.name)) continue;
+  const workflow = await readFile(path.join(workflowDirectory, entry.name), "utf8");
+  for (const [action, version] of workflowVersionRequirements) {
+    const pattern = new RegExp(`${action.replace("/", "\\/")}@([^\\s]+)`, "g");
+    for (const match of workflow.matchAll(pattern)) {
+      if (match[1] !== version) {
+        throw new Error(`${entry.name} must use ${action}@${version}; found ${match[0]}`);
+      }
+    }
+  }
+}
+
+const requiredWorkflowActions = new Map([
+  ["ci.yml", ["actions/checkout@v7", "actions/setup-node@v7"]],
+  [
+    "deploy-pages.yml",
+    [
+      "actions/checkout@v7",
+      "actions/setup-node@v7",
+      "actions/configure-pages@v6",
+      "actions/upload-pages-artifact@v5",
+      "actions/deploy-pages@v5",
+    ],
+  ],
+  [
+    "full-quality.yml",
+    ["actions/checkout@v7", "actions/setup-node@v7", "actions/upload-artifact@v6"],
+  ],
+  [
+    "security.yml",
+    ["actions/checkout@v7", "actions/setup-node@v7", "actions/dependency-review-action@v4"],
+  ],
+  ["release.yml", ["actions/checkout@v7", "actions/setup-node@v7"]],
+]);
+for (const [workflowName, requiredActions] of requiredWorkflowActions) {
+  const workflow = await readFile(path.join(workflowDirectory, workflowName), "utf8");
+  for (const action of requiredActions) {
+    if (!workflow.includes(action)) throw new Error(`${workflowName} is missing ${action}`);
+  }
+}
+
+const dependabot = await readFile(path.join(root, ".github/dependabot.yml"), "utf8");
+for (const ecosystem of ["npm", "cargo", "github-actions"]) {
+  if (!dependabot.includes(`package-ecosystem: ${ecosystem}`)) {
+    throw new Error(`Dependabot is missing the ${ecosystem} ecosystem`);
+  }
+}
+if ((dependabot.match(/target-branch:\s*develop/g) ?? []).length !== 3) {
+  throw new Error("All Dependabot ecosystems must target develop");
+}
+if (!dependabot.includes('groups:\n      github-actions:\n        patterns: ["*"]')) {
+  throw new Error("GitHub Actions Dependabot updates must be grouped");
+}
+
+const vitestConfig = await readFile(path.join(root, "vitest.config.ts"), "utf8");
+const minimumCoverageThresholds = new Map([
+  ["statements", 70],
+  ["branches", 60],
+  ["functions", 65],
+  ["lines", 70],
+]);
+for (const [metric, minimum] of minimumCoverageThresholds) {
+  const match = new RegExp(`${metric}:\\s*(\\d+)`).exec(vitestConfig);
+  const actual = match ? Number(match[1]) : Number.NaN;
+  if (!Number.isFinite(actual) || actual < minimum) {
+    throw new Error(
+      `Coverage threshold ${metric} must remain at least ${minimum}; found ${match?.[1] ?? "missing"}`,
+    );
+  }
+}
+for (const coveredPath of [
+  "packages/domain/src/**/*.ts",
+  "packages/print-engine/src/**/*.ts",
+  "apps/web/src/lib/archive.ts",
+  "apps/web/src/lib/projectHelpers.ts",
+]) {
+  if (!vitestConfig.includes(coveredPath))
+    throw new Error(`Coverage must continue to include ${coveredPath}`);
+}
+if (!vitestConfig.includes('exclude: ["**/*.d.ts", "**/index.ts"]')) {
+  throw new Error("Coverage exclusions must remain limited to declarations and barrel files");
+}
+if (!packageJson.scripts?.lint?.includes("--error-on-warnings")) {
+  throw new Error("The lint command must fail on warnings");
 }
 
 async function walk(directory) {
@@ -111,6 +209,25 @@ async function walk(directory) {
 const sourceRoots = ["apps/web/src", "packages/domain/src", "packages/print-engine/src"];
 const files = (await Promise.all(sourceRoots.map((item) => walk(path.join(root, item))))).flat();
 const codeFiles = files.filter((item) => /\.(?:ts|tsx|js|jsx|mjs)$/.test(item));
+
+const coverageSourcePrefixes = [
+  path.join(root, "packages/domain/src"),
+  path.join(root, "packages/print-engine/src"),
+];
+const explicitCoverageSources = new Set([
+  path.join(root, "apps/web/src/lib/archive.ts"),
+  path.join(root, "apps/web/src/lib/projectHelpers.ts"),
+]);
+for (const file of codeFiles) {
+  const covered =
+    coverageSourcePrefixes.some((prefix) => file.startsWith(`${prefix}${path.sep}`)) ||
+    explicitCoverageSources.has(file);
+  if (!covered) continue;
+  const content = await readFile(file, "utf8");
+  if (/istanbul ignore|c8 ignore|v8 ignore/i.test(content)) {
+    throw new Error(`Coverage ignore directives are not allowed in ${path.relative(root, file)}`);
+  }
+}
 const forbidden = [
   /react\.production\.min\.js/i,
   /react-dom\.production\.min\.js/i,

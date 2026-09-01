@@ -20,7 +20,7 @@ LyricBook is a privacy-first, local-first concert lyric-book editor and printabl
 
 ## 3. Current pinned toolchain
 
-Version 0.0.3 deliberately pins a current stack:
+Version 0.0.4 deliberately pins a current stack:
 
 - Node.js 26.8.1 and npm 12.0.2
 - React and React DOM 19.2.8
@@ -83,6 +83,8 @@ For every behavior change:
 6. Update user and developer documentation when behavior, data, deployment, or workflows change.
 
 Tests must cover failure paths, not only happy paths.
+
+Coverage gates are product requirements, not optional CI tuning. Do not lower the committed global thresholds, remove production files from coverage, add blanket ignore comments, or introduce exceptions merely to make CI pass. Increase coverage with behavior-focused tests. The Web quality gate must finish with zero Biome errors and zero Biome warnings.
 
 ## 6. Required test matrix
 

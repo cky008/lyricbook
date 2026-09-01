@@ -4,12 +4,32 @@ All notable changes follow Keep a Changelog principles.
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [0.0.4] - 2026-09-01
+
+### Changed
+
+- Raised the application release from 0.0.3 to 0.0.4 while keeping the verified modern dependency pins.
+- Routed npm, Cargo, and GitHub Actions Dependabot updates to `develop`, with grouped GitHub Actions updates.
+- Enforced the current GitHub Actions major versions in repository validation.
+
 ### Fixed
 
 - Removed the closed mobile sidebar from the DOM so hidden controls cannot remain focusable.
 - Made immersive next-song navigation reset scroll position synchronously and deterministically.
 - Made the print portal a static direct child of `body` to prevent duplicate or timing-sensitive portals.
 - Updated Playwright assertions to target persistent locale state, the visible print preview, and scoped mobile controls.
+- Added behavior-focused unit tests instead of lowering coverage thresholds or excluding additional production files.
+- Removed all 32 existing Biome warnings without applying unsafe automatic fixes.
+- Replaced non-null assertions with explicit runtime invariants in the print engine and tests.
+- Replaced array-index React keys with stable content or persistent-ID based keys.
+- Reworked print and reduced-motion CSS so required behavior no longer depends on `!important`.
+
+### Tests
+
+- Kept the global coverage gates at 70% statements, 60% branches, 65% functions, and 70% lines.
+- Added coverage for archive safety, localization fallbacks, theme sanitization, migration, setlist parsing, project helpers, print scopes, bilingual and multi-version layouts, long lyrics, table-of-contents density, and booklet output.
 
 ## [0.0.3] - 2026-08-31
 

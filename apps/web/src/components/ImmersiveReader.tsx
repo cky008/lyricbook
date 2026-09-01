@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { getLocalized, type Song, type UiLocale } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
 import { lockBodyScroll } from "@app/lib/scrollLock";
+import { keyedLyricTracks } from "@app/lib/renderKeys";
 
 interface ImmersiveReaderProps {
   song: Song;
@@ -32,6 +33,7 @@ export function ImmersiveReader({
   const version =
     song.lyricVersions.find((item) => item.id === selectedVersionId) ?? song.lyricVersions[0];
   const tracks = version?.tracks.filter((track) => track.text.trim()) ?? [];
+  const renderedTracks = keyedLyricTracks(tracks);
 
   useEffect(() => lockBodyScroll(), []);
   useLayoutEffect(() => {
@@ -74,8 +76,8 @@ export function ImmersiveReader({
         <h1 className="reader-title">{getLocalized(song.titles, locale)}</h1>
         <div className={`lyric-layout${tracks.length > 1 ? " bilingual" : ""}`}>
           {tracks.length ? (
-            tracks.map((track, index) => (
-              <section key={track.id ?? `${track.role}-${index}`}>
+            renderedTracks.map(({ track, key }) => (
+              <section key={key}>
                 {tracks.length > 1 ? (
                   <div className="lyric-track-heading">{t(track.role)}</div>
                 ) : null}

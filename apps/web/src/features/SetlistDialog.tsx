@@ -19,6 +19,27 @@ interface SetlistDialogProps {
   onChange: (project: LyricBookProject) => void;
 }
 
+function itemIdentity(item: SetlistItem): string {
+  if (item.type === "song") {
+    return `song:${item.songId}:${item.optional ? "optional" : "required"}`;
+  }
+  if (item.type === "section") {
+    return `section:${item.id ?? JSON.stringify(item.label)}`;
+  }
+  if (item.type === "note") return `note:${JSON.stringify(item.text)}`;
+  return `break:${JSON.stringify(item.label ?? {})}`;
+}
+
+function keyedItems(items: SetlistItem[]): Array<{ item: SetlistItem; key: string }> {
+  const occurrences = new Map<string, number>();
+  return items.map((item) => {
+    const identity = itemIdentity(item);
+    const occurrence = occurrences.get(identity) ?? 0;
+    occurrences.set(identity, occurrence + 1);
+    return { item, key: `${identity}:${occurrence}` };
+  });
+}
+
 function move<T>(items: T[], from: number, to: number): T[] {
   if (to < 0 || to >= items.length || from === to) return items;
   const next = [...items];
@@ -46,6 +67,7 @@ export function SetlistDialog({
     () => new Map(project.songs.map((song) => [song.id, song])),
     [project.songs],
   );
+  const setlistItems = useMemo(() => keyedItems(setlist?.items ?? []), [setlist?.items]);
 
   const updateSetlist = (updater: (setlist: Setlist) => Setlist) => {
     if (!setlist) return;
@@ -174,7 +196,7 @@ export function SetlistDialog({
           <section className="modal-section">
             <h3>{t("setlist")}</h3>
             <div className="setlist-editor-list">
-              {setlist.items.map((item, index) => {
+              {setlistItems.map(({ item, key }, index) => {
                 const song = item.type === "song" ? songMap.get(item.songId) : undefined;
                 const label =
                   item.type === "song"
@@ -187,7 +209,7 @@ export function SetlistDialog({
                 return (
                   <div
                     className={`setlist-editor-row${item.type === "section" ? " section" : ""}`}
-                    key={`${item.type}-${index}-${label}`}
+                    key={key}
                   >
                     <span className="song-number">{String(index + 1).padStart(2, "0")}</span>
                     <div style={{ minWidth: 0 }}>

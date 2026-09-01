@@ -39,7 +39,7 @@ for (const [name, script] of [
 
 const packageJson = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
 const toolchain = JSON.parse(readFileSync(path.join(root, "toolchain.json"), "utf8"));
-add("application-version", packageJson.version === "0.0.3" && toolchain.application === "0.0.3");
+add("application-version", packageJson.version === toolchain.application);
 add(
   "react-19",
   packageJson.dependencies.react === "19.2.8" && packageJson.dependencies["react-dom"] === "19.2.8",

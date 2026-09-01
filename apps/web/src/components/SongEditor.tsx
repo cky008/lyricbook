@@ -10,6 +10,7 @@ import {
   type UiLocale,
 } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
+import { keyedLyricTracks } from "@app/lib/renderKeys";
 
 interface SongEditorProps {
   song: Song;
@@ -45,6 +46,7 @@ export function SongEditor({
   const knownRoles: LyricTrackRole[] = ["original", "translation", "transliteration", "adaptation"];
   const title = getLocalized(song.titles, locale);
   const aliases = song.aliases.join(", ");
+  const renderedTracks = useMemo(() => keyedLyricTracks(version?.tracks ?? []), [version?.tracks]);
   const allLanguages = useMemo(
     () => [
       ...new Set(song.lyricVersions.flatMap((item) => item.tracks.map((track) => track.language))),
@@ -278,8 +280,8 @@ export function SongEditor({
               <Trash2 size={15} /> {t("remove")}
             </button>
           </div>
-          {version.tracks.map((track, index) => (
-            <section className="panel" key={track.id ?? `${track.role}-${index}`}>
+          {renderedTracks.map(({ track, key, index }) => (
+            <section className="panel" key={key}>
               <div className="panel-heading">
                 <h3>
                   {t("track")} {index + 1}

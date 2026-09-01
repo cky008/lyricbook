@@ -45,8 +45,8 @@ function SongPageContent({ page }: { page: SongPage }) {
       {page.versionLabel ? <div className="print-version-title">{page.versionLabel}</div> : null}
       {page.tracks.length ? (
         <div className="print-lyric-grid">
-          {page.tracks.map((track, index) => (
-            <section className="print-track" key={`${track.role}-${track.language}-${index}`}>
+          {page.tracks.map((track) => (
+            <section className="print-track" key={track.id}>
               {page.tracks.length > 1 ? (
                 <div className="print-track-label">
                   {track.label} · {track.language}
@@ -116,6 +116,14 @@ function PageBody({ page }: { page: LogicalPrintPage }) {
   return <div className="print-page-content" />;
 }
 
+function requiredPage(plan: PrintPlan, pageNumber: number): LogicalPrintPage {
+  const page = plan.pages[pageNumber - 1];
+  if (!page) {
+    throw new RangeError(`Print plan is missing logical page ${pageNumber}`);
+  }
+  return page;
+}
+
 function LogicalPage({
   page,
   number,
@@ -170,13 +178,13 @@ export function PrintDocument({ plan }: PrintDocumentProps) {
           key={`sheet-${sheet.index}-front`}
         >
           <LogicalPage
-            page={plan.pages[sheet.front[0] - 1]!}
+            page={requiredPage(plan, sheet.front[0])}
             number={sheet.front[0]}
             format="a5"
             logical
           />
           <LogicalPage
-            page={plan.pages[sheet.front[1] - 1]!}
+            page={requiredPage(plan, sheet.front[1])}
             number={sheet.front[1]}
             format="a5"
             logical
@@ -189,13 +197,13 @@ export function PrintDocument({ plan }: PrintDocumentProps) {
           key={`sheet-${sheet.index}-back`}
         >
           <LogicalPage
-            page={plan.pages[sheet.back[0] - 1]!}
+            page={requiredPage(plan, sheet.back[0])}
             number={sheet.back[0]}
             format="a5"
             logical
           />
           <LogicalPage
-            page={plan.pages[sheet.back[1] - 1]!}
+            page={requiredPage(plan, sheet.back[1])}
             number={sheet.back[1]}
             format="a5"
             logical

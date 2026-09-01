@@ -13,6 +13,7 @@ import type {
 import { imposeBooklet, paddedBookletPageCount, type BookletSheet } from "./booklet";
 
 export interface PrintTrackBlock {
+  id: string;
   label: string;
   language: string;
   role: string;
@@ -92,6 +93,10 @@ const CAPACITY: Record<Exclude<PrintFormat, "booklet">, Record<number, number>> 
   a5: { 1: 39, 2: 70, 3: 96 },
 };
 
+function capacityFor(format: Exclude<PrintFormat, "booklet">, columns: number): number {
+  return CAPACITY[format][columns] ?? CAPACITY[format][1] ?? 1;
+}
+
 function lineWeight(line: string): number {
   let weight = 0;
   for (const character of line) {
@@ -129,13 +134,14 @@ function versionsForMode(
   mode: PrintOptions["versionMode"],
   selectedVersionId: string | undefined,
 ): LyricVersion[] {
-  if (!song.lyricVersions.length) return [];
+  const firstVersion = song.lyricVersions.at(0);
+  if (!firstVersion) return [];
   if (mode === "all") return song.lyricVersions;
   if (mode === "current" && selectedVersionId) {
     const selected = song.lyricVersions.find((version) => version.id === selectedVersionId);
     if (selected) return [selected];
   }
-  return [song.lyricVersions.find((version) => version.isDefault) ?? song.lyricVersions[0]!];
+  return [song.lyricVersions.find((version) => version.isDefault) ?? firstVersion];
 }
 
 function sectionMap(setlist: Setlist | undefined): Map<string, string> {
@@ -200,9 +206,7 @@ function chooseLayout(
   for (const columns of candidates) {
     for (const fontSize of fontRange) {
       const scale = (baseFormat === "a4" ? 12 : 10.5) / fontSize;
-      const lineLimit = Math.floor(
-        (CAPACITY[baseFormat][columns] ?? CAPACITY[baseFormat][1]!) * scale,
-      );
+      const lineLimit = Math.floor(capacityFor(baseFormat, columns) * scale);
       const visualLines = trackTexts.reduce(
         (total, text) =>
           total + estimateVisualLines(text, columns === 1 ? 42 : columns === 2 ? 31 : 24),
@@ -222,7 +226,7 @@ function chooseLayout(
   }
   const columns = strategy === "readable" ? 2 : 3;
   const fontSize = baseFormat === "a4" ? 10 : 8;
-  const lineLimit = CAPACITY[baseFormat][columns] ?? CAPACITY[baseFormat][1]!;
+  const lineLimit = capacityFor(baseFormat, columns);
   const totalLines = trackTexts.reduce(
     (total, text) => total + estimateVisualLines(text, columns === 2 ? 31 : 24),
     0,
@@ -292,7 +296,8 @@ function buildSongPages(
         versionLabel,
         pageInSong: 1,
         pageCountForSong: 1,
-        tracks: nonEmptyTracks.map((track) => ({
+        tracks: nonEmptyTracks.map((track, trackIndex) => ({
+          id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
           label: getLocalized(track.label, context.locale) || track.role,
           language: track.language,
           role: track.role,
@@ -320,6 +325,7 @@ function buildSongPages(
         pageInSong: index + 1,
         pageCountForSong: pageCount,
         tracks: nonEmptyTracks.map((track, trackIndex) => ({
+          id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
           label: getLocalized(track.label, context.locale) || track.role,
           language: track.language,
           role: track.role,
