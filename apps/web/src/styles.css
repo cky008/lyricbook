@@ -399,19 +399,40 @@ a {
   font-size: 11px;
 }
 
+.song-row-copy {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
 .song-title {
+  display: block;
   overflow: hidden;
   font-size: 13px;
   font-weight: 650;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .song-meta {
-  margin-top: 3px;
-  overflow: hidden;
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
   color: var(--lb-muted);
   font-size: 10px;
+  line-height: 1.2;
+}
+
+.song-meta-tag {
+  overflow: hidden;
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--lb-accent) 26%, transparent);
+  border-radius: 999px;
+  padding: 2px 6px;
+  background: color-mix(in srgb, var(--lb-accent) 8%, transparent);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

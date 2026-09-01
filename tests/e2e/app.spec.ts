@@ -6,6 +6,19 @@ async function waitForApplication(page: Page): Promise<void> {
   await expect(page.locator("header.app-header")).toBeVisible();
 }
 
+async function songRowsForViewport(page: Page, isMobile: boolean) {
+  if (!isMobile) {
+    const rows = page.locator(".sidebar.desktop .song-row");
+    await expect(rows.first()).toBeVisible();
+    return rows;
+  }
+
+  await page.getByRole("button", { name: /Open menu|打开菜单/i }).click();
+  const rows = page.locator(".mobile-sidebar.open .song-row");
+  await expect(rows.first()).toBeVisible();
+  return rows;
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await waitForApplication(page);
@@ -65,6 +78,19 @@ test("switches language and persists the user-selected UI locale", async ({ page
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-ui-locale")))
     .toBe("zh-CN");
+});
+
+test("stacks each song title above its version and tag metadata", async ({ page, isMobile }) => {
+  const rows = await songRowsForViewport(page, isMobile);
+  const firstRow = rows.first();
+  const title = firstRow.locator(".song-title");
+  const meta = firstRow.locator(".song-meta");
+  const titleBox = await title.boundingBox();
+  const metaBox = await meta.boundingBox();
+  expect(titleBox).not.toBeNull();
+  expect(metaBox).not.toBeNull();
+  expect(metaBox?.y ?? 0).toBeGreaterThan((titleBox?.y ?? 0) + (titleBox?.height ?? 0) - 1);
+  await expect(meta.locator(".song-meta-tag").first()).toBeVisible();
 });
 
 test("immersive next-song navigation resets the next song to the top", async ({ page }) => {
