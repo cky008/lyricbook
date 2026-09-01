@@ -10,7 +10,7 @@
 
 LyricBook is a privacy-first, local-first concert lyric-book editor, immersive setlist reader, and printable PDF/booklet generator. It stores user lyrics in the browser, separates reusable content from themes, supports multilingual and multi-version songs, and deploys as a static GitHub Pages application without a backend.
 
-> **Version 0.0.5 is the modern runtime reset.** It uses React 19.2.8, React DOM 19.2.8, React Compiler 1.0.0 through Babel 8.0.1, Vite 8.2.2, TypeScript 7.0.2, Tailwind CSS 4.3.3, Rust 1.98.0, Vitest 4.1.11, and Playwright 1.62.1. There is no vendored React 16 runtime and no global `window.React` compatibility layer.
+> **Version 0.0.6 builds on the modern runtime introduced in 0.0.5.** It uses React 19.2.8, React DOM 19.2.8, React Compiler 1.0.0 through Babel 8.0.1, Vite 8.2.2, TypeScript 7.0.2, Tailwind CSS 4.3.3, Rust 1.98.0, Vitest 4.1.11, and Playwright 1.62.1. There is no vendored React 16 runtime and no global `window.React` compatibility layer.
 
 ## What it does
 

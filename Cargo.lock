@@ -259,7 +259,7 @@ checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "lyricbook-cli"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "clap",
  "lyricbook-core",
@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "lyricbook-core"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "proptest",
  "serde",
@@ -279,7 +279,7 @@ dependencies = [
 
 [[package]]
 name = "lyricbook-wasm"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "console_error_panic_hook",
  "lyricbook-core",

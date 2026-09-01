@@ -6,6 +6,26 @@ All notable changes follow Keep a Changelog principles.
 
 No unreleased changes.
 
+## [0.0.6] - 2026-09-02
+
+### Added
+
+- Restored migration support for legacy `gem-lyricbook-backup-v4` archives, including lyric versions, translations, setlists, and unmatched legacy songs.
+- Added system, light, and dark appearance modes with persisted user selection.
+- Added an optional designed cover for imposed A4 folded booklets.
+
+### Changed
+
+- Separated the project title and tagline for clearer responsive header spacing.
+- Standardized song-list rows so titles appear above version and tag metadata.
+- Added more breathing room between reader actions and the lyric panel.
+- Replaced the active-song inset rail with a full-card selected state and improved pointer and keyboard interactions.
+
+### Tests
+
+- Added migration, appearance, responsive song-list, selection-state, reader-spacing, and booklet-cover regression coverage.
+- Verified the complete TypeScript, Rust, production-build, accessibility, print, Chromium, Firefox, WebKit, and iPhone quality gates.
+
 
 ## [0.0.5] - 2026-09-01
 
