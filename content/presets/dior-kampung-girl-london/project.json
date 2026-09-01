@@ -2081,14 +2081,14 @@
     },
     {
       "id": "dior-regional-rotation-report",
-      "kind": "community",
-      "title": "Singapore regional-cover candidates (low-confidence summary)",
-      "publisher": "Secondary tour reporting",
+      "kind": "press",
+      "title": "Dior大颖演唱会另类追星！汪苏泷没来，但也来了",
+      "publisher": "8world / Mediacorp",
       "retrievedAt": "2026-09-01T00:00:00Z",
       "language": "zh-Hans",
-      "confidence": 0.45,
-      "notes": "Secondary, low-confidence reporting attributes three Singapore-only covers to the tour stop. They remain optional rotation candidates only and are excluded from the London core and likely running order.",
-      "url": "https://en.wikipedia.org/wiki/DIOR_%28singer%29"
+      "confidence": 0.9,
+      "notes": "Contemporaneous post-show reporting confirming the Singapore-specific covers 像晴天像雨天、如燕 and 下一个天亮. These songs remain regional rotation candidates only and are excluded from the London high-confidence core and likely running order.",
+      "url": "https://vibes.8world.com/music/dior-da-ying-concert-singapore-3100601"
     },
     {
       "id": "dior-spotify-chart",
