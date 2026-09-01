@@ -179,6 +179,7 @@ export interface PrintOptions {
   includeEmptySongs: boolean;
   includeSources: boolean;
   includeTableOfContents: boolean;
+  includeCover: boolean;
 }
 
 export interface PresetIndexEntry {

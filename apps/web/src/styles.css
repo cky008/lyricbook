@@ -1038,6 +1038,11 @@ a {
   inset: 10mm 10mm 8mm;
 }
 
+.print-page.cover .print-page-inner,
+.print-logical-page.cover .print-page-inner {
+  inset: 0;
+}
+
 .print-page-content {
   position: absolute;
   inset: 0 0 9mm;
@@ -1047,6 +1052,91 @@ a {
 .print-page.a5 .print-page-content,
 .print-logical-page .print-page-content {
   bottom: 7mm;
+}
+
+.print-page .print-cover,
+.print-logical-page .print-cover {
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 7mm;
+  padding: 12mm;
+  overflow: hidden;
+  color: var(--print-paper, #fffdf8);
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      color-mix(in srgb, var(--print-accent, #694e98) 54%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--print-accent, #694e98) 38%, #17151c),
+      #17151c 62%
+    );
+}
+
+.print-cover-rule {
+  width: 18mm;
+  height: 1.2mm;
+  border-radius: 999px;
+  background: var(--print-accent, #d59852);
+}
+
+.print-cover-kicker {
+  align-self: start;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 72%, transparent);
+  font-size: 7pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.print-cover-copy {
+  align-self: center;
+  min-width: 0;
+}
+
+.print-cover-copy h1 {
+  max-width: 100%;
+  margin: 0;
+  font-family: Georgia, "Noto Serif CJK SC", "Songti SC", serif;
+  font-size: 29pt;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.print-cover-subtitle {
+  max-width: 92%;
+  margin: 5mm 0 0;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 72%, transparent);
+  font-size: 9pt;
+  line-height: 1.6;
+}
+
+.print-cover-details {
+  display: grid;
+  gap: 1.5mm;
+  align-self: end;
+  padding-top: 5mm;
+  border-top: 0.35mm solid color-mix(in srgb, var(--print-paper, #fffdf8) 28%, transparent);
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 82%, transparent);
+  font-size: 8pt;
+}
+
+.print-cover-mark {
+  position: absolute;
+  right: -3mm;
+  bottom: -10mm;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 7%, transparent);
+  font-family: Georgia, serif;
+  font-size: 74pt;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .print-page-footer {

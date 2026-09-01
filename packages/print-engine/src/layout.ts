@@ -33,6 +33,16 @@ export interface TocSection {
   entries: TocEntry[];
 }
 
+export interface CoverPage {
+  kind: "cover";
+  id: string;
+  kicker: string;
+  title: string;
+  subtitle?: string;
+  setlistTitle?: string;
+  songCountLabel: string;
+}
+
 export interface TocPage {
   kind: "toc";
   id: string;
@@ -68,7 +78,7 @@ export interface BlankPage {
   id: string;
 }
 
-export type LogicalPrintPage = TocPage | SongPage | InfoPage | BlankPage;
+export type LogicalPrintPage = CoverPage | TocPage | SongPage | InfoPage | BlankPage;
 
 export interface PrintPlan {
   format: PrintFormat;
@@ -346,6 +356,13 @@ function buildSongPages(
   }));
 }
 
+function coverSummary(value: string | undefined): string | undefined {
+  const normalized = value?.replace(/\s+/g, " ").trim();
+  if (!normalized) return undefined;
+  if (normalized.length <= 180) return normalized;
+  return `${normalized.slice(0, 177).trimEnd()}…`;
+}
+
 function tocColumns(entryCount: number, format: Exclude<PrintFormat, "booklet">): number {
   if (format === "a5") return entryCount > 38 ? 2 : 1;
   if (entryCount <= 42) return 1;
@@ -365,10 +382,50 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
   const sections = sectionMap(setlist);
   const songPages = songs.flatMap((song) => buildSongPages(song, context, baseFormat));
   const pages: LogicalPrintPage[] = [];
-  const tocOffset = context.options.includeTableOfContents ? 1 : 0;
+  const includeCover = context.options.format === "booklet" && context.options.includeCover;
+  const frontMatterOffset =
+    (includeCover ? 1 : 0) + (context.options.includeTableOfContents ? 1 : 0);
+
+  if (includeCover) {
+    const projectTitle = getLocalized(context.project.title, context.locale);
+    const subtitle = coverSummary(
+      context.project.description
+        ? getLocalized(context.project.description, context.locale)
+        : undefined,
+    );
+    const setlistTitle =
+      context.options.scope === "active-setlist" && setlist
+        ? getLocalized(setlist.title, context.locale)
+        : undefined;
+    const setlistSlots =
+      context.options.scope === "active-setlist"
+        ? setlist?.items.filter(
+            (item) => item.type === "song" && (context.options.includeOptional || !item.optional),
+          ).length
+        : undefined;
+    const hasRepeatedSlots = Boolean(setlistSlots && setlistSlots > songs.length);
+
+    pages.push({
+      kind: "cover",
+      id: "print-cover",
+      kicker:
+        context.locale === "zh-CN" ? "演唱会歌词本 · IOCKY.COM" : "CONCERT LYRICBOOK · IOCKY.COM",
+      title: projectTitle,
+      subtitle,
+      setlistTitle: setlistTitle || undefined,
+      songCountLabel: hasRepeatedSlots
+        ? context.locale === "zh-CN"
+          ? `${songs.length} 首不同歌曲 · ${setlistSlots} 个歌单位置`
+          : `${songs.length} unique songs · ${setlistSlots} setlist slots`
+        : context.locale === "zh-CN"
+          ? `${songs.length} 首歌曲`
+          : `${songs.length} ${songs.length === 1 ? "song" : "songs"}`,
+    });
+  }
+
   if (context.options.includeTableOfContents) {
     const tocSections = new Map<string, TocEntry[]>();
-    let cursor = tocOffset + 1;
+    let cursor = frontMatterOffset + 1;
     let sequence = 1;
     for (const song of songs) {
       const count = songPages.filter((page) => page.songId === song.id).length;

@@ -93,6 +93,7 @@ language-output = Language output
 print-strategy = Print strategy
 include-optional = Include optional songs
 include-empty = Include songs without lyrics
+include-cover = Include a designed booklet cover
 include-toc = Include linked contents
 current-song = Current song
 current-filter = Current filtered list

@@ -247,6 +247,30 @@ test("print studio creates measurable A4 pages without marked overflow", async (
   expect(metrics.every((metric) => metric.overflow !== "true")).toBe(true);
 });
 
+test("booklet preview places a designed cover on the first front-right page", async ({ page }) => {
+  await page
+    .getByRole("button", { name: /Print|打印/i })
+    .first()
+    .click();
+  await page.getByLabel(/Page format|页面格式/i).selectOption("booklet");
+  await expect(
+    page.getByLabel(/Include a designed booklet cover|包含主题化小册封面/i),
+  ).toBeChecked();
+  await page.getByRole("button", { name: /Build preview|生成预览/i }).click();
+
+  const cover = page.locator(
+    "body > #print-portal .booklet-sheet[data-side='front'] .print-logical-page:nth-child(2) .print-cover",
+  );
+  await expect(cover).toBeAttached();
+  await expect(cover.locator("h1")).not.toHaveText("");
+  await expect(cover.locator(".print-cover-details")).toContainText(/songs|首歌曲/i);
+  const coverPage = page.locator(
+    "body > #print-portal .booklet-sheet[data-side='front'] .print-logical-page:nth-child(2)",
+  );
+  await expect(coverPage).toHaveAttribute("data-page-kind", "cover");
+  await expect(coverPage.locator(".print-page-footer")).toHaveCount(0);
+});
+
 test("has no serious accessibility violations", async ({ page }) => {
   await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
   const results = await new AxeBuilder({ page }).exclude("#print-portal").analyze();

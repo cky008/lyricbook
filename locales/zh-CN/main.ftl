@@ -93,6 +93,7 @@ language-output = 语言输出
 print-strategy = 排版策略
 include-optional = 包含可选曲目
 include-empty = 包含尚无歌词的歌曲
+include-cover = 包含主题化小册封面
 include-toc = 包含可点击目录
 current-song = 当前歌曲
 current-filter = 当前筛选结果

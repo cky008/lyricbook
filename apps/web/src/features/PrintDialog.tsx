@@ -27,6 +27,7 @@ const DEFAULT_OPTIONS: PrintOptions = {
   includeEmptySongs: false,
   includeSources: false,
   includeTableOfContents: true,
+  includeCover: true,
 };
 
 function pageStyle(format: PrintOptions["format"]): string {
@@ -198,10 +199,20 @@ export function PrintDialog({
               </label>
             ))}
             {options.format === "booklet" ? (
-              <div className="notice">
-                <BookOpen size={15} style={{ display: "inline", marginRight: 7 }} />
-                {t("booklet-help")}
-              </div>
+              <>
+                <label className="status-line">
+                  <input
+                    type="checkbox"
+                    checked={options.includeCover}
+                    onChange={(event) => update("includeCover", event.currentTarget.checked)}
+                  />
+                  {t("include-cover")}
+                </label>
+                <div className="notice">
+                  <BookOpen size={15} style={{ display: "inline", marginRight: 7 }} />
+                  {t("booklet-help")}
+                </div>
+              </>
             ) : null}
             <div className="notice">{t("print-disclaimer")}</div>
           </section>

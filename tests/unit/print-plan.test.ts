@@ -20,6 +20,7 @@ const options: PrintOptions = {
   includeEmptySongs: true,
   includeSources: false,
   includeTableOfContents: true,
+  includeCover: false,
 };
 
 function songWithTracks(title: string): Song {
@@ -111,6 +112,48 @@ describe("print plan", () => {
     expect(plan.pages.filter((page) => page.kind === "song")).toHaveLength(1);
     expect(plan.pages.filter((page) => page.kind === "blank")).toHaveLength(1);
     expect(plan.pages.at(-1)?.kind).toBe("blank");
+  });
+
+  it("places an optional booklet cover on logical page one", () => {
+    const project = projectWithSongs(2);
+    project.title = { en: "Concert Notes", "zh-Hans": "演唱会笔记" };
+    project.description = {
+      en: `${"A thoughtfully prepared concert guide. ".repeat(8)}Final detail.`,
+    };
+    const setlist = requireValue(project.setlists[0]);
+    setlist.title = { en: "London Night", "zh-Hans": "伦敦之夜" };
+
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, format: "booklet", includeCover: true },
+      locale: "en-US",
+    });
+
+    const cover = plan.pages[0];
+    expect(cover?.kind).toBe("cover");
+    expect(cover?.kind === "cover" ? cover.title : undefined).toBe("Concert Notes");
+    expect(cover?.kind === "cover" ? cover.setlistTitle : undefined).toBe("London Night");
+    expect(cover?.kind === "cover" ? cover.songCountLabel : undefined).toBe("2 songs");
+    expect(cover?.kind === "cover" ? cover.subtitle?.endsWith("…") : false).toBe(true);
+    expect(cover?.kind === "cover" ? cover.subtitle?.length : 0).toBeLessThanOrEqual(180);
+    expect(plan.bookletSheets[0]?.front[1]).toBe(1);
+    expect(plan.pages[1]?.kind).toBe("toc");
+    const toc = plan.pages[1];
+    expect(toc?.kind === "toc" ? toc.sections[0]?.entries[0]?.pageNumber : undefined).toBe(3);
+
+    const withoutCover = createPrintPlan({
+      project,
+      options: { ...options, format: "booklet", includeCover: false },
+      locale: "en-US",
+    });
+    expect(withoutCover.pages.some((page) => page.kind === "cover")).toBe(false);
+
+    const a4 = createPrintPlan({
+      project,
+      options: { ...options, format: "a4", includeCover: true },
+      locale: "en-US",
+    });
+    expect(a4.pages.some((page) => page.kind === "cover")).toBe(false);
   });
 
   it("covers current, filtered, library, and optional setlist scopes", () => {
