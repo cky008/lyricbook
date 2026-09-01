@@ -17,6 +17,21 @@ test("loads a preset and renders the modern React application", async ({ page })
   await expect(page.locator("script[src*='vendor']")).toHaveCount(0);
 });
 
+test("keeps the project title and tagline vertically separated", async ({ page, isMobile }) => {
+  test.skip(isMobile, "desktop header spacing");
+  const title = page.locator("header.app-header .brand-title");
+  const subtitle = page.locator("header.app-header .brand-subtitle");
+  await expect(title).toBeVisible();
+  await expect(subtitle).toBeVisible();
+  const titleBox = await title.boundingBox();
+  const subtitleBox = await subtitle.boundingBox();
+  expect(titleBox).not.toBeNull();
+  expect(subtitleBox).not.toBeNull();
+  expect(
+    (subtitleBox?.y ?? 0) - ((titleBox?.y ?? 0) + (titleBox?.height ?? 0)),
+  ).toBeGreaterThanOrEqual(1);
+});
+
 test("keeps exactly one static print portal as a direct body child", async ({ page }) => {
   const portal = page.locator("body > #print-portal");
   await expect(portal).toHaveCount(1);

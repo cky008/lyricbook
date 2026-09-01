@@ -137,24 +137,31 @@ a {
 }
 
 .brand-copy {
+  display: grid;
   min-width: 0;
+  align-content: center;
+  gap: 4px;
 }
 
 .brand-title {
+  display: block;
   overflow: hidden;
   font-size: clamp(17px, 2.2vw, 22px);
   font-weight: 760;
   letter-spacing: -0.025em;
+  line-height: 1.08;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .brand-subtitle {
+  display: block;
   overflow: hidden;
-  margin-top: 1px;
+  margin-top: 0;
   color: var(--lb-muted);
   font-size: 11px;
   letter-spacing: 0.075em;
+  line-height: 1.25;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
