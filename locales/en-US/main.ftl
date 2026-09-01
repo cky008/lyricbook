@@ -168,3 +168,6 @@ format-booklet = A4 folded booklet
 source-count = { $count } sources
 song-count = { $count } songs
 setlist-count = { $count } setlists
+
+transfer-data = Import / Export
+legacy-gem-import-note = Legacy G.E.M. v4 JSON backups are supported, including multi-version lyrics, translations, favorites, learned songs, and setlists.

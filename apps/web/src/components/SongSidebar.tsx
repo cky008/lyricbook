@@ -1,4 +1,4 @@
-import { Check, Menu, Plus, Search, X } from "lucide-react";
+import { ArrowUpDown, Check, Menu, Plus, Search, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { getLocalized, type Song, type UiLocale } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
@@ -15,6 +15,7 @@ interface SongSidebarProps {
   onClearTags: () => void;
   onSelectSong: (id: string) => void;
   onAddSong: () => void;
+  onTransfer: () => void;
   mobile?: boolean;
   open?: boolean;
   onClose?: () => void;
@@ -31,6 +32,7 @@ function SidebarBody({
   onClearTags,
   onSelectSong,
   onAddSong,
+  onTransfer,
 }: Omit<SongSidebarProps, "mobile" | "open" | "onClose">) {
   const { t } = useI18n();
   const tags = useMemo(
@@ -50,6 +52,9 @@ function SidebarBody({
           <Plus size={15} />
         </button>
       </div>
+      <button type="button" className="button sidebar-transfer-button" onClick={onTransfer}>
+        <ArrowUpDown size={15} /> {t("transfer-data")}
+      </button>
       <div className="search-wrap">
         <Search size={15} />
         <input

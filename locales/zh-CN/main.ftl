@@ -168,3 +168,6 @@ format-booklet = A4 对折小册
 source-count = { $count } 条来源
 song-count = { $count } 首歌曲
 setlist-count = { $count } 个歌单
+
+transfer-data = 导入 / 导出
+legacy-gem-import-note = 支持旧版 G.E.M. v4 JSON 备份，可迁移多版本歌词、翻译、收藏、已学会歌曲与歌单。

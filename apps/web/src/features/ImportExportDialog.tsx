@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import {
   createBlankProject,
   createExportFilename,
-  migrateGemV4Backup,
+  migrateLegacyGemV4Backup,
   parseProject,
   parseSetlistText,
   sanitizeTheme,
@@ -16,7 +16,7 @@ import { DialogShell } from "@app/components/DialogShell";
 import { createProjectArchive, importHttpsUrl, importProjectFile } from "@app/lib/archive";
 import { downloadBlob, downloadText } from "@app/lib/download";
 import { useI18n } from "@app/lib/i18n";
-import { loadPreset } from "@app/lib/presets";
+import { loadPreset, loadPresetIndex } from "@app/lib/presets";
 
 interface ImportExportDialogProps {
   open: boolean;
@@ -72,12 +72,16 @@ export function ImportExportDialog({
 
     const legacy = value as { format?: string };
     if (legacy?.format === "gem-lyricbook-backup-v4") {
-      const gemEntry = presets.find((entry) => entry.id === "gem-gloria");
+      const availablePresets = presets.length ? presets : await loadPresetIndex();
+      const gemEntry = availablePresets.find((entry) => entry.id === "gem-gloria");
       if (!gemEntry) throw new Error("G.E.M. metadata preset is unavailable");
-      const migrated = migrateGemV4Backup(value, await loadPreset(gemEntry));
+      const migrated = migrateLegacyGemV4Backup(value, await loadPreset(gemEntry));
       if (!migrated) throw new Error("Unable to migrate the G.E.M. backup");
       await onReplace(migrated, `Legacy G.E.M. import: ${sourceName}`);
-      setMessage({ kind: "success", text: t("import-success") });
+      setMessage({
+        kind: "success",
+        text: `${t("import-success")} ${t("song-count", { count: migrated.songs.length })}`,
+      });
       return;
     }
 
@@ -231,6 +235,7 @@ export function ImportExportDialog({
             <Upload size={17} />
           </div>
           <p className="panel-copy">{t("upload-help")}</p>
+          <div className="notice">{t("legacy-gem-import-note")}</div>
           <input
             ref={fileInput}
             type="file"

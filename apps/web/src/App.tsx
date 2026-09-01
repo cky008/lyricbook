@@ -222,6 +222,7 @@ export default function App() {
     onClearTags: () => setActiveTags([]),
     onSelectSong: selectSong,
     onAddSong: addSong,
+    onTransfer: () => openDialog("transfer"),
   };
 
   return (
