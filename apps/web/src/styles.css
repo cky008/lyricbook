@@ -388,6 +388,7 @@ a {
 }
 
 .song-row {
+  position: relative;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
@@ -400,22 +401,61 @@ a {
   color: inherit;
   cursor: pointer;
   text-align: left;
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .song-row:hover {
-  background: color-mix(in srgb, var(--lb-surface) 65%, transparent);
+  border-color: color-mix(in srgb, var(--lb-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--lb-surface) 72%, transparent);
+  transform: translateX(3px);
+}
+
+.song-row:active {
+  transform: translateX(2px) scale(0.99);
+}
+
+.song-row:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lb-accent) 38%, transparent);
+  outline-offset: 2px;
 }
 
 .song-row.active {
-  border-color: color-mix(in srgb, var(--lb-accent) 48%, transparent);
-  background: color-mix(in srgb, var(--lb-accent) 15%, var(--lb-surface));
-  box-shadow: inset 3px 0 0 var(--lb-accent);
+  border-color: color-mix(in srgb, var(--lb-accent) 62%, transparent);
+  background:
+    radial-gradient(
+      circle at 92% 18%,
+      color-mix(in srgb, var(--lb-accent-2) 18%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lb-accent) 20%, var(--lb-surface)),
+      color-mix(in srgb, var(--lb-surface-strong) 88%, transparent)
+    );
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--lb-accent) 16%, transparent);
+  transform: translateX(3px);
 }
 
 .song-number {
   color: var(--lb-muted);
   font-variant-numeric: tabular-nums;
   font-size: 11px;
+}
+
+.song-row.active .song-number {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--lb-accent), var(--lb-accent-2));
+  color: white;
+  font-weight: 750;
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--lb-accent) 24%, transparent);
 }
 
 .song-row-copy {

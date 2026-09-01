@@ -179,6 +179,31 @@ test("mobile sidebar and setlist dialog release document scrolling", async ({ pa
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
 });
 
+test("highlights the selected song without an inset left rail", async ({ page, isMobile }) => {
+  let rows = await songRowsForViewport(page, isMobile);
+  const secondTitle = (await rows.nth(1).locator(".song-title").innerText()).trim();
+
+  await rows.nth(1).click();
+
+  if (isMobile) {
+    await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
+    await expect(page.locator(".reader-title").first()).toHaveText(secondTitle);
+    rows = await songRowsForViewport(page, isMobile);
+  }
+
+  const first = rows.first();
+  const second = rows.nth(1);
+  await expect(second).toBeVisible();
+  await expect(second).toHaveClass(/active/);
+  await expect(first).not.toHaveClass(/active/);
+  const styles = await second.evaluate((element) => {
+    const computed = getComputedStyle(element);
+    return { boxShadow: computed.boxShadow, transform: computed.transform };
+  });
+  expect(styles.boxShadow).not.toContain("inset");
+  expect(styles.transform).not.toBe("none");
+});
+
 test("keeps breathing room between reader actions and the lyric panel", async ({ page }) => {
   const actions = page.locator(".reader-card > .inline-actions").first();
   const lyrics = page
