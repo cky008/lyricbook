@@ -397,7 +397,7 @@ pub fn validate_project(project: &Project) -> Result<(), ValidationError> {
 /// Returns imposed logical page pairs for an already padded saddle-stitched booklet.
 /// Each tuple is `(front_left, front_right, back_left, back_right)`.
 pub fn booklet_imposition(total_pages: usize) -> Result<Vec<(usize, usize, usize, usize)>, String> {
-    if total_pages == 0 || total_pages % 4 != 0 {
+    if total_pages == 0 || !total_pages.is_multiple_of(4) {
         return Err("booklet page count must be a positive multiple of four".into());
     }
     let mut sheets = Vec::with_capacity(total_pages / 4);
