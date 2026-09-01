@@ -98,8 +98,8 @@ const workflowVersionRequirements = new Map([
   ["actions/configure-pages", "v6"],
   ["actions/upload-pages-artifact", "v5"],
   ["actions/deploy-pages", "v5"],
-  ["actions/upload-artifact", "v6"],
-  ["actions/dependency-review-action", "v4"],
+  ["actions/upload-artifact", "v7"],
+  ["actions/dependency-review-action", "v5"],
 ]);
 const workflowDirectory = path.join(root, ".github/workflows");
 for (const entry of await readdir(workflowDirectory, { withFileTypes: true })) {
@@ -129,11 +129,11 @@ const requiredWorkflowActions = new Map([
   ],
   [
     "full-quality.yml",
-    ["actions/checkout@v7", "actions/setup-node@v7", "actions/upload-artifact@v6"],
+    ["actions/checkout@v7", "actions/setup-node@v7", "actions/upload-artifact@v7"],
   ],
   [
     "security.yml",
-    ["actions/checkout@v7", "actions/setup-node@v7", "actions/dependency-review-action@v4"],
+    ["actions/checkout@v7", "actions/setup-node@v7", "actions/dependency-review-action@v5"],
   ],
   ["release.yml", ["actions/checkout@v7", "actions/setup-node@v7"]],
 ]);

@@ -10,8 +10,8 @@
   {
     "id": "dior-kampung-girl-london",
     "title": {
-      "zh-Hans": "DIOR 大颖伦敦预测",
-      "en": "DIOR London Prediction"
+      "zh-Hans": "DIOR 大颖伦敦扩展预测",
+      "en": "DIOR London Expanded Prediction"
     },
     "path": "./content/presets/dior-kampung-girl-london/project.json"
   }
