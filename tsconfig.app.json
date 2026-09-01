@@ -24,7 +24,7 @@
       "@domain/*": ["./packages/domain/src/*"],
       "@print/*": ["./packages/print-engine/src/*"]
     },
-    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom", "node"]
   },
   "include": [
     "apps/web/src/**/*.ts",
