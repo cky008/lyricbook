@@ -553,7 +553,7 @@ a {
 .lyric-layout {
   display: grid;
   gap: 24px;
-  margin-top: 28px;
+  margin-top: clamp(40px, 5vw, 64px);
 }
 
 .lyric-layout.bilingual {
@@ -586,6 +586,7 @@ a {
 .lyric-placeholder {
   display: grid;
   min-height: 280px;
+  margin-top: clamp(40px, 5vw, 64px);
   place-items: center;
   border: 1px dashed var(--lb-border);
   border-radius: 20px;

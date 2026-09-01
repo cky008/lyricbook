@@ -154,6 +154,22 @@ test("mobile sidebar and setlist dialog release document scrolling", async ({ pa
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
 });
 
+test("keeps breathing room between reader actions and the lyric panel", async ({ page }) => {
+  const actions = page.locator(".reader-card > .inline-actions").first();
+  const lyrics = page
+    .locator(".reader-card > .lyric-layout, .reader-card > .lyric-placeholder")
+    .first();
+  await expect(actions).toBeVisible();
+  await expect(lyrics).toBeVisible();
+  const actionBox = await actions.boundingBox();
+  const lyricBox = await lyrics.boundingBox();
+  expect(actionBox).not.toBeNull();
+  expect(lyricBox).not.toBeNull();
+  expect(
+    (lyricBox?.y ?? 0) - ((actionBox?.y ?? 0) + (actionBox?.height ?? 0)),
+  ).toBeGreaterThanOrEqual(28);
+});
+
 test("print studio creates measurable A4 pages without marked overflow", async ({ page }) => {
   await page
     .getByRole("button", { name: /Print|打印/i })
