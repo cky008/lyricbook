@@ -1,6 +1,6 @@
 # Toolchain policy
 
-LyricBook 0.0.5 is a deliberate modern-runtime reset. The exact toolchain is recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows must use the committed `package-lock.json` and `Cargo.lock` after the one-time repository bootstrap commit.
+LyricBook 0.0.6 continues the modern-runtime baseline introduced in 0.0.5. The exact toolchain is recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows must use the committed `package-lock.json` and `Cargo.lock` after the one-time repository bootstrap commit.
 
 ## Pinned baseline
 

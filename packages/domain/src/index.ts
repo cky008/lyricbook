@@ -1,6 +1,7 @@
 export * from "./filename";
 export * from "./ids";
 export * from "./localize";
+export * from "./legacy-gem-v4";
 export * from "./migration";
 export * from "./project";
 export * from "./schema";

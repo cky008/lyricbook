@@ -15,11 +15,11 @@
 5. Render actual DOM pages with isolated title/content/footer regions.
 6. Measure rendered content and reduce type size within a safe minimum if necessary.
 7. Build linked contents.
-8. For booklet format, pad to four and impose logical pages into front/back sheet pairs.
+8. For booklet format, optionally prepend a designed cover, pad to four, and impose logical pages into front/back sheet pairs.
 
 ## Booklet printing
 
-The PDF is already imposed. Use A4 landscape, duplex, short-edge flip, one PDF page per sheet side, and 100% actual size. Do not ask the printer driver to impose a booklet again.
+The PDF is already imposed. The optional cover is logical page 1 and appears on the right half of the first sheet front after imposition. Use A4 landscape, duplex, short-edge flip, one PDF page per sheet side, and 100% actual size. Do not ask the printer driver to impose a booklet again.
 
 ## Regression invariants
 

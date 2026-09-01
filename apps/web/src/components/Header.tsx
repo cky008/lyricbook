@@ -4,15 +4,19 @@ import {
   CodeXml,
   Languages,
   Menu,
+  MonitorCog,
+  Moon,
   Palette,
   Printer,
   Rows3,
+  Sun,
   Upload,
 } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import type { ReactNode } from "react";
 import type { UiLocale } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
+import { nextAppearance, type AppearanceMode } from "@app/lib/appearance";
 
 interface HeaderProps {
   projectTitle: string;
@@ -23,6 +27,8 @@ interface HeaderProps {
   onExport: () => void;
   onPrint: () => void;
   onImmersive: () => void;
+  appearance: AppearanceMode;
+  onAppearanceChange: (mode: AppearanceMode) => void;
   canRead: boolean;
 }
 
@@ -61,10 +67,14 @@ export function Header({
   onExport,
   onPrint,
   onImmersive,
+  appearance,
+  onAppearanceChange,
   canRead,
 }: HeaderProps) {
   const { locale, setLocale, t } = useI18n();
   const toggleLocale = () => setLocale((locale === "zh-CN" ? "en-US" : "zh-CN") as UiLocale);
+  const appearanceLabel = t(`appearance-${appearance}`);
+  const AppearanceIcon = appearance === "system" ? MonitorCog : appearance === "light" ? Sun : Moon;
   return (
     <Tooltip.Provider delayDuration={260}>
       <header className="app-header">
@@ -141,6 +151,16 @@ export function Header({
               aria-label={t("immersive-mode")}
             >
               <BookOpenText size={18} />
+            </button>
+          </Tip>
+          <Tip label={appearanceLabel}>
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => onAppearanceChange(nextAppearance(appearance))}
+              aria-label={appearanceLabel}
+            >
+              <AppearanceIcon size={18} />
             </button>
           </Tip>
           <Tip label={t("language")}>

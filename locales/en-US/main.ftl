@@ -93,6 +93,7 @@ language-output = Language output
 print-strategy = Print strategy
 include-optional = Include optional songs
 include-empty = Include songs without lyrics
+include-cover = Include a designed booklet cover
 include-toc = Include linked contents
 current-song = Current song
 current-filter = Current filtered list
@@ -168,3 +169,10 @@ format-booklet = A4 folded booklet
 source-count = { $count } sources
 song-count = { $count } songs
 setlist-count = { $count } setlists
+
+transfer-data = Import / Export
+legacy-gem-import-note = Legacy G.E.M. v4 JSON backups are supported, including multi-version lyrics, translations, favorites, learned songs, and setlists.
+
+appearance-system = Appearance: Follow system
+appearance-light = Appearance: Light
+appearance-dark = Appearance: Dark

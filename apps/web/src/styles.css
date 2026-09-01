@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  color-scheme: dark light;
   --lb-accent: #8f67ff;
   --lb-accent-2: #e05ca7;
   --lb-background: #17132b;
@@ -59,6 +59,25 @@ body {
       var(--lb-background)
     );
   background-attachment: fixed;
+}
+
+:root[data-resolved-appearance="light"] body {
+  background:
+    radial-gradient(
+      circle at 82% 5%,
+      color-mix(in srgb, var(--lb-accent-2) 13%, transparent),
+      transparent 31rem
+    ),
+    radial-gradient(
+      circle at 8% 32%,
+      color-mix(in srgb, var(--lb-accent) 10%, transparent),
+      transparent 34rem
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--lb-background) 96%, white),
+      var(--lb-background)
+    );
 }
 
 button,
@@ -137,24 +156,31 @@ a {
 }
 
 .brand-copy {
+  display: grid;
   min-width: 0;
+  align-content: center;
+  gap: 4px;
 }
 
 .brand-title {
+  display: block;
   overflow: hidden;
   font-size: clamp(17px, 2.2vw, 22px);
   font-weight: 760;
   letter-spacing: -0.025em;
+  line-height: 1.08;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .brand-subtitle {
+  display: block;
   overflow: hidden;
-  margin-top: 1px;
+  margin-top: 0;
   color: var(--lb-muted);
   font-size: 11px;
   letter-spacing: 0.075em;
+  line-height: 1.25;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -290,6 +316,12 @@ a {
   text-transform: uppercase;
 }
 
+.sidebar-transfer-button {
+  width: 100%;
+  margin-top: 14px;
+  justify-content: flex-start;
+}
+
 .search-wrap {
   position: relative;
   margin: 14px 0 12px;
@@ -356,6 +388,7 @@ a {
 }
 
 .song-row {
+  position: relative;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
@@ -368,16 +401,43 @@ a {
   color: inherit;
   cursor: pointer;
   text-align: left;
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .song-row:hover {
-  background: color-mix(in srgb, var(--lb-surface) 65%, transparent);
+  border-color: color-mix(in srgb, var(--lb-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--lb-surface) 72%, transparent);
+  transform: translateX(3px);
+}
+
+.song-row:active {
+  transform: translateX(2px) scale(0.99);
+}
+
+.song-row:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--lb-accent) 38%, transparent);
+  outline-offset: 2px;
 }
 
 .song-row.active {
-  border-color: color-mix(in srgb, var(--lb-accent) 48%, transparent);
-  background: color-mix(in srgb, var(--lb-accent) 15%, var(--lb-surface));
-  box-shadow: inset 3px 0 0 var(--lb-accent);
+  border-color: color-mix(in srgb, var(--lb-accent) 62%, transparent);
+  background:
+    radial-gradient(
+      circle at 92% 18%,
+      color-mix(in srgb, var(--lb-accent-2) 18%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lb-accent) 20%, var(--lb-surface)),
+      color-mix(in srgb, var(--lb-surface-strong) 88%, transparent)
+    );
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--lb-accent) 16%, transparent);
+  transform: translateX(3px);
 }
 
 .song-number {
@@ -386,19 +446,52 @@ a {
   font-size: 11px;
 }
 
+.song-row.active .song-number {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--lb-accent), var(--lb-accent-2));
+  color: white;
+  font-weight: 750;
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--lb-accent) 24%, transparent);
+}
+
+.song-row-copy {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
 .song-title {
+  display: block;
   overflow: hidden;
   font-size: 13px;
   font-weight: 650;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .song-meta {
-  margin-top: 3px;
-  overflow: hidden;
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
   color: var(--lb-muted);
   font-size: 10px;
+  line-height: 1.2;
+}
+
+.song-meta-tag {
+  overflow: hidden;
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--lb-accent) 26%, transparent);
+  border-radius: 999px;
+  padding: 2px 6px;
+  background: color-mix(in srgb, var(--lb-accent) 8%, transparent);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -519,7 +612,7 @@ a {
 .lyric-layout {
   display: grid;
   gap: 24px;
-  margin-top: 28px;
+  margin-top: clamp(40px, 5vw, 64px);
 }
 
 .lyric-layout.bilingual {
@@ -552,6 +645,7 @@ a {
 .lyric-placeholder {
   display: grid;
   min-height: 280px;
+  margin-top: clamp(40px, 5vw, 64px);
   place-items: center;
   border: 1px dashed var(--lb-border);
   border-radius: 20px;
@@ -944,6 +1038,11 @@ a {
   inset: 10mm 10mm 8mm;
 }
 
+.print-page.cover .print-page-inner,
+.print-logical-page.cover .print-page-inner {
+  inset: 0;
+}
+
 .print-page-content {
   position: absolute;
   inset: 0 0 9mm;
@@ -953,6 +1052,91 @@ a {
 .print-page.a5 .print-page-content,
 .print-logical-page .print-page-content {
   bottom: 7mm;
+}
+
+.print-page .print-cover,
+.print-logical-page .print-cover {
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 7mm;
+  padding: 12mm;
+  overflow: hidden;
+  color: var(--print-paper, #fffdf8);
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      color-mix(in srgb, var(--print-accent, #694e98) 54%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--print-accent, #694e98) 38%, #17151c),
+      #17151c 62%
+    );
+}
+
+.print-cover-rule {
+  width: 18mm;
+  height: 1.2mm;
+  border-radius: 999px;
+  background: var(--print-accent, #d59852);
+}
+
+.print-cover-kicker {
+  align-self: start;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 72%, transparent);
+  font-size: 7pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.print-cover-copy {
+  align-self: center;
+  min-width: 0;
+}
+
+.print-cover-copy h1 {
+  max-width: 100%;
+  margin: 0;
+  font-family: Georgia, "Noto Serif CJK SC", "Songti SC", serif;
+  font-size: 29pt;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.print-cover-subtitle {
+  max-width: 92%;
+  margin: 5mm 0 0;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 72%, transparent);
+  font-size: 9pt;
+  line-height: 1.6;
+}
+
+.print-cover-details {
+  display: grid;
+  gap: 1.5mm;
+  align-self: end;
+  padding-top: 5mm;
+  border-top: 0.35mm solid color-mix(in srgb, var(--print-paper, #fffdf8) 28%, transparent);
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 82%, transparent);
+  font-size: 8pt;
+}
+
+.print-cover-mark {
+  position: absolute;
+  right: -3mm;
+  bottom: -10mm;
+  color: color-mix(in srgb, var(--print-paper, #fffdf8) 7%, transparent);
+  font-family: Georgia, serif;
+  font-size: 74pt;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .print-page-footer {

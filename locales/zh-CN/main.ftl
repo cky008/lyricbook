@@ -93,6 +93,7 @@ language-output = 语言输出
 print-strategy = 排版策略
 include-optional = 包含可选曲目
 include-empty = 包含尚无歌词的歌曲
+include-cover = 包含主题化小册封面
 include-toc = 包含可点击目录
 current-song = 当前歌曲
 current-filter = 当前筛选结果
@@ -168,3 +169,10 @@ format-booklet = A4 对折小册
 source-count = { $count } 条来源
 song-count = { $count } 首歌曲
 setlist-count = { $count } 个歌单
+
+transfer-data = 导入 / 导出
+legacy-gem-import-note = 支持旧版 G.E.M. v4 JSON 备份，可迁移多版本歌词、翻译、收藏、已学会歌曲与歌单。
+
+appearance-system = 外观：跟随系统
+appearance-light = 外观：浅色
+appearance-dark = 外观：深色

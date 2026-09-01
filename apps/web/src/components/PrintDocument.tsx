@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useLayoutEffect, useRef } from "react";
-import type { LogicalPrintPage, PrintPlan, SongPage, TocPage } from "@print/index";
+import type { CoverPage, LogicalPrintPage, PrintPlan, SongPage, TocPage } from "@print/index";
 
 interface PrintDocumentProps {
   plan: PrintPlan;
@@ -89,7 +89,28 @@ function TocContent({ page }: { page: TocPage }) {
   );
 }
 
+function CoverContent({ page }: { page: CoverPage }) {
+  return (
+    <div className="print-page-content print-cover">
+      <div className="print-cover-rule" aria-hidden="true" />
+      <div className="print-cover-kicker">{page.kicker}</div>
+      <div className="print-cover-copy">
+        <h1>{page.title}</h1>
+        {page.subtitle ? <p className="print-cover-subtitle">{page.subtitle}</p> : null}
+      </div>
+      <div className="print-cover-details">
+        {page.setlistTitle ? <span>{page.setlistTitle}</span> : null}
+        <span>{page.songCountLabel}</span>
+      </div>
+      <div className="print-cover-mark" aria-hidden="true">
+        LB
+      </div>
+    </div>
+  );
+}
+
 function PageBody({ page }: { page: LogicalPrintPage }) {
+  if (page.kind === "cover") return <CoverContent page={page} />;
   if (page.kind === "song") return <SongPageContent page={page} />;
   if (page.kind === "toc") return <TocContent page={page} />;
   if (page.kind === "info") {
@@ -139,15 +160,20 @@ function LogicalPage({
   return (
     <article
       id={firstSongPage ? `print-song-${page.songId}` : page.id}
-      className={logical ? "print-logical-page" : `print-page ${format}`}
+      className={`${logical ? "print-logical-page" : `print-page ${format}`}${
+        page.kind === "cover" ? " cover" : ""
+      }`}
+      data-page-kind={page.kind}
       data-page-number={number}
     >
       <div className="print-page-inner">
         <PageBody page={page} />
-        <footer className="print-page-footer">
-          <span>LYRICBOOK · IOCKY.COM</span>
-          <span>{number}</span>
-        </footer>
+        {page.kind === "cover" ? null : (
+          <footer className="print-page-footer">
+            <span>LYRICBOOK · IOCKY.COM</span>
+            <span>{number}</span>
+          </footer>
+        )}
       </div>
     </article>
   );
