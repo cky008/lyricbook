@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  color-scheme: dark light;
   --lb-accent: #8f67ff;
   --lb-accent-2: #e05ca7;
   --lb-background: #17132b;
@@ -59,6 +59,25 @@ body {
       var(--lb-background)
     );
   background-attachment: fixed;
+}
+
+:root[data-resolved-appearance="light"] body {
+  background:
+    radial-gradient(
+      circle at 82% 5%,
+      color-mix(in srgb, var(--lb-accent-2) 13%, transparent),
+      transparent 31rem
+    ),
+    radial-gradient(
+      circle at 8% 32%,
+      color-mix(in srgb, var(--lb-accent) 10%, transparent),
+      transparent 34rem
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--lb-background) 96%, white),
+      var(--lb-background)
+    );
 }
 
 button,

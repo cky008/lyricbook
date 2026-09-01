@@ -93,6 +93,31 @@ test("stacks each song title above its version and tag metadata", async ({ page,
   await expect(meta.locator(".song-meta-tag").first()).toBeVisible();
 });
 
+test("cycles system, light, and dark appearance modes and persists the choice", async ({
+  page,
+}) => {
+  await page.evaluate(() => localStorage.removeItem("lyricbook-appearance"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await waitForApplication(page);
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-appearance", "system");
+
+  const button = page
+    .locator("header.app-header")
+    .getByRole("button", { name: /Appearance|外观/i });
+  await button.click();
+  await expect(html).toHaveAttribute("data-appearance", "light");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-appearance")))
+    .toBe("light");
+
+  await button.click();
+  await expect(html).toHaveAttribute("data-appearance", "dark");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-appearance")))
+    .toBe("dark");
+});
+
 test("immersive next-song navigation resets the next song to the top", async ({ page }) => {
   await page.addStyleTag({ content: ".immersive-content { min-height: 220vh; }" });
   await page

@@ -171,3 +171,7 @@ setlist-count = { $count } 个歌单
 
 transfer-data = 导入 / 导出
 legacy-gem-import-note = 支持旧版 G.E.M. v4 JSON 备份，可迁移多版本歌词、翻译、收藏、已学会歌曲与歌单。
+
+appearance-system = 外观：跟随系统
+appearance-light = 外观：浅色
+appearance-dark = 外观：深色

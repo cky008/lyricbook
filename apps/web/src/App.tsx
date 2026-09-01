@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-  applyTheme,
   createEmptySong,
   getLocalized,
   setlistSongIds,
@@ -32,6 +31,12 @@ import { SetlistDialog } from "@app/features/SetlistDialog";
 import { ThemeDialog } from "@app/features/ThemeDialog";
 import { useLyricBookProject } from "@app/hooks/useLyricBookProject";
 import { useI18n } from "@app/lib/i18n";
+import {
+  APPEARANCE_STORAGE_KEY,
+  applyAppearance,
+  storedAppearance,
+  type AppearanceMode,
+} from "@app/lib/appearance";
 import {
   activeSetlist,
   currentVersionId,
@@ -78,6 +83,7 @@ export default function App() {
   const [dialog, setDialog] = useState<DialogName>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [immersive, setImmersive] = useState(false);
+  const [appearance, setAppearance] = useState<AppearanceMode>(() => storedAppearance());
 
   useEffect(() => {
     loadPresetIndex()
@@ -91,8 +97,14 @@ export default function App() {
   }, [project]);
 
   useEffect(() => {
-    if (activeTheme) applyTheme(activeTheme);
-  }, [activeTheme]);
+    if (!activeTheme) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => applyAppearance(activeTheme, appearance, media.matches);
+    apply();
+    if (appearance !== "system") return;
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [activeTheme, appearance]);
 
   useEffect(() => {
     if (!project) return;
@@ -236,6 +248,11 @@ export default function App() {
         onExport={() => openDialog("transfer")}
         onPrint={() => openDialog("print")}
         onImmersive={() => setImmersive(true)}
+        appearance={appearance}
+        onAppearanceChange={(mode) => {
+          localStorage.setItem(APPEARANCE_STORAGE_KEY, mode);
+          setAppearance(mode);
+        }}
         canRead={Boolean(selectedSong)}
       />
       <div className="app-grid">

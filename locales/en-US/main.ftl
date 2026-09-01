@@ -171,3 +171,7 @@ setlist-count = { $count } setlists
 
 transfer-data = Import / Export
 legacy-gem-import-note = Legacy G.E.M. v4 JSON backups are supported, including multi-version lyrics, translations, favorites, learned songs, and setlists.
+
+appearance-system = Appearance: Follow system
+appearance-light = Appearance: Light
+appearance-dark = Appearance: Dark
