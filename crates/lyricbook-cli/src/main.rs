@@ -7,7 +7,11 @@ use std::{
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "lyricbook", version, about = "Validate and inspect LyricBook projects")]
+#[command(
+    name = "lyricbook",
+    version,
+    about = "Validate and inspect LyricBook projects"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Command,

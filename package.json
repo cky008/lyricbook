@@ -25,7 +25,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "lint": "biome lint .",
+    "lint": "biome lint . --max-diagnostics=none",
     "typecheck": "tsc --build --pretty false",
     "test": "npm run test:unit && npm run test:rust",
     "test:unit": "vitest run --coverage",

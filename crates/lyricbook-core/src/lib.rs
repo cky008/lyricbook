@@ -434,7 +434,11 @@ pub fn safe_export_filename(slug: &str, timestamp: &str, suffix: &str) -> String
         .collect::<Vec<_>>()
         .join("-")
         .to_ascii_lowercase();
-    let project = if sanitized.is_empty() { "project" } else { &sanitized };
+    let project = if sanitized.is_empty() {
+        "project"
+    } else {
+        &sanitized
+    };
     format!("lyricbook_{project}_{timestamp}_{suffix}.lyricbook")
 }
 
