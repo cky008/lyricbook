@@ -259,7 +259,7 @@ checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "lyricbook-cli"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "clap",
  "lyricbook-core",
@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "lyricbook-core"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "proptest",
  "serde",
@@ -279,7 +279,7 @@ dependencies = [
 
 [[package]]
 name = "lyricbook-wasm"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "console_error_panic_hook",
  "lyricbook-core",
@@ -589,9 +589,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.25.0"
+version = "1.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f053576934f05a761a402421fbbe3d425d9366f75f978806a037b3ca481abecc"
+checksum = "b5772d71c9be8a8a6ac2117d949c5b224c1b72241bb611d9a3012edcf8af7812"
 dependencies = [
  "getrandom 0.4.3",
  "js-sys",

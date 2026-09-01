@@ -6,6 +6,24 @@ All notable changes follow Keep a Changelog principles.
 
 No unreleased changes.
 
+
+## [0.0.5] - 2026-09-01
+
+### Changed
+
+- Updated `actions/upload-artifact` to v7 and `actions/dependency-review-action` to v5, with repository validation updated atomically to the same majors.
+- Expanded the DIOR London preset from 10 songs to a 40-song research library with explicit source confidence.
+- Added a 17-song London high-confidence core, a 24-song London composite prediction, the user-supplied 24-track Taipei reference order, and a 20-song rotation pool.
+- Corrected official English-title mappings, including `YOLO` → `人醒着不过一万多天` and `Mutual Friends` → `靠关系`.
+
+### Added
+
+- Added `docs/DIOR_LONDON_PREDICTION.md` describing evidence tiers, source limitations, optional slots, and the post-show update workflow.
+
+### Security
+
+- Kept public presets metadata-only with empty lyric tracks and retained full content, repository, Rust, browser, accessibility, and print quality gates.
+
 ## [0.0.4] - 2026-09-01
 
 ### Changed

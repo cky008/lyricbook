@@ -1,6 +1,6 @@
 {
   "name": "@iocky/lyricbook",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "description": "Privacy-first, local-first concert lyric book and printable booklet generator.",
   "license": "Apache-2.0",

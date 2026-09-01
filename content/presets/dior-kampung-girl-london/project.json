@@ -2,19 +2,31 @@
   "schemaVersion": 1,
   "id": "dior-kampung-girl-london",
   "title": {
-    "zh-Hans": "DIOR 大颖 2026 伦敦站预测",
-    "en": "DIOR 2026 London Prediction"
+    "zh-Hans": "DIOR 大颖 2026 伦敦站扩展预测",
+    "en": "DIOR 2026 London Expanded Prediction"
   },
+  "description": {
+    "zh-Hans": "基于伦敦官方场地／主办宣传、台北站观测顺序、巡演报道和用户提供的社区歌单交叉整理。包含 17 首高置信度核心、24 首伦敦综合预测、24 首台北参考顺序和 20 首轮换候选；所有预测均明确标注置信度，不代表官方最终歌单。",
+    "en": "Cross-checked from official London venue/promoter material, the observed Taipei sequence, tour reporting, and user-supplied community playlists. Includes a 17-song high-confidence core, a 24-song London composite prediction, the 24-track Taipei reference order, and a 20-song rotation pool. Confidence labels are explicit; none is presented as the final official London running order."
+  },
+  "createdAt": "2026-08-31T00:00:00Z",
+  "updatedAt": "2026-09-01T15:00:00Z",
+  "revisionId": "dior-london-expanded-v0.0.5-20260901",
   "songs": [
     {
-      "id": "dior-better",
+      "id": "dior-kampung-girl",
       "titles": {
-        "zh-Hans": "你最近过得好吗？",
-        "en": "I’ve Been Better"
+        "zh-Hans": "Kampung Girl 普通人",
+        "en": "Kampung Girl"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["KAMPUNG GIRL", "普通人"],
+      "tags": ["tour-theme", "high-confidence", "encore"],
+      "sourceRefs": [
+        "dior-london-promoter",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
       "lyricVersions": [
         {
           "id": "default",
@@ -26,6 +38,41 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-better",
+      "titles": {
+        "zh-Hans": "你最近过得好吗？",
+        "en": "I’ve Been Better"
+      },
+      "aliases": ["你最近过得好嗎？", "你最近过得好吗"],
+      "tags": ["high-confidence", "signature"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -40,9 +87,14 @@
         "zh-Hans": "如果那通电话有接通",
         "en": "If That Phone Call Had Been Answered"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["如果那通電話有接通"],
+      "tags": ["high-confidence", "signature"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
       "lyricVersions": [
         {
           "id": "default",
@@ -54,6 +106,7 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -63,14 +116,19 @@
       ]
     },
     {
-      "id": "dior-see-you",
+      "id": "dior-love-myself-more",
       "titles": {
-        "zh-Hans": "有天会再相见",
-        "en": "See You"
+        "zh-Hans": "爱自己更深",
+        "en": "Love Myself More"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["愛自己更深"],
+      "tags": ["high-confidence", "debut"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
       "lyricVersions": [
         {
           "id": "default",
@@ -82,6 +140,7 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -91,14 +150,14 @@
       ]
     },
     {
-      "id": "dior-slow",
+      "id": "dior-tears-bridge",
       "titles": {
-        "zh-Hans": "慢慢走才能走得快",
-        "en": "Go Slow To Go Fast"
+        "zh-Hans": "泪桥",
+        "en": "Tears Bridge"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["淚橋"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-taipei-kkbox-community"],
       "lyricVersions": [
         {
           "id": "default",
@@ -110,6 +169,185 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-last-time",
+      "titles": {
+        "zh-Hans": "最后一次",
+        "en": "The Last Time"
+      },
+      "aliases": ["最後一次"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-taipei-kkbox-community"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-ghana",
+      "titles": {
+        "zh-Hans": "在加纳共和国离婚",
+        "en": "Divorce in Ghana"
+      },
+      "aliases": ["在加納共和國離婚"],
+      "tags": ["high-confidence", "collaboration"],
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-few-days",
+      "titles": {
+        "zh-Hans": "过了几天（合唱版）",
+        "en": "A Few Days Later (Duet Version)"
+      },
+      "aliases": ["過了幾天(合唱版)", "过了几天(合唱版)", "過了幾天 - 合唱版"],
+      "tags": ["likely", "collaboration"],
+      "sourceRefs": [
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice",
+        "dior-spotify-community"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-soft-hearted",
+      "titles": {
+        "zh-Hans": "做一个惜情软心的人",
+        "en": "Be a Tender-Hearted Person"
+      },
+      "aliases": ["做一個惜情軟心的人", "做ㄧ個惜情軟心的人"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-lifetime-of-us",
+      "titles": {
+        "zh-Hans": "人的这一生",
+        "en": "This Lifetime of Ours"
+      },
+      "aliases": ["人的這一生"],
+      "tags": ["high-confidence", "tour-era", "london-official"],
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-mutual-friends",
+      "titles": {
+        "zh-Hans": "靠关系",
+        "en": "Mutual Friends"
+      },
+      "aliases": ["靠關係", "共同好友"],
+      "tags": ["high-confidence", "tour-era"],
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -122,11 +360,11 @@
       "id": "dior-yolo",
       "titles": {
         "zh-Hans": "大人的快乐",
-        "en": "YOLO"
+        "en": "Adult Happiness"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["大人的快樂"],
+      "tags": ["high-confidence", "signature"],
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-youtube-practice"],
       "lyricVersions": [
         {
           "id": "default",
@@ -138,34 +376,7 @@
           "isDefault": true,
           "tracks": [
             {
-              "language": "zh-Hans",
-              "role": "original",
-              "text": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "dior-lifetime",
-      "titles": {
-        "zh-Hans": "人醒着不过一万多天",
-        "en": "This Lifetime of Ours"
-      },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
-      "lyricVersions": [
-        {
-          "id": "default",
-          "label": {
-            "zh-Hans": "默认版",
-            "en": "Default"
-          },
-          "kind": "studio",
-          "isDefault": true,
-          "tracks": [
-            {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -180,9 +391,14 @@
         "zh-Hans": "节约用爱",
         "en": "Save Some"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["節約用愛"],
+      "tags": ["high-confidence", "signature"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
       "lyricVersions": [
         {
           "id": "default",
@@ -194,6 +410,7 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -203,14 +420,19 @@
       ]
     },
     {
-      "id": "dior-mutual",
+      "id": "dior-lifetime",
       "titles": {
-        "zh-Hans": "共同好友",
-        "en": "Mutual Friends"
+        "zh-Hans": "人醒着不过一万多天",
+        "en": "YOLO"
       },
-      "aliases": [],
-      "tags": ["high-confidence"],
-      "sourceRefs": ["dior-london-venue"],
+      "aliases": ["人醒著不過一萬多天"],
+      "tags": ["high-confidence", "signature", "london-official"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
       "lyricVersions": [
         {
           "id": "default",
@@ -222,6 +444,7 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -231,14 +454,14 @@
       ]
     },
     {
-      "id": "dior-ghana",
+      "id": "dior-step-forward",
       "titles": {
-        "zh-Hans": "在加纳共和国离婚",
-        "en": "Divorce in the Republic of Ghana"
+        "zh-Hans": "一步一步向前走",
+        "en": "Step by Step Forward"
       },
-      "aliases": [],
-      "tags": ["rotation"],
-      "sourceRefs": ["dior-london-venue", "dior-tour-variation"],
+      "aliases": ["一步一步向前走"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-taipei-kkbox-community"],
       "lyricVersions": [
         {
           "id": "default",
@@ -250,6 +473,152 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-louise",
+      "titles": {
+        "zh-Hans": "LOUISE",
+        "en": "LOUISE"
+      },
+      "aliases": ["Louise"],
+      "tags": ["high-confidence", "tour-era"],
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-proud",
+      "titles": {
+        "zh-Hans": "Proud Of Myself",
+        "en": "Proud of Myself"
+      },
+      "aliases": ["PROUD OF MYSELF"],
+      "tags": ["high-confidence", "show-energy"],
+      "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-lostcontrol",
+      "titles": {
+        "zh-Hans": "我要发疯 LOSTCONTROL",
+        "en": "LOSTCONTROL"
+      },
+      "aliases": ["我要發瘋", "我要发疯", "我要發瘋LOSTCONTROL", "我要发疯LOSTCONTROL"],
+      "tags": ["high-confidence", "show-energy"],
+      "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-adai",
+      "titles": {
+        "zh-Hans": "阿呆",
+        "en": "A-Dai"
+      },
+      "aliases": [],
+      "tags": ["likely", "tour-era"],
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-crush",
+      "titles": {
+        "zh-Hans": "给我的 Crush",
+        "en": "Dear My Crush"
+      },
+      "aliases": ["給我的Crush", "给我的Crush"],
+      "tags": ["high-confidence", "tour-era"],
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -264,9 +633,9 @@
         "zh-Hans": "花期不同",
         "en": "Different Blooming Seasons"
       },
-      "aliases": [],
-      "tags": ["rotation"],
-      "sourceRefs": ["dior-london-venue", "dior-tour-variation"],
+      "aliases": ["花期不同"],
+      "tags": ["high-confidence", "signature"],
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"],
       "lyricVersions": [
         {
           "id": "default",
@@ -278,6 +647,563 @@
           "isDefault": true,
           "tracks": [
             {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-goodbye-time",
+      "titles": {
+        "zh-Hans": "再见的时候",
+        "en": "When We Say Goodbye"
+      },
+      "aliases": ["再見的時候"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-see-you",
+      "titles": {
+        "zh-Hans": "有天会再相见",
+        "en": "See You"
+      },
+      "aliases": ["有天會再相見"],
+      "tags": ["high-confidence", "encore", "signature"],
+      "sourceRefs": [
+        "dior-london-venue",
+        "dior-taipei-mtv",
+        "dior-taipei-kkbox-community",
+        "dior-youtube-practice"
+      ],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-slow",
+      "titles": {
+        "zh-Hans": "慢慢走才能走得快",
+        "en": "Go Slow to Go Fast"
+      },
+      "aliases": [],
+      "tags": ["high-confidence", "london-official"],
+      "sourceRefs": ["dior-london-venue"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-no-longer-that-girl",
+      "titles": {
+        "zh-Hans": "她已不再是那个女孩",
+        "en": "She Is No Longer That Girl"
+      },
+      "aliases": ["她已不再是那個女孩"],
+      "tags": ["likely", "recent-release"],
+      "sourceRefs": ["dior-youtube-practice", "dior-spotify-chart"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-out-of-place",
+      "titles": {
+        "zh-Hans": "脱臼",
+        "en": "Out of Place"
+      },
+      "aliases": ["脫臼", "Out of place"],
+      "tags": ["collaboration", "rotation"],
+      "sourceRefs": ["dior-youtube-practice", "dior-spotify-chart"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-johns-bar",
+      "titles": {
+        "zh-Hans": "John's Bar",
+        "en": "John's Bar"
+      },
+      "aliases": [],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-telepathy",
+      "titles": {
+        "zh-Hans": "Telepathy",
+        "en": "Telepathy"
+      },
+      "aliases": [],
+      "tags": ["collaboration", "rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-expired",
+      "titles": {
+        "zh-Hans": "过期",
+        "en": "Expired"
+      },
+      "aliases": ["過期"],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-another-heaven",
+      "titles": {
+        "zh-Hans": "另一个天堂",
+        "en": "Another Heaven"
+      },
+      "aliases": ["另一個天堂"],
+      "tags": ["collaboration", "rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-not-together",
+      "titles": {
+        "zh-Hans": "我们没有在一起",
+        "en": "We Were Never Together"
+      },
+      "aliases": ["我們沒有在一起"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-most-loved",
+      "titles": {
+        "zh-Hans": "我是不是你最疼爱的人",
+        "en": "Am I the One You Love Most?"
+      },
+      "aliases": ["我是不是你最疼愛的人"],
+      "tags": ["cover", "rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-worth-it",
+      "titles": {
+        "zh-Hans": "值得",
+        "en": "Worth It"
+      },
+      "aliases": [],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-youtube-practice", "dior-spotify-community"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-forgive",
+      "titles": {
+        "zh-Hans": "该怎么原谅",
+        "en": "How Should I Forgive?"
+      },
+      "aliases": ["該怎麼原諒"],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-alone",
+      "titles": {
+        "zh-Hans": "一个人",
+        "en": "Alone"
+      },
+      "aliases": ["一個人"],
+      "tags": ["rotation", "soundtrack"],
+      "sourceRefs": ["dior-youtube-practice"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-tears-remember-you",
+      "titles": {
+        "zh-Hans": "眼泪记得你",
+        "en": "Tears Remember You"
+      },
+      "aliases": ["眼淚記得你"],
+      "tags": ["cover", "rotation", "taipei-day1"],
+      "sourceRefs": ["dior-taipei-mtv"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-singer",
+      "titles": {
+        "zh-Hans": "歌颂者",
+        "en": "The Singer"
+      },
+      "aliases": ["歌頌者"],
+      "tags": ["cover", "rotation", "taipei-day1"],
+      "sourceRefs": ["dior-taipei-mtv"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-like-sunny-rainy",
+      "titles": {
+        "zh-Hans": "像晴天像雨天",
+        "en": "Like Sunshine, Like Rain"
+      },
+      "aliases": [],
+      "tags": ["cover", "rotation", "regional"],
+      "sourceRefs": ["dior-regional-rotation-report"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-like-swallow",
+      "titles": {
+        "zh-Hans": "如燕",
+        "en": "Like a Swallow"
+      },
+      "aliases": [],
+      "tags": ["cover", "rotation", "regional"],
+      "sourceRefs": ["dior-regional-rotation-report"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
+              "language": "zh-Hans",
+              "role": "original",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dior-next-dawn",
+      "titles": {
+        "zh-Hans": "下一个天亮",
+        "en": "The Next Dawn"
+      },
+      "aliases": ["下一個天亮"],
+      "tags": ["cover", "rotation", "regional"],
+      "sourceRefs": ["dior-regional-rotation-report"],
+      "lyricVersions": [
+        {
+          "id": "default",
+          "label": {
+            "zh-Hans": "默认版",
+            "en": "Default"
+          },
+          "kind": "studio",
+          "isDefault": true,
+          "tracks": [
+            {
+              "id": "original-zh",
               "language": "zh-Hans",
               "role": "original",
               "text": ""
@@ -289,180 +1215,759 @@
   ],
   "setlists": [
     {
-      "id": "dior-london-core",
+      "id": "dior-taipei-2026-04-17-reference",
       "title": {
-        "zh-Hans": "伦敦站高置信度核心",
-        "en": "London High-Confidence Core"
+        "zh-Hans": "台北站 2026-04-17 观测参考顺序",
+        "en": "Taipei 2026-04-17 Observed Reference"
       },
-      "status": "prediction",
+      "status": "observed",
+      "date": "2026-04-17",
+      "venue": {
+        "zh-Hans": "Zepp New Taipei",
+        "en": "Zepp New Taipei"
+      },
+      "notes": {
+        "zh-Hans": "顺序来自用户提供的 KKBOX 24 首歌单，并以 MTV 台北演出回顾核对开场、核心曲目、Day 2 轮换和结尾。它不是官方舞台 cue sheet。",
+        "en": "The order follows a user-supplied 24-track KKBOX playlist and is cross-checked against MTV’s post-show report for the opener, tour anchors, Day 2 substitutions and finale. It is not an official stage cue sheet."
+      },
       "items": [
+        {
+          "type": "song",
+          "songId": "dior-kampung-girl",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
         {
           "type": "song",
           "songId": "dior-better",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
         },
         {
           "type": "song",
           "songId": "dior-phone",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
         },
         {
           "type": "song",
-          "songId": "dior-see-you",
+          "songId": "dior-love-myself-more",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
         },
         {
           "type": "song",
-          "songId": "dior-slow",
+          "songId": "dior-tears-bridge",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-last-time",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-ghana",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-few-days",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-soft-hearted",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime-of-us",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-mutual-friends",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
           "songId": "dior-yolo",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
-        },
-        {
-          "type": "song",
-          "songId": "dior-lifetime",
-          "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
           "songId": "dior-save",
           "optional": false,
-          "confidence": 0.88,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-step-forward",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-louise",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-proud",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lostcontrol",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-adai",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-crush",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-bloom",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-goodbye-time",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-kampung-girl",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-see-you",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        }
+      ]
+    },
+    {
+      "id": "dior-london-core",
+      "title": {
+        "zh-Hans": "伦敦站高置信度核心（17 首）",
+        "en": "London High-Confidence Core (17 songs)"
+      },
+      "status": "prediction",
+      "date": "2026-09-02",
+      "venue": {
+        "zh-Hans": "Clapham Grand，伦敦",
+        "en": "Clapham Grand, London"
+      },
+      "notes": {
+        "zh-Hans": "17 首核心候选：伦敦官方宣传点名曲目，加上多站稳定出现的巡演主轴。它是高置信度准备清单，不是官方顺序。",
+        "en": "A 17-song preparation core combining titles named by official London promotion with recurring tour anchors. High confidence, but not an official running order."
+      },
+      "items": [
+        {
+          "type": "song",
+          "songId": "dior-kampung-girl",
+          "optional": false,
+          "confidence": 0.93,
+          "sourceRefs": ["dior-london-promoter", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-better",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-phone",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-love-myself-more",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-ghana",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime-of-us",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-mutual-friends",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-yolo",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-save",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-slow",
+          "optional": false,
+          "confidence": 0.86,
           "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
-          "songId": "dior-mutual",
+          "songId": "dior-louise",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-proud",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lostcontrol",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-crush",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-bloom",
+          "optional": false,
+          "confidence": 0.86,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-see-you",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
         }
       ]
     },
     {
       "id": "dior-london-likely",
       "title": {
-        "zh-Hans": "伦敦站综合预测",
-        "en": "London Composite Prediction"
+        "zh-Hans": "伦敦站完整综合预测（24 首）",
+        "en": "London Expanded Composite Prediction (24 songs)"
       },
       "status": "prediction",
+      "date": "2026-09-02",
+      "venue": {
+        "zh-Hans": "Clapham Grand，伦敦",
+        "en": "Clapham Grand, London"
+      },
+      "notes": {
+        "zh-Hans": "24 首综合预测；低置信度翻唱位和 Kampung Girl reprise 均标为 optional。预计实际伦敦场会从轮换池替换若干位置。",
+        "en": "A 24-song composite prediction. Low-confidence cover slots and the Kampung Girl reprise are marked optional; the actual London show may substitute items from the rotation pool."
+      },
       "items": [
         {
           "type": "section",
+          "id": "opening",
           "label": {
-            "zh-Hans": "伦敦站综合预测",
-            "en": "London Composite Prediction"
+            "zh-Hans": "开场｜普通人的起点",
+            "en": "Opening — The ordinary beginning"
           },
           "optional": false
         },
         {
           "type": "song",
+          "songId": "dior-kampung-girl",
+          "optional": false,
+          "confidence": 0.95,
+          "sourceRefs": ["dior-london-promoter", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
           "songId": "dior-better",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.96,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
           "songId": "dior-phone",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.96,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
-          "songId": "dior-see-you",
+          "songId": "dior-love-myself-more",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.95,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
-          "songId": "dior-slow",
+          "songId": "dior-no-longer-that-girl",
           "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "confidence": 0.76,
+          "sourceRefs": ["dior-youtube-practice", "dior-spotify-chart"]
         },
         {
-          "type": "song",
-          "songId": "dior-yolo",
-          "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
-        },
-        {
-          "type": "song",
-          "songId": "dior-lifetime",
-          "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
-        },
-        {
-          "type": "song",
-          "songId": "dior-save",
-          "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
-        },
-        {
-          "type": "song",
-          "songId": "dior-mutual",
-          "optional": false,
-          "confidence": 0.88,
-          "sourceRefs": ["dior-london-venue"]
+          "type": "section",
+          "id": "story",
+          "label": {
+            "zh-Hans": "故事与关系",
+            "en": "Stories and relationships"
+          },
+          "optional": false
         },
         {
           "type": "song",
           "songId": "dior-ghana",
           "optional": false,
-          "confidence": 0.62,
-          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
+          "confidence": 0.88,
+          "sourceRefs": [
+            "dior-london-venue",
+            "dior-taipei-kkbox-community",
+            "dior-youtube-practice"
+          ]
+        },
+        {
+          "type": "song",
+          "songId": "dior-few-days",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": [
+            "dior-taipei-kkbox-community",
+            "dior-youtube-practice",
+            "dior-spotify-community"
+          ]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime-of-us",
+          "optional": false,
+          "confidence": 0.82,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-mutual-friends",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": [
+            "dior-london-venue",
+            "dior-taipei-kkbox-community",
+            "dior-youtube-practice"
+          ]
+        },
+        {
+          "type": "song",
+          "songId": "dior-yolo",
+          "optional": false,
+          "confidence": 0.94,
+          "sourceRefs": [
+            "dior-london-venue",
+            "dior-taipei-kkbox-community",
+            "dior-youtube-practice"
+          ]
+        },
+        {
+          "type": "section",
+          "id": "reflection",
+          "label": {
+            "zh-Hans": "人生与自我拥抱",
+            "en": "Reflection and self-embrace"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "dior-save",
+          "optional": false,
+          "confidence": 0.95,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lifetime",
+          "optional": false,
+          "confidence": 0.95,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-slow",
+          "optional": false,
+          "confidence": 0.82,
+          "sourceRefs": ["dior-london-venue"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-louise",
+          "optional": false,
+          "confidence": 0.78,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "section",
+          "id": "energy",
+          "label": {
+            "zh-Hans": "释放与失控",
+            "en": "Release and lost control"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "dior-proud",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-lostcontrol",
+          "optional": false,
+          "confidence": 0.9,
+          "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-adai",
+          "optional": false,
+          "confidence": 0.72,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-crush",
+          "optional": false,
+          "confidence": 0.79,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
         },
         {
           "type": "song",
           "songId": "dior-bloom",
           "optional": false,
-          "confidence": 0.62,
-          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
+          "confidence": 0.82,
+          "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+        },
+        {
+          "type": "section",
+          "id": "acoustic",
+          "label": {
+            "zh-Hans": "翻唱／地区轮换位（预测）",
+            "en": "Cover / regional rotation slots (predicted)"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "dior-tears-bridge",
+          "optional": true,
+          "confidence": 0.56,
+          "sourceRefs": ["dior-taipei-kkbox-community"],
+          "note": {
+            "zh-Hans": "可能由其他翻唱或地区限定曲替换。",
+            "en": "May be replaced by another cover or regional exclusive."
+          }
+        },
+        {
+          "type": "song",
+          "songId": "dior-soft-hearted",
+          "optional": true,
+          "confidence": 0.52,
+          "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community"],
+          "note": {
+            "zh-Hans": "台北 Day 2 轮换曲，伦敦仅列为候选。",
+            "en": "A Taipei Day 2 rotation song; candidate only for London."
+          }
+        },
+        {
+          "type": "song",
+          "songId": "dior-last-time",
+          "optional": true,
+          "confidence": 0.48,
+          "sourceRefs": ["dior-taipei-kkbox-community"],
+          "note": {
+            "zh-Hans": "台北参考顺序中的翻唱位，伦敦可能替换。",
+            "en": "A cover slot in the Taipei reference sequence; likely replaceable in London."
+          }
+        },
+        {
+          "type": "section",
+          "id": "encore",
+          "label": {
+            "zh-Hans": "返场",
+            "en": "Encore"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "dior-kampung-girl",
+          "optional": true,
+          "confidence": 0.65,
+          "sourceRefs": ["dior-taipei-kkbox-community"],
+          "note": {
+            "zh-Hans": "台北参考歌单出现 reprise；伦敦是否重复未知。",
+            "en": "The Taipei reference playlist contains a reprise; a London reprise is unconfirmed."
+          }
+        },
+        {
+          "type": "song",
+          "songId": "dior-see-you",
+          "optional": false,
+          "confidence": 0.96,
+          "sourceRefs": ["dior-london-venue", "dior-taipei-mtv", "dior-taipei-kkbox-community"]
         }
       ]
     },
     {
       "id": "dior-london-rotation",
       "title": {
-        "zh-Hans": "轮换与候选池",
-        "en": "Rotation Pool"
+        "zh-Hans": "轮换／翻唱／地区限定候选池（20 首）",
+        "en": "Rotation / Cover / Regional Candidate Pool (20 songs)"
       },
       "status": "rotation",
+      "date": "2026-09-02",
+      "venue": {
+        "zh-Hans": "Clapham Grand，伦敦",
+        "en": "Clapham Grand, London"
+      },
+      "notes": {
+        "zh-Hans": "这些歌曲来自台北两日差异、歌迷预习歌单和地区轮换证据；不应整体加入主预测，也不代表伦敦将演唱。",
+        "en": "These songs come from Taipei day-to-day variation, fan preparation playlists and regional rotation evidence. The pool should not be treated as a single predicted set or as confirmation for London."
+      },
       "items": [
         {
           "type": "song",
-          "songId": "dior-ghana",
-          "optional": false,
-          "confidence": 0.62,
-          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
+          "songId": "dior-tears-bridge",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
         },
         {
           "type": "song",
-          "songId": "dior-bloom",
-          "optional": false,
-          "confidence": 0.62,
-          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
+          "songId": "dior-last-time",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-soft-hearted",
+          "optional": true,
+          "confidence": 0.58,
+          "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-step-forward",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-goodbye-time",
+          "optional": true,
+          "confidence": 0.58,
+          "sourceRefs": ["dior-taipei-mtv", "dior-taipei-kkbox-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-tears-remember-you",
+          "optional": true,
+          "confidence": 0.58,
+          "sourceRefs": ["dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-singer",
+          "optional": true,
+          "confidence": 0.58,
+          "sourceRefs": ["dior-taipei-mtv"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-out-of-place",
+          "optional": true,
+          "confidence": 0.48,
+          "sourceRefs": ["dior-youtube-practice", "dior-spotify-chart"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-johns-bar",
+          "optional": true,
+          "confidence": 0.48,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-telepathy",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-expired",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-another-heaven",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-not-together",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-most-loved",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-worth-it",
+          "optional": true,
+          "confidence": 0.48,
+          "sourceRefs": ["dior-youtube-practice", "dior-spotify-community"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-forgive",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-alone",
+          "optional": true,
+          "confidence": 0.42,
+          "sourceRefs": ["dior-youtube-practice"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-like-sunny-rainy",
+          "optional": true,
+          "confidence": 0.35,
+          "sourceRefs": ["dior-regional-rotation-report"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-like-swallow",
+          "optional": true,
+          "confidence": 0.35,
+          "sourceRefs": ["dior-regional-rotation-report"]
+        },
+        {
+          "type": "song",
+          "songId": "dior-next-dawn",
+          "optional": true,
+          "confidence": 0.35,
+          "sourceRefs": ["dior-regional-rotation-report"]
         }
       ]
     }
@@ -476,10 +1981,22 @@
       },
       "tokens": {
         "accent": "#e79a3b",
+        "accent2": "#8fbd72",
         "background": "#13241f",
         "surface": "#24382e",
+        "surfaceStrong": "#314c3d",
         "text": "#fff8e7",
-        "radius": "20px"
+        "muted": "#d8d1bd",
+        "radius": "20px",
+        "density": 1,
+        "headingFont": "serif",
+        "bodyFont": "sans"
+      },
+      "print": {
+        "accent": "#9b5b19",
+        "paper": "#fffaf0",
+        "text": "#28251f",
+        "headingStyle": "editorial"
       }
     }
   ],
@@ -492,10 +2009,10 @@
       "title": "DIOR 大颖 2026 KAMPUNG GIRL World Tour in London",
       "publisher": "Onion Production",
       "url": "https://www.onionproduction.com/dior",
-      "retrievedAt": "2026-08-31T00:00:00Z",
+      "retrievedAt": "2026-09-01T00:00:00Z",
       "language": "en",
-      "confidence": 0.98,
-      "notes": "Official promoter listing confirming 2 September 2026 and The Clapham Grand. It does not publish a final running order."
+      "confidence": 0.99,
+      "notes": "Official London promoter listing. Confirms 2 September 2026, Clapham Grand and a 19:30 show start; the listed 21:30 VIP photo-session time suggests, but does not guarantee, an approximately two-hour performance window. No running order is published."
     },
     {
       "id": "dior-london-venue",
@@ -503,25 +2020,90 @@
       "title": "DIOR 大颖 2026 KAMPUNG GIRL World Tour in London",
       "publisher": "The Clapham Grand",
       "url": "https://claphamgrand.com/event/dior%E5%A4%A7%E7%A9%8E-2026%E3%80%8Akampung-girl%E3%80%8Bworld-tour-in-london/",
-      "retrievedAt": "2026-08-31T00:00:00Z",
+      "retrievedAt": "2026-09-01T00:00:00Z",
       "language": "en",
-      "confidence": 0.95,
-      "notes": "Official venue listing and representative-song evidence. The order in this preset remains a prediction."
+      "confidence": 0.98,
+      "notes": "Official venue listing naming representative songs: Love Myself More, I’ve Been Better, If That Phone Call Had Been Answered, See You, Go Slow to Go Fast, YOLO, This Lifetime of Ours, Save Some and Mutual Friends. It is promotional repertoire, not a final setlist."
+    },
+    {
+      "id": "dior-taipei-mtv",
+      "kind": "press",
+      "title": "DIOR 大颖台北站演出回顾与两日轮换信息",
+      "publisher": "MTV Taiwan",
+      "url": "https://www.mtv.com.tw/news/newsdetail/13317",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hant",
+      "confidence": 0.92,
+      "notes": "Post-show report confirming the Taipei tour spine and named Day 1/Day 2 substitutions. It confirms major anchors but not every position in the full running order."
+    },
+    {
+      "id": "dior-taipei-kkbox-community",
+      "kind": "community",
+      "title": "20260417 DIOR 大颖世界巡回演唱会《Kampung Girl 普通人》台北站歌单",
+      "publisher": "KKBOX community playlist supplied by the user",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hant",
+      "confidence": 0.78,
+      "notes": "User-supplied 24-track playlist dated 17 April 2026. Used as an observed reference sequence, not represented as an official stage cue sheet. The playlist repeats Kampung Girl before the final song."
+    },
+    {
+      "id": "dior-youtube-practice",
+      "kind": "community",
+      "title": "Dior 大颖演唱会预习歌单 Concert Practice Playlist",
+      "publisher": "SL 音乐",
+      "url": "https://www.youtube.com/playlist?list=PLDz7TYOmF0S-glZ3tj_rVMyVUY97bOFId",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hant",
+      "confidence": 0.58,
+      "notes": "Community preparation playlist containing 29 videos. Used only to broaden the candidate and rotation pool."
+    },
+    {
+      "id": "dior-spotify-community",
+      "kind": "community",
+      "title": "DIOR concert preparation playlist supplied by the user",
+      "publisher": "Spotify community playlist",
+      "url": "https://open.spotify.com/playlist/1AnhKhBvk5pxy2j0OYiwF6",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hant",
+      "confidence": 0.55,
+      "notes": "User-supplied Spotify playlist used as secondary candidate evidence; it is not an official concert setlist."
     },
     {
       "id": "dior-tour-variation",
-      "kind": "promoter-official",
-      "title": "DIOR KAMPUNG GIRL World Tour Bali listing",
-      "publisher": "CK Star Entertainment Singapore",
+      "kind": "press",
+      "title": "Bali tour stop announced with approximately 50% setlist changes",
+      "publisher": "CK Star Entertainment",
       "url": "https://sg.ckstarentertainment.com/events/dior%E5%A4%A7%E9%A2%96-2026%E3%80%8Akampung-girl%E6%99%AE%E9%80%9A%E4%BA%BA%E3%80%8B%E4%B8%96%E7%95%8C%E5%B7%A1%E5%9B%9E%E6%BC%94%E5%94%B1%E4%BC%9A-%E5%B3%87%E9%87%8C%E5%B3%B6%E7%AB%99/",
-      "retrievedAt": "2026-08-31T00:00:00Z",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hans",
+      "confidence": 0.82,
+      "notes": "Official Bali tour announcement stating that the outdoor stop would use a setlist with approximately 50% changes. Used to justify a broad, explicitly lower-confidence rotation pool outside the tour core."
+    },
+    {
+      "id": "dior-regional-rotation-report",
+      "kind": "press",
+      "title": "Dior大颖演唱会另类追星！汪苏泷没来，但也来了",
+      "publisher": "8world / Mediacorp",
+      "retrievedAt": "2026-09-01T00:00:00Z",
+      "language": "zh-Hans",
+      "confidence": 0.9,
+      "notes": "Contemporaneous post-show reporting confirming the Singapore-specific covers 像晴天像雨天、如燕 and 下一个天亮. These songs remain regional rotation candidates only and are excluded from the London high-confidence core and likely running order.",
+      "url": "https://vibes.8world.com/music/dior-da-ying-concert-singapore-3100601"
+    },
+    {
+      "id": "dior-spotify-chart",
+      "kind": "other",
+      "title": "DIOR 大颖 Spotify chart-history snapshot",
+      "publisher": "Kworb",
+      "url": "https://kworb.net/spotify/artist/0czbvTRVGHfCdRsJLxbBGQ.html",
+      "retrievedAt": "2026-09-01T00:00:00Z",
       "language": "en",
-      "confidence": 0.8,
-      "notes": "Official promoter evidence that another tour stop changed approximately half of its setlist; used only to justify a separate rotation pool, not to claim London songs."
+      "confidence": 0.62,
+      "notes": "Secondary popularity snapshot updated in August 2026. Used only to prioritize recent originals such as 过了几天(合唱版), 她已不再是那个女孩, 人的这一生 and 靠关系; it is not concert evidence."
     }
   ],
-  "description": {
-    "zh-Hans": "根据伦敦官方活动页面、代表作信息与巡演轮换证据建立的非官方预测验证包；不是正式歌单。",
-    "en": "An unofficial validation prediction built from official London event listings, representative-song evidence, and tour-variation evidence; not a confirmed setlist."
+  "preferences": {
+    "uiLocale": "zh-CN",
+    "lyricLanguages": ["zh-Hans"]
   }
 }
