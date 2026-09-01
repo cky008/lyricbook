@@ -90,10 +90,27 @@ describe("print plan", () => {
       options: { ...options, format: "booklet", versionMode: "all" },
       locale: "en-US",
     });
-    expect(plan.pages.length % 4).toBe(0);
-    expect(plan.bookletSheets.length).toBeGreaterThan(0);
+    expect(plan.pages).toHaveLength(4);
+    expect(plan.paddedPageCount).toBe(4);
+    expect(plan.bookletSheets).toHaveLength(1);
     expect(plan.pages.filter((page) => page.kind === "song")).toHaveLength(2);
-    expect(plan.pages.some((page) => page.kind === "blank")).toBe(true);
+    expect(plan.pages.some((page) => page.kind === "blank")).toBe(false);
+  });
+
+  it("pads booklet plans only when the logical page count is not divisible by four", () => {
+    const project = projectWithSongs(1);
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, format: "booklet" },
+      locale: "en-US",
+    });
+
+    expect(plan.pages).toHaveLength(4);
+    expect(plan.paddedPageCount).toBe(4);
+    expect(plan.bookletSheets).toHaveLength(1);
+    expect(plan.pages.filter((page) => page.kind === "song")).toHaveLength(1);
+    expect(plan.pages.filter((page) => page.kind === "blank")).toHaveLength(1);
+    expect(plan.pages.at(-1)?.kind).toBe("blank");
   });
 
   it("covers current, filtered, library, and optional setlist scopes", () => {
