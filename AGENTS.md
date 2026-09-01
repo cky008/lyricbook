@@ -20,7 +20,7 @@ LyricBook is a privacy-first, local-first concert lyric-book editor and printabl
 
 ## 3. Current pinned toolchain
 
-Version 0.0.4 deliberately pins a current stack:
+Version 0.0.5 deliberately pins a current stack:
 
 - Node.js 26.8.1 and npm 12.0.2
 - React and React DOM 19.2.8

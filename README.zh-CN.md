@@ -9,7 +9,7 @@
 
 LyricBook 是一个**隐私优先、本地优先、无需后端**的演唱会歌词本编辑器、沉浸式歌单阅读器和实体歌词本／PDF 生成器。
 
-> **0.0.4 是现代技术栈重置版本。** 项目使用 React 19.2.8、React DOM 19.2.8、Vite 8.2.2、TypeScript 7.0.2、Tailwind CSS 4.3.3、Rust 1.98.0、Vitest 4.1.11 和 Playwright 1.62.1；不再包含 React 16、本地 vendor React 或 `window.React` 兼容层。
+> **0.0.5 是现代技术栈重置版本。** 项目使用 React 19.2.8、React DOM 19.2.8、Vite 8.2.2、TypeScript 7.0.2、Tailwind CSS 4.3.3、Rust 1.98.0、Vitest 4.1.11 和 Playwright 1.62.1；不再包含 React 16、本地 vendor React 或 `window.React` 兼容层。
 
 ## 主要功能
 

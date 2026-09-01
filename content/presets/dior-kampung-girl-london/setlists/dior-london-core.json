@@ -1,66 +1,138 @@
 {
   "id": "dior-london-core",
   "title": {
-    "zh-Hans": "伦敦站高置信度核心",
-    "en": "London High-Confidence Core"
+    "zh-Hans": "伦敦站高置信度核心（17 首）",
+    "en": "London High-Confidence Core (17 songs)"
   },
   "status": "prediction",
+  "date": "2026-09-02",
+  "venue": {
+    "zh-Hans": "Clapham Grand，伦敦",
+    "en": "Clapham Grand, London"
+  },
+  "notes": {
+    "zh-Hans": "17 首核心候选：伦敦官方宣传点名曲目，加上多站稳定出现的巡演主轴。它是高置信度准备清单，不是官方顺序。",
+    "en": "A 17-song preparation core combining titles named by official London promotion with recurring tour anchors. High confidence, but not an official running order."
+  },
   "items": [
+    {
+      "type": "song",
+      "songId": "dior-kampung-girl",
+      "optional": false,
+      "confidence": 0.93,
+      "sourceRefs": ["dior-london-promoter", "dior-taipei-mtv"]
+    },
     {
       "type": "song",
       "songId": "dior-better",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
     },
     {
       "type": "song",
       "songId": "dior-phone",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
     },
     {
       "type": "song",
-      "songId": "dior-see-you",
+      "songId": "dior-love-myself-more",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
     },
     {
       "type": "song",
-      "songId": "dior-slow",
+      "songId": "dior-ghana",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-lifetime-of-us",
+      "optional": false,
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-mutual-friends",
+      "optional": false,
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community"]
     },
     {
       "type": "song",
       "songId": "dior-yolo",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
-    },
-    {
-      "type": "song",
-      "songId": "dior-lifetime",
-      "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community"]
     },
     {
       "type": "song",
       "songId": "dior-save",
       "optional": false,
-      "confidence": 0.88,
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-lifetime",
+      "optional": false,
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-slow",
+      "optional": false,
+      "confidence": 0.86,
       "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
-      "songId": "dior-mutual",
+      "songId": "dior-louise",
       "optional": false,
-      "confidence": 0.88,
-      "sourceRefs": ["dior-london-venue"]
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-proud",
+      "optional": false,
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-lostcontrol",
+      "optional": false,
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-taipei-mtv"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-crush",
+      "optional": false,
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-bloom",
+      "optional": false,
+      "confidence": 0.86,
+      "sourceRefs": ["dior-taipei-kkbox-community", "dior-youtube-practice"]
+    },
+    {
+      "type": "song",
+      "songId": "dior-see-you",
+      "optional": false,
+      "confidence": 0.94,
+      "sourceRefs": ["dior-london-venue", "dior-taipei-kkbox-community", "dior-taipei-mtv"]
     }
   ]
 }
