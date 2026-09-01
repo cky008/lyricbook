@@ -1,9 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function waitForApplication(page: Page): Promise<void> {
+  await expect(page.locator(".app-shell")).toBeVisible();
+  await expect(page.locator("header.app-header")).toBeVisible();
+}
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("./");
-  await expect(page.getByText("LyricBook", { exact: true }).first()).toBeVisible();
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await waitForApplication(page);
 });
 
 test("loads a preset and renders the modern React application", async ({ page }) => {
@@ -21,23 +26,30 @@ test("keeps exactly one static print portal as a direct body child", async ({ pa
 
 test("switches language and persists the user-selected UI locale", async ({ page }) => {
   const html = page.locator("html");
-  const initialLanguage = await html.getAttribute("lang");
-  const expectedLanguage = initialLanguage === "zh-CN" ? "en" : "zh-CN";
-  const expectedStoredLocale = expectedLanguage === "zh-CN" ? "zh-CN" : "en-US";
+
+  // Start from a deterministic locale so browser language and catalog timing
+  // cannot make this test race with the initial i18n request.
+  await page.evaluate(() => localStorage.setItem("lyricbook-ui-locale", "en-US"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await waitForApplication(page);
+  await expect(html).toHaveAttribute("lang", "en");
 
   await page
+    .locator("header.app-header")
     .getByRole("button", { name: /Language|语言/i })
-    .last()
     .click();
 
-  await expect(html).toHaveAttribute("lang", expectedLanguage);
+  await expect(html).toHaveAttribute("lang", "zh-CN");
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-ui-locale")))
-    .toBe(expectedStoredLocale);
+    .toBe("zh-CN");
 
-  await page.reload();
-  await expect(page.getByText("LyricBook", { exact: true }).first()).toBeVisible();
-  await expect(page.locator("html")).toHaveAttribute("lang", expectedLanguage);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await waitForApplication(page);
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-ui-locale")))
+    .toBe("zh-CN");
 });
 
 test("immersive next-song navigation resets the next song to the top", async ({ page }) => {
