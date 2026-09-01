@@ -1,23 +1,85 @@
 {
-  "name": "@iocky/lyricbook-workspace",
-  "version": "0.0.1",
+  "name": "@iocky/lyricbook",
+  "version": "0.0.4",
   "private": true,
-  "description": "Local-first concert lyric book and printable booklet generator.",
+  "description": "Privacy-first, local-first concert lyric book and printable booklet generator.",
   "license": "Apache-2.0",
   "type": "module",
-  "engines": {
-    "node": ">=22"
+  "author": "iocky.com",
+  "homepage": "https://lyricbook.iocky.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cky008/lyricbook.git"
   },
+  "bugs": {
+    "url": "https://github.com/cky008/lyricbook/issues"
+  },
+  "engines": {
+    "node": ">=26.8.1 <27",
+    "npm": ">=12.0.2"
+  },
+  "packageManager": "npm@12.0.2",
   "scripts": {
-    "dev": "node scripts/serve.mjs",
-    "lint": "node scripts/lint.mjs",
-    "typecheck": "node scripts/typecheck.mjs",
-    "test": "node --test tests/*.test.mjs",
-    "test:rust": "node scripts/test-rust.mjs",
-    "validate:repo": "node scripts/validate-repository.mjs",
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint . --max-diagnostics=none --error-on-warnings",
+    "typecheck": "tsc --build --pretty false",
+    "test": "npm run test:unit && npm run test:rust",
+    "test:unit": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:rust": "cargo test --workspace --all-targets",
+    "lint:rust": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "build:wasm": "wasm-pack build crates/lyricbook-wasm --target web --out-dir ../../packages/wasm/pkg --release",
     "validate:content": "node scripts/validate-content.mjs",
-    "build": "node scripts/build.mjs",
-    "check": "npm run lint && npm run typecheck && npm run test && npm run test:rust && npm run validate:repo && npm run validate:content && npm run build",
-    "test:e2e": "node scripts/e2e-help.mjs"
+    "validate:repo": "node scripts/validate-repository.mjs",
+    "check:offline": "node scripts/offline-check.mjs",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run validate:content && npm run validate:repo && npm run lint:rust && npm run test:rust && npm run build",
+    "security:audit": "npm audit --audit-level=high && cargo audit",
+    "clean": "node scripts/clean.mjs"
+  },
+  "dependencies": {
+    "@fluent/bundle": "0.19.1",
+    "clsx": "2.1.1",
+    "fflate": "0.8.3",
+    "idb": "8.0.3",
+    "lucide-react": "1.37.0",
+    "radix-ui": "1.6.7",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "3.6.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@babel/core": "8.0.1",
+    "@biomejs/biome": "2.5.11",
+    "@playwright/test": "1.62.1",
+    "@rolldown/plugin-babel": "0.2.3",
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.6",
+    "@types/node": "26.4.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.1",
+    "@vitest/coverage-v8": "4.1.11",
+    "babel-plugin-react-compiler": "1.0.0",
+    "happy-dom": "20.12.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  },
+  "overrides": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-is": "19.2.8"
   }
 }

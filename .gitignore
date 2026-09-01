@@ -1,39 +1,43 @@
-# Dependencies and build output
+# JavaScript / TypeScript
 node_modules/
 dist/
-target/
 coverage/
+*.tsbuildinfo
+npm-debug.log*
+
+# Rust
+target/
+packages/wasm/pkg/
+apps/web/public/wasm/
+
+# Playwright / tests
 playwright-report/
 test-results/
-*.wasm
-*.map
+blob-report/
+.nyc_output/
 
-# Local data and private lyric content
-*.lyricbook
-*.lyricbook.json
-*backup*.json
-*含歌词*.html
-*lyrics-private*
-private/
-.local-data/
-
-# Environment and secrets
+# Environment and local settings
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-
-# Editors and OS
 .DS_Store
 Thumbs.db
+.vscode/
 .idea/
-.vscode/*
-!.vscode/extensions.json
-*.swp
 
-# Logs and temporary files
-*.log
+# Private user data and exports
+*.lyricbook
+*含歌词*.html
+*lyrics-backup*.json
+*lyricbook-backup*.json
+GEM歌词本备份*.json
+private-preview/
+private-data/
+user-content/
+
+# Generated local files
+package-lock.local.json
 .tmp/
 tmp/
-.cache/
+
+offline-check-report.json

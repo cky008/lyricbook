@@ -13,12 +13,8 @@
         "en": "I’ve Been Better"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -45,12 +41,8 @@
         "en": "If That Phone Call Had Been Answered"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -77,12 +69,8 @@
         "en": "See You"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -109,12 +97,8 @@
         "en": "Go Slow To Go Fast"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -141,12 +125,8 @@
         "en": "YOLO"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -173,12 +153,8 @@
         "en": "This Lifetime of Ours"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -205,12 +181,8 @@
         "en": "Save Some"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -237,12 +209,8 @@
         "en": "Mutual Friends"
       },
       "aliases": [],
-      "tags": [
-        "high-confidence"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["high-confidence"],
+      "sourceRefs": ["dior-london-venue"],
       "lyricVersions": [
         {
           "id": "default",
@@ -269,12 +237,8 @@
         "en": "Divorce in the Republic of Ghana"
       },
       "aliases": [],
-      "tags": [
-        "rotation"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"],
       "lyricVersions": [
         {
           "id": "default",
@@ -301,12 +265,8 @@
         "en": "Different Blooming Seasons"
       },
       "aliases": [],
-      "tags": [
-        "rotation"
-      ],
-      "sourceRefs": [
-        "dior-london-venue"
-      ],
+      "tags": ["rotation"],
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"],
       "lyricVersions": [
         {
           "id": "default",
@@ -340,49 +300,57 @@
           "type": "song",
           "songId": "dior-better",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-phone",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-see-you",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-slow",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-yolo",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-lifetime",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-save",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-mutual",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         }
       ]
     },
@@ -406,61 +374,71 @@
           "type": "song",
           "songId": "dior-better",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-phone",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-see-you",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-slow",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-yolo",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-lifetime",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-save",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-mutual",
           "optional": false,
-          "confidence": 0.88
+          "confidence": 0.88,
+          "sourceRefs": ["dior-london-venue"]
         },
         {
           "type": "song",
           "songId": "dior-ghana",
           "optional": false,
-          "confidence": 0.62
+          "confidence": 0.62,
+          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
         },
         {
           "type": "song",
           "songId": "dior-bloom",
           "optional": false,
-          "confidence": 0.62
+          "confidence": 0.62,
+          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
         }
       ]
     },
@@ -476,13 +454,15 @@
           "type": "song",
           "songId": "dior-ghana",
           "optional": false,
-          "confidence": 0.62
+          "confidence": 0.62,
+          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
         },
         {
           "type": "song",
           "songId": "dior-bloom",
           "optional": false,
-          "confidence": 0.62
+          "confidence": 0.62,
+          "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
         }
       ]
     }
@@ -507,14 +487,41 @@
   "activeThemeId": "kampung-girl",
   "sources": [
     {
-      "id": "dior-london-venue",
-      "kind": "official-venue",
-      "title": "DIOR 2026 KAMPUNG GIRL World Tour in London",
-      "publisher": "Clapham Grand / promoter listing",
-      "url": "https://claphamgrand.com/",
+      "id": "dior-london-promoter",
+      "kind": "promoter-official",
+      "title": "DIOR 大颖 2026 KAMPUNG GIRL World Tour in London",
+      "publisher": "Onion Production",
+      "url": "https://www.onionproduction.com/dior",
       "retrievedAt": "2026-08-31T00:00:00Z",
+      "language": "en",
+      "confidence": 0.98,
+      "notes": "Official promoter listing confirming 2 September 2026 and The Clapham Grand. It does not publish a final running order."
+    },
+    {
+      "id": "dior-london-venue",
+      "kind": "venue-official",
+      "title": "DIOR 大颖 2026 KAMPUNG GIRL World Tour in London",
+      "publisher": "The Clapham Grand",
+      "url": "https://claphamgrand.com/event/dior%E5%A4%A7%E7%A9%8E-2026%E3%80%8Akampung-girl%E3%80%8Bworld-tour-in-london/",
+      "retrievedAt": "2026-08-31T00:00:00Z",
+      "language": "en",
+      "confidence": 0.95,
+      "notes": "Official venue listing and representative-song evidence. The order in this preset remains a prediction."
+    },
+    {
+      "id": "dior-tour-variation",
+      "kind": "promoter-official",
+      "title": "DIOR KAMPUNG GIRL World Tour Bali listing",
+      "publisher": "CK Star Entertainment Singapore",
+      "url": "https://sg.ckstarentertainment.com/events/dior%E5%A4%A7%E9%A2%96-2026%E3%80%8Akampung-girl%E6%99%AE%E9%80%9A%E4%BA%BA%E3%80%8B%E4%B8%96%E7%95%8C%E5%B7%A1%E5%9B%9E%E6%BC%94%E5%94%B1%E4%BC%9A-%E5%B3%87%E9%87%8C%E5%B3%B6%E7%AB%99/",
+      "retrievedAt": "2026-08-31T00:00:00Z",
+      "language": "en",
       "confidence": 0.8,
-      "notes": "The preset is a prediction and must not be represented as a confirmed final running order."
+      "notes": "Official promoter evidence that another tour stop changed approximately half of its setlist; used only to justify a separate rotation pool, not to claim London songs."
     }
-  ]
+  ],
+  "description": {
+    "zh-Hans": "根据伦敦官方活动页面、代表作信息与巡演轮换证据建立的非官方预测验证包；不是正式歌单。",
+    "en": "An unofficial validation prediction built from official London event listings, representative-song evidence, and tour-variation evidence; not a confirmed setlist."
+  }
 }

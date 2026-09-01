@@ -1,30 +1,79 @@
-use lyricbook_core::{booklet_imposition, validate_project, Project};
-use std::{env, fs, process};
+use clap::{Parser, Subcommand};
+use lyricbook_core::{Project, booklet_imposition, padded_booklet_page_count, validate_project};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    process::ExitCode,
+};
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    match args.as_slice() {
-        [_, command, path] if command == "validate" => {
-            let content = fs::read_to_string(path).unwrap_or_else(|error| fail(&error.to_string()));
-            let project: Project = serde_json::from_str(&content).unwrap_or_else(|error| fail(&error.to_string()));
-            validate_project(&project).unwrap_or_else(|error| fail(&error.to_string()));
-            println!("valid: {}", project.id);
-        }
-        [_, command, pages] if command == "booklet" => {
-            let pages: usize = pages.parse().unwrap_or_else(|_| fail("pages must be an integer"));
-            let sheets = booklet_imposition(pages).unwrap_or_else(|error| fail(&error));
-            for (index, sheet) in sheets.iter().enumerate() {
-                println!("sheet {}: {}|{} / {}|{}", index + 1, sheet.0, sheet.1, sheet.2, sheet.3);
-            }
-        }
-        _ => {
-            eprintln!("Usage:\n  lyricbook validate <project.json>\n  lyricbook booklet <page-count>");
-            process::exit(2);
-        }
-    }
+#[derive(Debug, Parser)]
+#[command(
+    name = "lyricbook",
+    version,
+    about = "Validate and inspect LyricBook projects"
+)]
+struct Cli {
+    #[command(subcommand)]
+    command: Command,
 }
 
-fn fail(message: &str) -> ! {
-    eprintln!("error: {message}");
-    process::exit(1);
+#[derive(Debug, Subcommand)]
+enum Command {
+    /// Validate a project JSON file.
+    Validate { path: PathBuf },
+    /// Print saddle-stitch imposition pairs.
+    Booklet {
+        /// Logical page count; it is padded to a multiple of four.
+        pages: usize,
+    },
+    /// Print a compact project summary.
+    Inspect { path: PathBuf },
+}
+
+fn load_project(path: &Path) -> Result<Project, String> {
+    let content = fs::read_to_string(path).map_err(|error| error.to_string())?;
+    serde_json::from_str(&content).map_err(|error| error.to_string())
+}
+
+fn run() -> Result<(), String> {
+    match Cli::parse().command {
+        Command::Validate { path } => {
+            let project = load_project(&path)?;
+            validate_project(&project).map_err(|error| error.to_string())?;
+            println!("valid: {}", project.id);
+        }
+        Command::Booklet { pages } => {
+            let padded = padded_booklet_page_count(pages);
+            for (index, sheet) in booklet_imposition(padded)?.iter().enumerate() {
+                println!(
+                    "sheet {}: {}|{} / {}|{}",
+                    index + 1,
+                    sheet.0,
+                    sheet.1,
+                    sheet.2,
+                    sheet.3
+                );
+            }
+        }
+        Command::Inspect { path } => {
+            let project = load_project(&path)?;
+            validate_project(&project).map_err(|error| error.to_string())?;
+            println!("id: {}", project.id);
+            println!("songs: {}", project.songs.len());
+            println!("setlists: {}", project.setlists.len());
+            println!("themes: {}", project.themes.len());
+            println!("sources: {}", project.sources.len());
+        }
+    }
+    Ok(())
+}
+
+fn main() -> ExitCode {
+    match run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            eprintln!("error: {error}");
+            ExitCode::FAILURE
+        }
+    }
 }

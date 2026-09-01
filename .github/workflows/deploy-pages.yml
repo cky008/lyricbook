@@ -1,42 +1,80 @@
 name: Deploy GitHub Pages
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
+
 jobs:
   quality-build:
+    name: Quality gate and Pages build
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run test
-      - run: npm run validate:repo
-      - run: npm run validate:content
-      - run: npm run build
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+          node-version: 26.8.1
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.98.0
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - name: Pin npm 12.0.2
+        run: npm install --global npm@12.0.2
+      - name: Install JavaScript dependencies
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          else
+            echo "package-lock.json is absent on this bootstrap commit; generating it with npm install."
+            npm install --no-audit --no-fund
+          fi
+      - name: Generate Cargo lockfile on bootstrap commits
+        shell: bash
+        run: test -f Cargo.lock || cargo generate-lockfile
+      - name: Web tests before build
+        run: |
+          npm run format:check
+          npm run lint
+          npm run typecheck
+          npm run test:unit
+          npm run validate:content
+          npm run validate:repo
+      - name: Rust tests before build
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
+          cargo test --workspace --all-targets
+      - name: Install wasm-pack 0.15.0
+        run: cargo install wasm-pack --version 0.15.0 --locked
+      - name: Build WASM adapter
+        run: npm run build:wasm
+      - name: Build production site
+        run: npm run build
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+
   deploy:
+    name: Deploy
     needs: quality-build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Deploy
+      - name: Deploy Pages artifact
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

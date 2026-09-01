@@ -18,61 +18,71 @@
       "type": "song",
       "songId": "dior-better",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-phone",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-see-you",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-slow",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-yolo",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-lifetime",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-save",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-mutual",
       "optional": false,
-      "confidence": 0.88
+      "confidence": 0.88,
+      "sourceRefs": ["dior-london-venue"]
     },
     {
       "type": "song",
       "songId": "dior-ghana",
       "optional": false,
-      "confidence": 0.62
+      "confidence": 0.62,
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
     },
     {
       "type": "song",
       "songId": "dior-bloom",
       "optional": false,
-      "confidence": 0.62
+      "confidence": 0.62,
+      "sourceRefs": ["dior-london-venue", "dior-tour-variation"]
     }
   ]
 }

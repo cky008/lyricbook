@@ -1,21 +1,100 @@
-name: Release artifacts
+name: Release
+
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to publish
+        required: true
+        type: string
+
 permissions:
   contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 50
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run check
-      - run: zip -r "lyricbook-${GITHUB_REF_NAME}-dist.zip" dist
-      - uses: softprops/action-gh-release@v2
+          fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/setup-node@v7
         with:
-          files: lyricbook-*-dist.zip
+          node-version: 26.8.1
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.98.0
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - name: Pin npm 12.0.2
+        run: npm install --global npm@12.0.2
+      - name: Install JavaScript dependencies
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+      - name: Generate Cargo lockfile on bootstrap commits
+        shell: bash
+        run: test -f Cargo.lock || cargo generate-lockfile
+      - name: Install wasm-pack 0.15.0
+        run: cargo install wasm-pack --version 0.15.0 --locked
+      - name: Release quality gate
+        run: |
+          npm run format:check
+          npm run lint
+          npm run typecheck
+          npm run test:unit
+          npm run validate:content
+          npm run validate:repo
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
+          cargo test --workspace --all-targets
+          npm run build:wasm
+          npm run build
+      - name: Resolve release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
+          test -n "$TAG"
+          git rev-parse "$TAG^{commit}" >/dev/null
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Package release assets
+        shell: bash
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          STAGE="$(mktemp -d)"
+          mkdir -p "$STAGE/lyricbook-$TAG"
+          rsync -a ./ "$STAGE/lyricbook-$TAG/" \
+            --exclude .git \
+            --exclude node_modules \
+            --exclude dist \
+            --exclude target \
+            --exclude coverage \
+            --exclude packages/wasm/pkg \
+            --exclude playwright-report \
+            --exclude test-results
+          (cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/lyricbook-$TAG-source.zip" "lyricbook-$TAG")
+          (cd dist && zip -qr "../lyricbook-$TAG-dist.zip" .)
+          sha256sum "lyricbook-$TAG-source.zip" "lyricbook-$TAG-dist.zip" > SHA256SUMS.txt
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          gh release create "$TAG" \
+            "lyricbook-$TAG-source.zip" \
+            "lyricbook-$TAG-dist.zip" \
+            SHA256SUMS.txt \
+            --generate-notes \
+            --verify-tag

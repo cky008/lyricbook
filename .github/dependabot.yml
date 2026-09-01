@@ -2,10 +2,28 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
-    schedule: { interval: monthly }
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      react-runtime:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom", "babel-plugin-react-compiler"]
+      vite-tailwind:
+        patterns: ["vite", "@vitejs/*", "tailwindcss", "@tailwindcss/*", "typescript"]
+      testing:
+        patterns: ["vitest", "@vitest/*", "@playwright/*", "@testing-library/*", "@axe-core/*"]
+    open-pull-requests-limit: 10
   - package-ecosystem: cargo
     directory: /
-    schedule: { interval: monthly }
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
   - package-ecosystem: github-actions
     directory: /
-    schedule: { interval: monthly }
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]

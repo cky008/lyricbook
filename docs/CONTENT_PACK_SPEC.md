@@ -1,14 +1,22 @@
 # Content pack specification
 
-Version `0.0.1` ships reviewable built-in projects under `content/presets/<id>/project.json` and an index at `content/presets/index.json`.
+## Built-in preset
 
-A preset must:
+A built-in preset is a reviewable `project.json` under `content/presets/<id>/`. Add the preset to `content/presets/index.json` and run content validation.
 
-1. use schema version `1`;
-2. contain unique song and setlist IDs;
-3. reference only songs present in the same project;
-4. include source metadata for researched claims;
-5. keep lyric tracks empty unless redistribution permission is documented;
-6. avoid executable HTML, scripts, remote tracking assets, and private data.
+Public presets may contain metadata, aliases, source evidence, setlist order, confidence, safe themes, and empty lyric tracks. They must not contain unauthorized full lyrics.
 
-Run `npm run validate:content` before committing a preset.
+## User archive
+
+A `.lyricbook` file is ZIP with:
+
+```text
+manifest.json
+project.json
+```
+
+`manifest.json` identifies format `lyricbook-project`, format version `1`, application/schema versions, project id, timestamps, revision id, and entrypoint.
+
+## Import safety
+
+Reject absolute paths, `..`, drive paths, nested archives, excessive archive size, excessive expanded size, and excessive file count. Validate the full project before replacement.

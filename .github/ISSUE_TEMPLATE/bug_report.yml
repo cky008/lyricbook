@@ -1,18 +1,30 @@
 name: Bug report
 description: Report a reproducible LyricBook problem
-title: "[Bug]: "
+title: "bug: "
+labels: [bug]
 body:
   - type: textarea
-    attributes: { label: What happened? }
-    validations: { required: true }
+    attributes:
+      label: What happened?
+    validations:
+      required: true
   - type: textarea
-    attributes: { label: Reproduction steps }
-    validations: { required: true }
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
   - type: input
-    attributes: { label: Browser and operating system }
+    attributes:
+      label: Browser and operating system
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Console or test output
+      description: Remove lyrics, secrets, and personal data before posting.
   - type: checkboxes
     attributes:
-      label: Privacy
+      label: Privacy confirmation
       options:
-        - label: I removed copyrighted lyrics, private exports, and personal information.
+        - label: I removed private lyrics and project data.
           required: true

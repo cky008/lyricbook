@@ -1,21 +1,54 @@
 name: Security
+
 on:
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - Cargo.toml
+      - Cargo.lock
+      - crates/**
+      - .github/workflows/security.yml
   schedule:
-    - cron: "23 4 * * 1"
+    - cron: "41 5 * * 3"
   workflow_dispatch:
+
 permissions:
   contents: read
+  pull-requests: read
+
 jobs:
   audit:
+    name: Dependency audit
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm audit --audit-level=high
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install cargo-audit --locked
-      - run: cargo audit
+          node-version: 26.8.1
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.98.0
+      - name: Pin npm 12.0.2
+        run: npm install --global npm@12.0.2
+      - name: Install JavaScript dependencies
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+      - name: npm audit
+        run: npm audit --audit-level=high
+      - name: Generate Cargo lockfile on bootstrap commits
+        shell: bash
+        run: test -f Cargo.lock || cargo generate-lockfile
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: RustSec audit
+        run: cargo audit
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4

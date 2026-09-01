@@ -1,11 +1,7 @@
 # Theme specification
 
-Themes are declarative records with localized names and an allow-listed token object. Version `0.0.1` accepts:
+Themes are data-only. Supported tokens include primary/secondary accent, background, surface, strong surface, text, muted text, radius, density, heading/body category, and print paper/accent settings.
 
-- `accent`
-- `background`
-- `surface`
-- `text`
-- `radius`
+Allowed values are sanitized CSS colors and bounded lengths. User themes cannot supply JavaScript, arbitrary HTML, arbitrary stylesheets, remote fonts, tracking URLs, or active SVG.
 
-Themes must not contain JavaScript, arbitrary HTML, arbitrary CSS, remote fonts, or tracking resources. The browser applies tokens as CSS custom properties. Print-specific tokens may be added only through a schema revision and validation tests.
+Content and theme packages are independent so one concert library can be rendered with multiple designs.

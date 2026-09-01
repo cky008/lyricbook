@@ -1,7 +1,16 @@
 # Security design
 
-LyricBook stores user projects locally and performs no automatic upload. Imports must be explicit and validated before replacing local state.
+## Threats
 
-Security rules include text-only lyric rendering, HTTPS-only URL import, response-size limits, no frontend secrets, no arbitrary theme scripts or CSS, no executable SVG uploads, safe archive paths, no nested archives, and no private content in public presets or logs.
+- malicious ZIP paths and decompression bombs;
+- unsafe user themes;
+- injected lyric HTML;
+- remote import tracking or oversized responses;
+- leaked AI/service secrets;
+- Service Worker caching private data;
+- stale overlay scroll locks;
+- supply-chain regressions.
 
-See the root `SECURITY.md` for vulnerability reporting.
+## Controls
+
+Archives are bounded and paths validated. Lyrics render as text. Themes are token-only and sanitized. Remote imports require explicit HTTPS URLs and CORS. No secrets are stored in the frontend. IndexedDB records are not Service Worker precache entries. Dependencies are pinned and audited in CI. Full-source maps are not emitted in production.

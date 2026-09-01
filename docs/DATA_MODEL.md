@@ -1,14 +1,32 @@
 # Data model
 
-The public schema version is `1`.
+Schema version: `1`.
 
-A project contains stable IDs, localized titles, songs, setlists, themes, active selections, and source references. A song may contain multiple lyric versions. Each version may contain original, translation, transliteration, or adaptation tracks.
+## Project
 
-Rules:
+A project contains localized title/description, songs, setlists, themes, sources, active ids, timestamps, revision ids, and browser preferences.
 
-- Song and setlist IDs are unique and stable.
-- Setlists may contain songs, optional sections, notes, and breaks.
-- Sections are optional; a plain ordered song list is valid.
-- At most one lyric version is marked as default.
-- Public presets contain no bundled lyric text unless redistribution rights are documented.
-- Schema changes require migration fixtures and a schema-version change.
+## Song and lyric versions
+
+A song has stable id, localized titles, aliases, tags, source references, and lyric versions. A version represents a studio/live/language/arrangement variant. Tracks inside a version represent original, translation, transliteration, or adaptation text.
+
+English original plus Chinese translation belong to one version. Mandarin and Cantonese lyrics belong to two versions.
+
+## Setlist
+
+A setlist is an ordered list of:
+
+- `song`
+- `section`
+- `note`
+- `break`
+
+Sections are optional. Song items can be optional and can carry confidence/source evidence.
+
+## Source
+
+Sources record id, kind, title, publisher, URL, retrieval time, language, confidence, and notes. Setlist research must retain source spelling and map aliases separately.
+
+## Revision and exports
+
+Exports record UTC times, revision id, and parent revision id. File names include milliseconds and a random suffix.
