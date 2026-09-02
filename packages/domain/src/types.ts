@@ -168,6 +168,16 @@ export type PrintScope = "current-song" | "active-setlist" | "filtered" | "libra
 export type PrintVersionMode = "default" | "current" | "all";
 export type PrintLanguageMode = "original" | "original-translation" | "all-tracks";
 export type PrintStrategy = "balanced" | "readable" | "compact" | "strict-page-limit";
+export type PrintLineFlow = "auto" | "preserve" | "slash";
+export type PrintCoverMode = "generated" | "image" | "image-with-text";
+
+export interface LocalCoverImage {
+  dataUrl: string;
+  mediaType: "image/jpeg" | "image/png" | "image/webp";
+  width: number;
+  height: number;
+  byteLength: number;
+}
 
 export interface PrintOptions {
   format: PrintFormat;
@@ -180,6 +190,9 @@ export interface PrintOptions {
   includeSources: boolean;
   includeTableOfContents: boolean;
   includeCover: boolean;
+  lineFlow: PrintLineFlow;
+  coverMode: PrintCoverMode;
+  coverImage?: LocalCoverImage;
 }
 
 export interface PresetIndexEntry {

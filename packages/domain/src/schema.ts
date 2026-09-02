@@ -1,5 +1,20 @@
 import { z } from "zod";
-import { SCHEMA_VERSION, type LyricBookProject, type ValidationResult } from "./types";
+import {
+  type LocalCoverImage,
+  type LyricBookProject,
+  SCHEMA_VERSION,
+  type ValidationResult,
+} from "./types";
+
+export const LOCAL_COVER_MAX_BYTES = 4_000_000;
+export const LOCAL_COVER_MAX_EDGE = 4_096;
+export const LOCAL_COVER_MAX_PIXELS = 40_000_000;
+
+export interface RasterImageInfo {
+  mediaType: LocalCoverImage["mediaType"];
+  width: number;
+  height: number;
+}
 
 const localizedTextSchema = z.record(z.string().min(1), z.string());
 
@@ -109,6 +124,300 @@ const sourceSchema = z.object({
   notes: z.string().optional(),
 });
 
+function startsWith(bytes: Uint8Array, signature: readonly number[], offset = 0): boolean {
+  return signature.every((value, index) => bytes[offset + index] === value);
+}
+
+export function sniffRasterImageType(bytes: Uint8Array): LocalCoverImage["mediaType"] | undefined {
+  if (startsWith(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) {
+    return "image/png";
+  }
+  if (startsWith(bytes, [0xff, 0xd8, 0xff])) return "image/jpeg";
+  if (
+    startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) &&
+    startsWith(bytes, [0x57, 0x45, 0x42, 0x50], 8)
+  ) {
+    return "image/webp";
+  }
+  return undefined;
+}
+
+function readUint16BigEndian(bytes: Uint8Array, offset: number): number {
+  return ((bytes[offset] ?? 0) << 8) | (bytes[offset + 1] ?? 0);
+}
+
+function readUint16LittleEndian(bytes: Uint8Array, offset: number): number {
+  return (bytes[offset] ?? 0) | ((bytes[offset + 1] ?? 0) << 8);
+}
+
+function readUint24LittleEndian(bytes: Uint8Array, offset: number): number {
+  return (bytes[offset] ?? 0) | ((bytes[offset + 1] ?? 0) << 8) | ((bytes[offset + 2] ?? 0) << 16);
+}
+
+function readUint32BigEndian(bytes: Uint8Array, offset: number): number {
+  return new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(offset);
+}
+
+function readUint32LittleEndian(bytes: Uint8Array, offset: number): number {
+  return new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(offset, true);
+}
+
+function validDimensions(
+  mediaType: LocalCoverImage["mediaType"],
+  width: number,
+  height: number,
+): RasterImageInfo | undefined {
+  return Number.isSafeInteger(width) && Number.isSafeInteger(height) && width > 0 && height > 0
+    ? { mediaType, width, height }
+    : undefined;
+}
+
+function inspectPng(bytes: Uint8Array): RasterImageInfo | undefined {
+  if (
+    bytes.byteLength < 24 ||
+    readUint32BigEndian(bytes, 8) !== 13 ||
+    !startsWith(bytes, [0x49, 0x48, 0x44, 0x52], 12)
+  ) {
+    return undefined;
+  }
+  return validDimensions(
+    "image/png",
+    readUint32BigEndian(bytes, 16),
+    readUint32BigEndian(bytes, 20),
+  );
+}
+
+const JPEG_START_OF_FRAME_MARKERS = new Set([
+  0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf,
+]);
+
+function inspectJpeg(bytes: Uint8Array): RasterImageInfo | undefined {
+  let offset = 2;
+  while (offset + 1 < bytes.byteLength) {
+    if (bytes[offset] !== 0xff) return undefined;
+    while (bytes[offset] === 0xff) offset += 1;
+    const marker = bytes[offset];
+    offset += 1;
+    if (marker === undefined || marker === 0x00 || marker === 0xd9 || marker === 0xda) {
+      return undefined;
+    }
+    if (marker === 0x01 || marker === 0xd8 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+    if (offset + 2 > bytes.byteLength) return undefined;
+    const segmentLength = readUint16BigEndian(bytes, offset);
+    if (segmentLength < 2 || offset + segmentLength > bytes.byteLength) return undefined;
+    if (JPEG_START_OF_FRAME_MARKERS.has(marker)) {
+      if (segmentLength < 7) return undefined;
+      return validDimensions(
+        "image/jpeg",
+        readUint16BigEndian(bytes, offset + 5),
+        readUint16BigEndian(bytes, offset + 3),
+      );
+    }
+    offset += segmentLength;
+  }
+  return undefined;
+}
+
+function inspectWebp(bytes: Uint8Array): RasterImageInfo | undefined {
+  if (bytes.byteLength < 20 || readUint32LittleEndian(bytes, 4) + 8 > bytes.byteLength) {
+    return undefined;
+  }
+  let offset = 12;
+  while (offset + 8 <= bytes.byteLength) {
+    const chunkSize = readUint32LittleEndian(bytes, offset + 4);
+    const dataOffset = offset + 8;
+    const dataEnd = dataOffset + chunkSize;
+    if (dataEnd > bytes.byteLength) return undefined;
+
+    if (startsWith(bytes, [0x56, 0x50, 0x38, 0x58], offset) && chunkSize >= 10) {
+      return validDimensions(
+        "image/webp",
+        readUint24LittleEndian(bytes, dataOffset + 4) + 1,
+        readUint24LittleEndian(bytes, dataOffset + 7) + 1,
+      );
+    }
+    if (
+      startsWith(bytes, [0x56, 0x50, 0x38, 0x20], offset) &&
+      chunkSize >= 10 &&
+      startsWith(bytes, [0x9d, 0x01, 0x2a], dataOffset + 3)
+    ) {
+      return validDimensions(
+        "image/webp",
+        readUint16LittleEndian(bytes, dataOffset + 6) & 0x3fff,
+        readUint16LittleEndian(bytes, dataOffset + 8) & 0x3fff,
+      );
+    }
+    if (
+      startsWith(bytes, [0x56, 0x50, 0x38, 0x4c], offset) &&
+      chunkSize >= 5 &&
+      bytes[dataOffset] === 0x2f
+    ) {
+      const first = bytes[dataOffset + 1] ?? 0;
+      const second = bytes[dataOffset + 2] ?? 0;
+      const third = bytes[dataOffset + 3] ?? 0;
+      const fourth = bytes[dataOffset + 4] ?? 0;
+      return validDimensions(
+        "image/webp",
+        1 + first + ((second & 0x3f) << 8),
+        1 + (second >> 6) + (third << 2) + ((fourth & 0x0f) << 10),
+      );
+    }
+    offset = dataEnd + (chunkSize % 2);
+  }
+  return undefined;
+}
+
+/** Read trusted dimensions from raster container headers without decoding pixels. */
+export function inspectRasterImage(bytes: Uint8Array): RasterImageInfo | undefined {
+  const mediaType = sniffRasterImageType(bytes);
+  if (mediaType === "image/png") return inspectPng(bytes);
+  if (mediaType === "image/jpeg") return inspectJpeg(bytes);
+  if (mediaType === "image/webp") return inspectWebp(bytes);
+  return undefined;
+}
+
+function base64Value(characterCode: number): number {
+  if (characterCode >= 0x41 && characterCode <= 0x5a) return characterCode - 0x41;
+  if (characterCode >= 0x61 && characterCode <= 0x7a) return characterCode - 0x61 + 26;
+  if (characterCode >= 0x30 && characterCode <= 0x39) return characterCode - 0x30 + 52;
+  if (characterCode === 0x2b) return 62;
+  if (characterCode === 0x2f) return 63;
+  return -1;
+}
+
+function decodeBase64(value: string): Uint8Array | undefined {
+  let padding = 0;
+  while (value.endsWith("=".repeat(padding + 1))) padding += 1;
+  if (padding > 2) return undefined;
+  const contentLength = value.length - padding;
+  const remainder = contentLength % 4;
+  if (!contentLength || remainder === 1) return undefined;
+  if (padding && (value.length % 4 !== 0 || padding !== 4 - remainder)) return undefined;
+  const decodedLength = Math.floor((contentLength * 6) / 8);
+  if (decodedLength > LOCAL_COVER_MAX_BYTES) return undefined;
+
+  const bytes = new Uint8Array(decodedLength);
+  let accumulator = 0;
+  let bitCount = 0;
+  let outputIndex = 0;
+  for (let index = 0; index < contentLength; index += 1) {
+    const digit = base64Value(value.charCodeAt(index));
+    if (digit < 0) return undefined;
+    accumulator = (accumulator << 6) | digit;
+    bitCount += 6;
+    if (bitCount >= 8) {
+      bitCount -= 8;
+      bytes[outputIndex] = (accumulator >> bitCount) & 0xff;
+      outputIndex += 1;
+      accumulator &= bitCount ? (1 << bitCount) - 1 : 0;
+    }
+  }
+  return outputIndex === decodedLength && accumulator === 0 ? bytes : undefined;
+}
+
+function decodeRasterDataUrl(
+  dataUrl: string,
+): { declaredMediaType: LocalCoverImage["mediaType"]; bytes: Uint8Array } | undefined {
+  const match = /^data:(image\/(?:jpeg|png|webp));base64,([a-z0-9+/]+={0,2})$/i.exec(dataUrl);
+  if (!match?.[1] || !match[2]) return undefined;
+  const bytes = decodeBase64(match[2]);
+  if (!bytes) return undefined;
+  return {
+    declaredMediaType: match[1].toLowerCase() as LocalCoverImage["mediaType"],
+    bytes,
+  };
+}
+
+function exceedsPixelLimit(width: number, height: number): boolean {
+  return height > 0 && width > Math.floor(LOCAL_COVER_MAX_PIXELS / height);
+}
+
+const localCoverImageSchema = z
+  .object({
+    dataUrl: z.string().max(6_000_000),
+    mediaType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+    width: z.number().int().positive().max(LOCAL_COVER_MAX_EDGE),
+    height: z.number().int().positive().max(LOCAL_COVER_MAX_EDGE),
+    byteLength: z.number().int().positive().max(LOCAL_COVER_MAX_BYTES),
+  })
+  .superRefine((image, context) => {
+    const decoded = decodeRasterDataUrl(image.dataUrl);
+    if (!decoded) {
+      context.addIssue({
+        code: "custom",
+        path: ["dataUrl"],
+        message: "Cover data must contain a recognized raster image data URL",
+      });
+      return;
+    }
+    if (decoded.declaredMediaType !== image.mediaType) {
+      context.addIssue({
+        code: "custom",
+        path: ["mediaType"],
+        message: "Cover media type does not match its data URL",
+      });
+    }
+    if (decoded.bytes.byteLength !== image.byteLength) {
+      context.addIssue({
+        code: "custom",
+        path: ["byteLength"],
+        message: "Cover byte length does not match its data URL",
+      });
+    }
+    const actual = inspectRasterImage(decoded.bytes);
+    if (!actual) {
+      context.addIssue({
+        code: "custom",
+        path: ["dataUrl"],
+        message: "Cover data is not a recognized raster image",
+      });
+      return;
+    }
+    if (actual.mediaType !== decoded.declaredMediaType) {
+      context.addIssue({
+        code: "custom",
+        path: ["mediaType"],
+        message: "Cover media type does not match the encoded image",
+      });
+    }
+    if (actual.width !== image.width || actual.height !== image.height) {
+      context.addIssue({
+        code: "custom",
+        path: ["width"],
+        message: "Cover dimensions do not match the encoded image",
+      });
+    }
+    if (
+      actual.width > LOCAL_COVER_MAX_EDGE ||
+      actual.height > LOCAL_COVER_MAX_EDGE ||
+      exceedsPixelLimit(actual.width, actual.height)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["dataUrl"],
+        message: "Cover image exceeds the decoded pixel limit",
+      });
+    }
+  });
+
+const printPreferencesSchema = z
+  .object({
+    format: z.enum(["a4", "a5", "booklet"]),
+    scope: z.enum(["current-song", "active-setlist", "filtered", "library"]),
+    versionMode: z.enum(["default", "current", "all"]),
+    languageMode: z.enum(["original", "original-translation", "all-tracks"]),
+    strategy: z.enum(["balanced", "readable", "compact", "strict-page-limit"]),
+    includeOptional: z.boolean(),
+    includeEmptySongs: z.boolean(),
+    includeSources: z.boolean(),
+    includeTableOfContents: z.boolean(),
+    includeCover: z.boolean(),
+    lineFlow: z.enum(["auto", "preserve", "slash"]),
+    coverMode: z.enum(["generated", "image", "image-with-text"]),
+    coverImage: localCoverImageSchema,
+  })
+  .partial();
+
 export const projectSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   id: z.string().min(1),
@@ -132,7 +441,7 @@ export const projectSchema = z.object({
       activeVersionBySong: z.record(z.string(), z.string()).optional(),
       favoriteSongIds: z.array(z.string()).optional(),
       learnedSongIds: z.array(z.string()).optional(),
-      print: z.record(z.string(), z.unknown()).optional(),
+      print: printPreferencesSchema.optional(),
     })
     .optional(),
 });

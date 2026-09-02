@@ -6,6 +6,7 @@ LyricBook uses TDD and multiple layers:
 - Rust tests/proptest: validation, booklet invariants, and deterministic helpers.
 - Playwright: Chromium, Firefox, WebKit, iPhone profile, accessibility, overlays, immersive navigation, and print preview.
 - Repository/content validators: required files, pinned modern stack, aligned Fluent keys, valid preset references, no React 16/vendor runtime, and no private lyric files.
+- Service Worker lifecycle tests: build-specific caches, network-first navigation, previous-build fallback, update checks, and a stale-HTML normal-reload regression.
 
 Print changes follow the synthetic fixture and PDF matrix in [PRINT_REGRESSION_TEST_PLAN.md](PRINT_REGRESSION_TEST_PLAN.md), including measured overflow, footer clearance, text completeness, contents links, strict-limit blocking, and A4/A5/booklet visual checks.
 

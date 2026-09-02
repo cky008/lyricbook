@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 async function waitForApplication(page: Page): Promise<void> {
   await expect(page.locator(".app-shell")).toBeVisible();
@@ -17,6 +17,16 @@ async function songRowsForViewport(page: Page, isMobile: boolean) {
   const rows = page.locator(".mobile-sidebar.open .song-row");
   await expect(rows.first()).toBeVisible();
   return rows;
+}
+
+async function chooseHeaderAction(page: Page, name: RegExp, isMobile: boolean): Promise<void> {
+  const header = page.locator("header.app-header");
+  if (isMobile) {
+    await header.getByRole("button", { name: /More actions|更多操作/i }).click();
+    await page.getByRole("menuitem", { name }).click();
+    return;
+  }
+  await header.getByRole("button", { name }).click();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -52,7 +62,7 @@ test("keeps exactly one static print portal as a direct body child", async ({ pa
   await expect(page.locator("#root #print-portal")).toHaveCount(0);
 });
 
-test("switches language and persists the user-selected UI locale", async ({ page }) => {
+test("switches language and persists the user-selected UI locale", async ({ page, isMobile }) => {
   const html = page.locator("html");
 
   // Start from a deterministic locale so browser language and catalog timing
@@ -62,10 +72,7 @@ test("switches language and persists the user-selected UI locale", async ({ page
   await waitForApplication(page);
   await expect(html).toHaveAttribute("lang", "en");
 
-  await page
-    .locator("header.app-header")
-    .getByRole("button", { name: /Language|语言/i })
-    .click();
+  await chooseHeaderAction(page, /Language|语言/i, isMobile);
 
   await expect(html).toHaveAttribute("lang", "zh-CN");
   await expect
@@ -95,6 +102,7 @@ test("stacks each song title above its version and tag metadata", async ({ page,
 
 test("cycles system, light, and dark appearance modes and persists the choice", async ({
   page,
+  isMobile,
 }) => {
   await page.evaluate(() => localStorage.removeItem("lyricbook-appearance"));
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -102,16 +110,13 @@ test("cycles system, light, and dark appearance modes and persists the choice", 
   const html = page.locator("html");
   await expect(html).toHaveAttribute("data-appearance", "system");
 
-  const button = page
-    .locator("header.app-header")
-    .getByRole("button", { name: /Appearance|外观/i });
-  await button.click();
+  await chooseHeaderAction(page, /Appearance|外观/i, isMobile);
   await expect(html).toHaveAttribute("data-appearance", "light");
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-appearance")))
     .toBe("light");
 
-  await button.click();
+  await chooseHeaderAction(page, /Appearance|外观/i, isMobile);
   await expect(html).toHaveAttribute("data-appearance", "dark");
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("lyricbook-appearance")))
@@ -153,10 +158,7 @@ test("mobile sidebar and setlist dialog release document scrolling", async ({ pa
   await sidebar.getByRole("button", { name: /Close menu|关闭菜单/i }).click();
   await expect(page.locator(".mobile-sidebar")).toHaveCount(0);
 
-  await page
-    .getByRole("button", { name: /Setlist editor|演出歌单/i })
-    .first()
-    .click();
+  await chooseHeaderAction(page, /Setlist editor|歌单编辑器|演出歌单/i, isMobile);
   await expect(page.locator("[role='dialog']")).toBeVisible();
   await page
     .getByRole("button", { name: /Close|关闭/i })

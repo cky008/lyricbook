@@ -30,6 +30,7 @@
     "apps/web/src/**/*.ts",
     "apps/web/src/**/*.tsx",
     "packages/**/*.ts",
+    "scripts/service-worker.ts",
     "tests/unit/**/*.ts",
     "tests/unit/**/*.tsx"
   ]

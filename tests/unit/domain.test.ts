@@ -1,12 +1,28 @@
-import { describe, expect, it } from "vitest";
 import {
+  applySetlistMarkdown,
   createBlankProject,
   createExportFilename,
+  inspectRasterImage,
   parseProject,
   parseSetlistText,
   sanitizeTheme,
+  serializeSetlistMarkdown,
   validateProject,
 } from "@domain/index";
+import { describe, expect, it } from "vitest";
+
+const ONE_PIXEL_PNG_DATA_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2S9sAAAAASUVORK5CYII=";
+
+function pngHeader(width: number, height: number): Uint8Array {
+  const bytes = new Uint8Array(24);
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 0);
+  new DataView(bytes.buffer).setUint32(8, 13);
+  bytes.set([0x49, 0x48, 0x44, 0x52], 12);
+  new DataView(bytes.buffer).setUint32(16, width);
+  new DataView(bytes.buffer).setUint32(20, height);
+  return bytes;
+}
 
 describe("project schema", () => {
   it("accepts a blank project", () => {
@@ -64,6 +80,111 @@ describe("project schema", () => {
     });
     expect(validateProject(project).ok).toBe(false);
   });
+
+  it("accepts only self-contained raster print covers with consistent metadata", () => {
+    const project = createBlankProject("en-US");
+    project.preferences = {
+      ...project.preferences,
+      print: {
+        coverMode: "image-with-text",
+        coverImage: {
+          dataUrl: ONE_PIXEL_PNG_DATA_URL,
+          mediaType: "image/png",
+          width: 1,
+          height: 1,
+          byteLength: 68,
+        },
+      },
+    };
+    expect(validateProject(project).ok).toBe(true);
+
+    const remote = structuredClone(project);
+    if (!remote.preferences?.print?.coverImage) throw new Error("Expected cover fixture");
+    remote.preferences.print.coverImage.dataUrl = "https://example.com/private-cover.png";
+    expect(validateProject(remote).ok).toBe(false);
+
+    const mismatched = structuredClone(project);
+    if (!mismatched.preferences?.print?.coverImage) throw new Error("Expected cover fixture");
+    mismatched.preferences.print.coverImage.mediaType = "image/jpeg";
+    mismatched.preferences.print.coverImage.byteLength = 99;
+    const result = validateProject(mismatched);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((issue) => issue.message.includes("media type"))).toBe(true);
+    expect(result.issues.some((issue) => issue.message.includes("byte length"))).toBe(true);
+  });
+
+  it("rejects forged cover signatures, dimensions, and decoded pixel counts", () => {
+    const project = createBlankProject("en-US");
+    project.preferences = {
+      ...project.preferences,
+      print: {
+        coverMode: "image",
+        coverImage: {
+          dataUrl: "data:image/png;base64,AQIDBA==",
+          mediaType: "image/png",
+          width: 1,
+          height: 1,
+          byteLength: 4,
+        },
+      },
+    };
+    let result = validateProject(project);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((issue) => issue.message.includes("recognized raster"))).toBe(true);
+
+    const wrongDimensions = structuredClone(project);
+    if (!wrongDimensions.preferences?.print?.coverImage) throw new Error("Expected cover fixture");
+    wrongDimensions.preferences.print.coverImage = {
+      dataUrl: ONE_PIXEL_PNG_DATA_URL,
+      mediaType: "image/png",
+      width: 2,
+      height: 1,
+      byteLength: 68,
+    };
+    result = validateProject(wrongDimensions);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((issue) => issue.message.includes("dimensions"))).toBe(true);
+
+    const oversizedHeader = pngHeader(10_000, 5_000);
+    const oversized = structuredClone(project);
+    if (!oversized.preferences?.print?.coverImage) throw new Error("Expected cover fixture");
+    oversized.preferences.print.coverImage = {
+      dataUrl: `data:image/png;base64,${Buffer.from(oversizedHeader).toString("base64")}`,
+      mediaType: "image/png",
+      width: 4_096,
+      height: 4_096,
+      byteLength: oversizedHeader.byteLength,
+    };
+    result = validateProject(oversized);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((issue) => issue.message.includes("pixel limit"))).toBe(true);
+  });
+
+  it("reads supported raster dimensions without browser image APIs", () => {
+    const jpeg = new Uint8Array(21);
+    jpeg.set([0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x03, 0x00, 0x02]);
+    const webp = new Uint8Array(30);
+    webp.set([0x52, 0x49, 0x46, 0x46, 22, 0, 0, 0, 0x57, 0x45, 0x42, 0x50], 0);
+    webp.set([0x56, 0x50, 0x38, 0x58, 10, 0, 0, 0], 12);
+    webp.set([1, 0, 0], 24);
+    webp.set([2, 0, 0], 27);
+
+    expect(inspectRasterImage(pngHeader(7, 9))).toEqual({
+      mediaType: "image/png",
+      width: 7,
+      height: 9,
+    });
+    expect(inspectRasterImage(jpeg)).toEqual({
+      mediaType: "image/jpeg",
+      width: 2,
+      height: 3,
+    });
+    expect(inspectRasterImage(webp)).toEqual({
+      mediaType: "image/webp",
+      width: 2,
+      height: 3,
+    });
+  });
 });
 
 describe("setlist import", () => {
@@ -84,6 +205,83 @@ describe("setlist import", () => {
     ]);
     const songItems = parsed.setlist.items.filter((item) => item.type === "song");
     expect(songItems[0]?.songId).toBe(songItems[2]?.songId);
+  });
+
+  it("round-trips structured setlist items through the Markdown editor", () => {
+    const project = createBlankProject("en-US");
+    project.songs = [
+      {
+        id: "first-song",
+        titles: { en: "First Song" },
+        aliases: [],
+        tags: [],
+        sourceRefs: [],
+        lyricVersions: [],
+      },
+      {
+        id: "second-song",
+        titles: { en: "Second Song" },
+        aliases: [],
+        tags: [],
+        sourceRefs: [],
+        lyricVersions: [],
+      },
+    ];
+    const setlist = project.setlists[0];
+    expect(setlist).toBeDefined();
+    if (!setlist) throw new Error("Blank project must contain a main setlist");
+    setlist.items = [
+      { type: "section", id: "act-one", label: { en: "Act One" } },
+      { type: "song", songId: "first-song", confidence: 0.9 },
+      { type: "song", songId: "second-song", optional: true },
+      { type: "note", text: { en: "Short stage talk" } },
+      { type: "break", label: { en: "Intermission" } },
+    ];
+
+    const markdown = serializeSetlistMarkdown(setlist, project, "en-US");
+    expect(markdown).toContain("## Act One");
+    expect(markdown).toContain("- First Song");
+    expect(markdown).toContain("- [ ] Second Song");
+    expect(markdown).toContain("[note] Short stage talk");
+    expect(markdown).toContain("[break] Intermission");
+
+    const result = applySetlistMarkdown(markdown, project, setlist.id, "en-US");
+    expect(result.createdSongs).toEqual([]);
+    expect(result.project.songs).toHaveLength(2);
+    expect(result.project.setlists[0]?.items).toEqual([
+      { type: "section", id: "act-one", label: { en: "Act One" } },
+      { type: "song", songId: "first-song", confidence: 0.9 },
+      { type: "song", songId: "second-song", optional: true },
+      { type: "note", text: { en: "Short stage talk" } },
+      { type: "break", label: { en: "Intermission" } },
+    ]);
+  });
+
+  it("creates unmatched songs when applying Markdown without mutating another setlist", () => {
+    const project = createBlankProject("zh-CN");
+    project.setlists.push({
+      id: "other-setlist",
+      title: { "zh-Hans": "另一歌单" },
+      status: "draft",
+      items: [],
+    });
+
+    const result = applySetlistMarkdown(
+      "## 第一部分\n- 新歌\n- [ ] 可选新歌",
+      project,
+      "main-setlist",
+      "zh-CN",
+    );
+
+    expect(result.unmatchedLines).toEqual(["新歌", "可选新歌"]);
+    expect(result.createdSongs).toHaveLength(2);
+    expect(result.project.setlists.find((item) => item.id === "other-setlist")?.items).toEqual([]);
+    expect(
+      result.project.setlists
+        .find((item) => item.id === "main-setlist")
+        ?.items.filter((item) => item.type === "song")
+        .map((item) => item.optional),
+    ).toEqual([undefined, true]);
   });
 });
 

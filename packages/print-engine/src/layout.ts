@@ -1,8 +1,10 @@
 import type {
+  LocalCoverImage,
   LyricBookProject,
   LyricTrack,
   LyricVersion,
   PrintFormat,
+  PrintLineFlow,
   PrintOptions,
   Setlist,
   Song,
@@ -44,6 +46,8 @@ export interface CoverPage {
   subtitle?: string;
   setlistTitle?: string;
   songCountLabel: string;
+  mode: "generated" | "image" | "image-with-text";
+  image?: LocalCoverImage;
 }
 
 export interface TocPage {
@@ -83,6 +87,7 @@ export interface SongPage {
   layoutMode: SongLayoutMode;
   trackColumns: number;
   textColumns: number;
+  lineFlow: Exclude<PrintLineFlow, "auto">;
   layoutSafety: PrintLayoutSafety;
   compact: boolean;
 }
@@ -155,6 +160,83 @@ function estimateVisualLines(text: string, charsPerLine: number): number {
     (total, line) => total + Math.max(1, Math.ceil(lineWeight(line) / charsPerLine)),
     0,
   );
+}
+
+function normalizePrintLyrics(text: string): string {
+  const sourceLines = text
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line) => line.replace(/[\t ]+$/g, ""));
+  while (sourceLines.length && !sourceLines[0]?.trim()) sourceLines.shift();
+  while (sourceLines.length && !sourceLines.at(-1)?.trim()) sourceLines.pop();
+  const output: string[] = [];
+  let previousBlank = false;
+  for (const line of sourceLines) {
+    const blank = !line.trim();
+    if (blank && previousBlank) continue;
+    output.push(blank ? "" : line);
+    previousBlank = blank;
+  }
+  return output.join("\n");
+}
+
+function isStructuralLyricLine(line: string): boolean {
+  const value = line.trim();
+  if (!value) return false;
+  return (
+    /^([[【（(].{0,24}[\]】）)]|#{1,4}\s|(?:verse|chorus|bridge|pre[- ]?chorus|intro|outro|hook|rap|repeat)\b|(?:主歌|副歌|桥段|前奏|间奏|尾奏|合唱|独白|念白|重复)(?=$|[\s\d０-９一二三四五六七八九十百零〇A-ZＡ-Ｚ:：([【（._—–-]))/i.test(
+      value,
+    ) || /^[A-Z\d][A-Z\d .&'’-]{1,22}:$/.test(value)
+  );
+}
+
+/** Combine only consecutive short lyric lines, never crossing structural or stanza boundaries. */
+export function mergeShortLyricLines(
+  text: string,
+  format: Exclude<PrintFormat, "booklet">,
+): string {
+  const source = normalizePrintLyrics(text);
+  if (!source) return "";
+  const shortLimit = format === "a4" ? 13.5 : 10.5;
+  const targetLimit = format === "a4" ? 37 : 25;
+  const maxParts = format === "a4" ? 3 : 2;
+  const output: string[] = [];
+  let buffer: string[] = [];
+  const flush = () => {
+    if (!buffer.length) return;
+    output.push(buffer.join(" / "));
+    buffer = [];
+  };
+
+  for (const rawLine of source.split("\n")) {
+    const line = rawLine.trimEnd();
+    if (!line.trim()) {
+      flush();
+      if (output.at(-1) !== "") output.push("");
+      continue;
+    }
+    const units = lineWeight(line);
+    if (isStructuralLyricLine(line) || units > shortLimit * 1.45) {
+      flush();
+      output.push(line);
+      continue;
+    }
+    if (!buffer.length) {
+      buffer.push(line);
+      continue;
+    }
+    const candidate = [...buffer, line].join(" / ");
+    if (buffer.length < maxParts && units <= shortLimit && lineWeight(candidate) <= targetLimit) {
+      buffer.push(line);
+    } else {
+      flush();
+      buffer.push(line);
+    }
+  }
+  flush();
+  while (output[0] === "") output.shift();
+  while (output.at(-1) === "") output.pop();
+  return output.join("\n");
 }
 
 function tracksForMode(version: LyricVersion, mode: PrintOptions["languageMode"]): LyricTrack[] {
@@ -383,6 +465,68 @@ function chooseLayout(
   };
 }
 
+interface ChosenLineFlow {
+  tracks: LyricTrack[];
+  lineFlow: Exclude<PrintLineFlow, "auto">;
+  layout: ChosenSongLayout;
+}
+
+function estimatedPageCount(layout: ChosenSongLayout, tracks: LyricTrack[]): number {
+  if (!layout.requiresPagination) return 1;
+  const total = visualLinesFor(
+    tracks.map((track) => track.text),
+    layout,
+  );
+  const safeCapacity = Math.max(1, layout.lineLimit * PAGINATION_SAFETY_FACTOR);
+  return Math.max(1, Math.ceil(total / safeCapacity));
+}
+
+function chooseLineFlow(
+  format: Exclude<PrintFormat, "booklet">,
+  tracks: LyricTrack[],
+  options: Pick<PrintOptions, "lineFlow" | "strategy">,
+): ChosenLineFlow {
+  const preserved = tracks.map((track) => ({ ...track }));
+  const choices: Array<{ tracks: LyricTrack[]; lineFlow: Exclude<PrintLineFlow, "auto"> }> = [
+    { tracks: preserved, lineFlow: "preserve" },
+  ];
+  // Independent tracks must not acquire different grouping boundaries. Until
+  // paired row groups are available, slash flow is deliberately monolingual.
+  if (tracks.length === 1 && options.lineFlow !== "preserve") {
+    const mergedText = mergeShortLyricLines(tracks[0]?.text ?? "", format);
+    if (options.lineFlow === "slash" || mergedText !== tracks[0]?.text) {
+      choices.push({
+        tracks: [{ ...tracks[0], text: mergedText } as LyricTrack],
+        lineFlow: "slash",
+      });
+    }
+  }
+
+  const candidates = choices.map((choice) => ({
+    ...choice,
+    layout: chooseLayout(format, choice.tracks, options.strategy),
+  }));
+  const firstCandidate = candidates[0];
+  if (!firstCandidate) throw new Error("At least one lyric line-flow candidate is required");
+  if (options.lineFlow === "slash") {
+    return candidates.find((candidate) => candidate.lineFlow === "slash") ?? firstCandidate;
+  }
+  if (options.lineFlow === "preserve") return firstCandidate;
+
+  return candidates.slice(1).reduce((best, candidate) => {
+    const candidatePages = estimatedPageCount(candidate.layout, candidate.tracks);
+    const bestPages = estimatedPageCount(best.layout, best.tracks);
+    if (candidatePages !== bestPages) return candidatePages < bestPages ? candidate : best;
+    if (candidate.layout.fontSize !== best.layout.fontSize) {
+      return candidate.layout.fontSize > best.layout.fontSize ? candidate : best;
+    }
+    const candidateColumns = Math.max(candidate.layout.trackColumns, candidate.layout.textColumns);
+    const bestColumns = Math.max(best.layout.trackColumns, best.layout.textColumns);
+    if (candidateColumns !== bestColumns) return candidateColumns < bestColumns ? candidate : best;
+    return best.lineFlow === "preserve" ? best : candidate;
+  }, firstCandidate);
+}
+
 function buildSongPages(
   song: Song,
   context: BuildContext,
@@ -411,6 +555,7 @@ function buildSongPages(
         layoutMode: "single-track",
         trackColumns: 1,
         textColumns: 1,
+        lineFlow: "preserve",
         layoutSafety: "pending",
         compact: false,
       },
@@ -424,11 +569,13 @@ function buildSongPages(
       (track) => track.text.trim() || context.options.includeEmptySongs,
     );
     if (!nonEmptyTracks.length && !context.options.includeEmptySongs) continue;
-    const layout = chooseLayout(format, nonEmptyTracks, context.options.strategy);
+    const flow = chooseLineFlow(format, nonEmptyTracks, context.options);
+    const layout = flow.layout;
+    const preparedTracks = flow.tracks;
     const versionLabel =
       song.lyricVersions.length > 1 ? getLocalized(version.label, context.locale) : undefined;
 
-    const printTracks = nonEmptyTracks.map((track, trackIndex) => ({
+    const printTracks = preparedTracks.map((track, trackIndex) => ({
       id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
       label: getLocalized(track.label, context.locale) || track.role,
       language: track.language,
@@ -454,6 +601,7 @@ function buildSongPages(
         layoutMode: layout.layoutMode,
         trackColumns: layout.trackColumns,
         textColumns: layout.textColumns,
+        lineFlow: flow.lineFlow,
         layoutSafety: layout.layoutSafety,
         compact: layout.compact,
       });
@@ -463,10 +611,10 @@ function buildSongPages(
     const perTrackLineLimit = Math.max(
       1,
       Math.floor(
-        (layout.lineLimit * PAGINATION_SAFETY_FACTOR) / Math.max(1, nonEmptyTracks.length),
+        (layout.lineLimit * PAGINATION_SAFETY_FACTOR) / Math.max(1, preparedTracks.length),
       ),
     );
-    const chunksByTrack = nonEmptyTracks.map((track) =>
+    const chunksByTrack = preparedTracks.map((track) =>
       splitTrackText(track.text, perTrackLineLimit, layout.charsPerLine),
     );
     const pageCount = Math.max(...chunksByTrack.map((chunks) => chunks.length));
@@ -479,7 +627,7 @@ function buildSongPages(
         versionLabel,
         pageInSong: index + 1,
         pageCountForSong: pageCount,
-        tracks: nonEmptyTracks.map((track, trackIndex) => ({
+        tracks: preparedTracks.map((track, trackIndex) => ({
           id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
           label: getLocalized(track.label, context.locale) || track.role,
           language: track.language,
@@ -494,6 +642,7 @@ function buildSongPages(
         layoutMode: layout.layoutMode,
         trackColumns: layout.trackColumns,
         textColumns: layout.textColumns,
+        lineFlow: flow.lineFlow,
         layoutSafety: layout.layoutSafety,
         compact: true,
       });
@@ -660,6 +809,11 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
           ).length
         : undefined;
     const hasRepeatedSlots = Boolean(setlistSlots && setlistSlots > songs.length);
+    const requestedCoverMode = context.options.coverMode ?? "generated";
+    const coverMode =
+      requestedCoverMode !== "generated" && context.options.coverImage
+        ? requestedCoverMode
+        : "generated";
 
     pages.push({
       kind: "cover",
@@ -676,6 +830,8 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
         : context.locale === "zh-CN"
           ? `${songs.length} 首歌曲`
           : `${songs.length} ${songs.length === 1 ? "song" : "songs"}`,
+      mode: coverMode,
+      image: coverMode === "generated" ? undefined : structuredClone(context.options.coverImage),
     });
   }
 

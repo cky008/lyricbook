@@ -31,6 +31,7 @@ export type PrintIssueCode =
   | "content-outside-inner"
   | "body-horizontal-overflow"
   | "body-vertical-overflow"
+  | "cover-image-unavailable"
   | "footer-outside-inner"
   | "footer-clearance";
 
@@ -146,9 +147,25 @@ function nextAnimationFrame(document: Document, signal: AbortSignal | undefined)
   });
 }
 
-/** Wait for loaded fonts and two painted frames before reading print geometry. */
+async function waitForImages(root: HTMLElement, signal: AbortSignal | undefined): Promise<void> {
+  const images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
+  await Promise.all(
+    images.map(async (image) => {
+      throwIfAborted(signal);
+      if (!image.complete || !image.naturalWidth) {
+        await awaitWithSignal(image.decode(), signal);
+      }
+      if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+        throw new Error("A printable image could not be decoded");
+      }
+    }),
+  );
+}
+
+/** Wait for loaded images, fonts, and two painted frames before reading print geometry. */
 export async function waitForStableLayout(root: HTMLElement, signal?: AbortSignal): Promise<void> {
   throwIfAborted(signal);
+  await waitForImages(root, signal);
   const fonts = root.ownerDocument.fonts;
   if (fonts) await awaitWithSignal(fonts.ready, signal);
   await nextAnimationFrame(root.ownerDocument, signal);
@@ -562,6 +579,15 @@ function inspectPage(pageElement: HTMLElement, page: LogicalPrintPage): PageSafe
     contentElement && page.kind !== "cover"
       ? unionMetrics(Array.from(contentElement.querySelectorAll<HTMLElement>("*")))
       : undefined;
+  const coverImage = pageElement.querySelector<HTMLImageElement>("[data-print-cover-image]");
+
+  if (
+    page.kind === "cover" &&
+    page.mode !== "generated" &&
+    (!coverImage?.complete || !coverImage.naturalWidth || !coverImage.naturalHeight)
+  ) {
+    issue(issues, "cover-image-unavailable", "The local cover image could not be rendered");
+  }
 
   addOverflowIssues(issues, pageBox, "page-horizontal-overflow", "page-vertical-overflow", "Page");
 

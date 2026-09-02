@@ -39,5 +39,6 @@ user-content/
 package-lock.local.json
 .tmp/
 tmp/
+output/pdf/
 
 offline-check-report.json

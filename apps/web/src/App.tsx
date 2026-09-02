@@ -344,15 +344,17 @@ export default function App() {
                   <input
                     className="field"
                     value={getLocalized(project.title, locale)}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const value = event.currentTarget.value;
+                      const language = locale === "zh-CN" ? "zh-Hans" : "en";
                       projectState.updateProject((current) => ({
                         ...current,
                         title: {
                           ...current.title,
-                          [locale === "zh-CN" ? "zh-Hans" : "en"]: event.currentTarget.value,
+                          [language]: value,
                         },
-                      }))
-                    }
+                      }));
+                    }}
                   />
                 </label>
                 <label className="field-label">
@@ -361,15 +363,17 @@ export default function App() {
                     className="textarea"
                     style={{ minHeight: 100 }}
                     value={getLocalized(project.description, locale)}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const value = event.currentTarget.value;
+                      const language = locale === "zh-CN" ? "zh-Hans" : "en";
                       projectState.updateProject((current) => ({
                         ...current,
                         description: {
                           ...current.description,
-                          [locale === "zh-CN" ? "zh-Hans" : "en"]: event.currentTarget.value,
+                          [language]: value,
                         },
-                      }))
-                    }
+                      }));
+                    }}
                   />
                 </label>
                 <div className="status-line">
@@ -468,6 +472,12 @@ export default function App() {
         currentSongId={selectedSongId}
         filteredSongIds={filteredSongs.map((song) => song.id)}
         selectedVersionBySong={project.preferences?.activeVersionBySong ?? {}}
+        onOptionsChange={(print) =>
+          projectState.updateProject((current) => ({
+            ...current,
+            preferences: { ...current.preferences, print },
+          }))
+        }
       />
       <DialogShell
         open={dialog === "about"}
