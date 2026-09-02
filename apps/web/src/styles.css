@@ -893,6 +893,12 @@ a {
   color: #fecaca;
 }
 
+:root[data-resolved-appearance="light"] .notice.error {
+  border-color: rgba(185, 28, 28, 0.32);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .color-field {
   display: grid;
   grid-template-columns: 46px minmax(0, 1fr);
@@ -1002,6 +1008,103 @@ a {
   color: #171717;
 }
 
+.print-preview-empty {
+  min-height: 390px;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  border: 1px dashed color-mix(in srgb, var(--lb-accent) 42%, var(--lb-border));
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      color-mix(in srgb, var(--lb-accent) 12%, transparent),
+      transparent 42%
+    ),
+    color-mix(in srgb, var(--lb-surface) 78%, transparent);
+  text-align: center;
+}
+
+.print-preview-empty-page {
+  position: relative;
+  width: 116px;
+  aspect-ratio: 210 / 297;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 22px;
+  border: 1px solid color-mix(in srgb, var(--lb-accent) 48%, var(--lb-border));
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--lb-surface-strong) 88%, white 12%);
+  color: var(--lb-accent-soft);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+}
+
+.print-preview-empty-page::before,
+.print-preview-empty-page::after {
+  position: absolute;
+  right: 18px;
+  left: 18px;
+  height: 1px;
+  content: "";
+  background: color-mix(in srgb, var(--lb-accent) 26%, transparent);
+}
+
+.print-preview-empty-page::before {
+  top: 28px;
+}
+
+.print-preview-empty-page::after {
+  bottom: 22px;
+}
+
+.print-preview-empty h4 {
+  margin: 0;
+  color: var(--lb-text);
+  font-family: Georgia, "Noto Serif CJK SC", serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.print-preview-empty p {
+  max-width: 380px;
+  margin: 9px auto 0;
+  color: var(--lb-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.print-preview-status {
+  min-height: 390px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 28px;
+  text-align: center;
+}
+
+.print-preview-status svg {
+  color: var(--lb-accent-soft);
+}
+
+.print-preview-status .spin {
+  animation: print-spin 900ms linear infinite;
+}
+
+.print-safety-issues {
+  display: grid;
+  gap: 3px;
+  margin-top: 7px;
+  font-size: 10px;
+  opacity: 0.88;
+}
+
+@keyframes print-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 .print-preview-pages {
   display: grid;
   gap: 18px;
@@ -1011,7 +1114,7 @@ a {
 .print-page,
 .print-logical-page {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background: var(--print-paper, #fffdf8);
   color: #18161a;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
@@ -1046,12 +1149,12 @@ a {
 .print-page-content {
   position: absolute;
   inset: 0 0 9mm;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .print-page.a5 .print-page-content,
 .print-logical-page .print-page-content {
-  bottom: 7mm;
+  bottom: 9mm;
 }
 
 .print-page .print-cover,
@@ -1129,8 +1232,8 @@ a {
 
 .print-cover-mark {
   position: absolute;
-  right: -3mm;
-  bottom: -10mm;
+  right: 3mm;
+  bottom: 2mm;
   color: color-mix(in srgb, var(--print-paper, #fffdf8) 7%, transparent);
   font-family: Georgia, serif;
   font-size: 74pt;
@@ -1171,9 +1274,9 @@ a {
 
 .print-lyric-grid {
   display: grid;
-  grid-template-columns: repeat(var(--print-columns, 1), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--print-track-columns, 1), minmax(0, 1fr));
   gap: 5mm;
-  height: 100%;
+  align-items: start;
 }
 
 .print-track {
@@ -1197,23 +1300,71 @@ a {
   line-height: var(--print-line-height, 1.46);
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: anywhere;
+  column-count: var(--print-text-columns, 1);
+  column-gap: 5mm;
+  column-fill: balance;
+}
+
+.print-song-content.stacked-tracks .print-lyric-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4mm;
+}
+
+.print-empty-song {
+  color: #817985;
+  font-size: 11pt;
 }
 
 .print-toc-title {
   margin: 0 0 7mm;
   font-family: Georgia, serif;
-  font-size: 25pt;
+  font-size: var(--toc-title-size, 25pt);
   font-weight: 500;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.print-toc-content {
+  --toc-title-size: 25pt;
+  --toc-section-size: 9pt;
+  --toc-entry-size: 8pt;
+  --toc-entry-padding: 0.8mm;
+  --toc-section-gap: 4mm;
+}
+
+.print-toc-content.toc-density-relaxed {
+  --toc-entry-size: 8.5pt;
+  --toc-entry-padding: 0.9mm;
+}
+
+.print-toc-content.toc-density-standard {
+  --toc-title-size: 24pt;
+  --toc-entry-padding: 0.65mm;
+  --toc-section-gap: 3.2mm;
+}
+
+.print-toc-content.toc-density-compact {
+  --toc-title-size: 22pt;
+  --toc-section-size: 8pt;
+  --toc-entry-size: 7.25pt;
+  --toc-entry-padding: 0.45mm;
+  --toc-section-gap: 2.4mm;
 }
 
 .print-toc-columns {
-  column-count: var(--toc-columns, 1);
-  column-gap: 8mm;
+  display: grid;
+  grid-template-columns: repeat(var(--toc-columns, 1), minmax(0, 1fr));
+  gap: 8mm;
+  align-items: start;
+}
+
+.print-toc-column {
+  min-width: 0;
 }
 
 .print-toc-section {
-  break-inside: avoid;
-  margin-bottom: 4mm;
+  margin-bottom: var(--toc-section-gap, 4mm);
 }
 
 .print-toc-section h3 {
@@ -1221,24 +1372,44 @@ a {
   padding-bottom: 1mm;
   border-bottom: 0.4mm solid var(--print-accent, #694e98);
   color: var(--print-accent, #694e98);
-  font-size: 9pt;
+  font-size: var(--toc-section-size, 9pt);
 }
 
 .print-toc-entry {
   display: grid;
   grid-template-columns: 7mm minmax(0, 1fr) auto;
   gap: 1.5mm;
-  align-items: baseline;
-  padding: 0.8mm 0;
+  align-items: start;
+  padding: var(--toc-entry-padding, 0.8mm) 0;
   color: #28232d;
-  font-size: 8pt;
+  font-size: var(--toc-entry-size, 8pt);
+  line-height: 1.25;
   text-decoration: none;
 }
 
 .print-toc-entry span:nth-child(2) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.print-info-content {
+  display: grid;
+  place-content: center;
+  gap: 8mm;
+}
+
+.print-info-copy {
+  max-width: 120mm;
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 12pt;
+  line-height: 1.8;
+}
+
+.print-info-license {
+  margin: 0;
+  color: #766a79;
+  font-size: 8pt;
 }
 
 .booklet-sheet {
@@ -1246,7 +1417,7 @@ a {
   width: 297mm;
   height: 210mm;
   grid-template-columns: 1fr 1fr;
-  overflow: hidden;
+  overflow: visible;
   background: #ddd;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
 }

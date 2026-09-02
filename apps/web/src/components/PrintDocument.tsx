@@ -1,39 +1,23 @@
 import type { CSSProperties } from "react";
-import { useLayoutEffect, useRef } from "react";
 import type { CoverPage, LogicalPrintPage, PrintPlan, SongPage, TocPage } from "@print/index";
 
 interface PrintDocumentProps {
   plan: PrintPlan;
-}
-
-function fitContent(container: HTMLElement, initial: number, minimum: number): void {
-  let size = initial;
-  container.style.setProperty("--print-font-size", `${size}pt`);
-  container.removeAttribute("data-overflow");
-  let guard = 0;
-  while (container.scrollHeight > container.clientHeight + 1 && size > minimum && guard < 60) {
-    size -= 0.25;
-    container.style.setProperty("--print-font-size", `${size}pt`);
-    guard += 1;
-  }
-  if (container.scrollHeight > container.clientHeight + 2) container.dataset.overflow = "true";
+  idPrefix?: "preview" | "print";
 }
 
 function SongPageContent({ page }: { page: SongPage }) {
-  const contentRef = useRef<HTMLDivElement | null>(null);
-  useLayoutEffect(() => {
-    if (!contentRef.current) return;
-    fitContent(contentRef.current, page.fontSize, 7);
-  }, [page]);
   return (
     <div
-      ref={contentRef}
-      className="print-page-content"
+      className={`print-page-content print-song-content ${page.layoutMode}`}
+      data-print-content="song"
+      data-song-page-id={page.id}
       style={
         {
           "--print-font-size": `${page.fontSize}pt`,
           "--print-title-size": `${page.titleSize}pt`,
-          "--print-columns": String(page.columns),
+          "--print-track-columns": String(page.trackColumns),
+          "--print-text-columns": String(page.textColumns),
           "--print-line-height": page.compact ? "1.32" : "1.46",
         } as CSSProperties
       }
@@ -57,32 +41,68 @@ function SongPageContent({ page }: { page: SongPage }) {
           ))}
         </div>
       ) : (
-        <div style={{ color: "#817985", fontSize: "11pt" }}>Lyrics not imported</div>
+        <div className="print-empty-song">Lyrics not imported</div>
       )}
     </div>
   );
 }
 
-function TocContent({ page }: { page: TocPage }) {
+function TocSectionContent({
+  section,
+  idPrefix,
+}: {
+  section: TocPage["sections"][number];
+  idPrefix: string;
+}) {
   return (
-    <div className="print-page-content">
+    <section className="print-toc-section" data-toc-section={section.label}>
+      <h3>{section.label}</h3>
+      {section.entries.map((entry) => (
+        <a
+          className="print-toc-entry"
+          data-toc-song-id={entry.songId}
+          href={`#${idPrefix}-song-${entry.songId}`}
+          key={entry.songId}
+        >
+          <span>{String(entry.sequence).padStart(2, "0")}</span>
+          <span>{entry.title}</span>
+          <span>{entry.pageNumber}</span>
+        </a>
+      ))}
+    </section>
+  );
+}
+
+function TocContent({ page, idPrefix }: { page: TocPage; idPrefix: string }) {
+  return (
+    <div
+      className={`print-page-content print-toc-content toc-density-${page.density}`}
+      data-print-content="toc"
+    >
       <h1 className="print-toc-title">{page.title}</h1>
-      <div className="print-toc-columns" style={{ "--toc-columns": page.columns } as CSSProperties}>
-        {page.sections.map((section) => (
-          <section className="print-toc-section" key={section.label}>
-            <h3>{section.label}</h3>
-            {section.entries.map((entry) => (
-              <a
-                className="print-toc-entry"
-                href={`#print-song-${entry.songId}`}
-                key={entry.songId}
-              >
-                <span>{String(entry.sequence).padStart(2, "0")}</span>
-                <span>{entry.title}</span>
-                <span>{entry.pageNumber}</span>
-              </a>
+      <div
+        className="print-toc-columns"
+        data-toc-page={page.pageInToc}
+        style={{ "--toc-columns": page.columns } as CSSProperties}
+      >
+        {page.columnSections.map((column) => (
+          <div
+            className="print-toc-column"
+            key={column
+              .map(
+                (section) =>
+                  `${section.label}:${section.entries.map((entry) => entry.songId).join(",")}`,
+              )
+              .join("|")}
+          >
+            {column.map((section) => (
+              <TocSectionContent
+                section={section}
+                idPrefix={idPrefix}
+                key={`${section.label}:${section.entries.map((entry) => entry.songId).join(",")}`}
+              />
             ))}
-          </section>
+          </div>
         ))}
       </div>
     </div>
@@ -91,7 +111,7 @@ function TocContent({ page }: { page: TocPage }) {
 
 function CoverContent({ page }: { page: CoverPage }) {
   return (
-    <div className="print-page-content print-cover">
+    <div className="print-page-content print-cover" data-print-content="cover">
       <div className="print-cover-rule" aria-hidden="true" />
       <div className="print-cover-kicker">{page.kicker}</div>
       <div className="print-cover-copy">
@@ -109,32 +129,20 @@ function CoverContent({ page }: { page: CoverPage }) {
   );
 }
 
-function PageBody({ page }: { page: LogicalPrintPage }) {
+function PageBody({ page, idPrefix }: { page: LogicalPrintPage; idPrefix: string }) {
   if (page.kind === "cover") return <CoverContent page={page} />;
   if (page.kind === "song") return <SongPageContent page={page} />;
-  if (page.kind === "toc") return <TocContent page={page} />;
+  if (page.kind === "toc") return <TocContent page={page} idPrefix={idPrefix} />;
   if (page.kind === "info") {
     return (
-      <div
-        className="print-page-content"
-        style={{ display: "grid", placeContent: "center", gap: "8mm" }}
-      >
+      <div className="print-page-content print-info-content" data-print-content="info">
         <h1 className="print-song-title">{page.title}</h1>
-        <p
-          style={{
-            maxWidth: "120mm",
-            fontFamily: "Georgia, serif",
-            fontSize: "12pt",
-            lineHeight: 1.8,
-          }}
-        >
-          {page.body}
-        </p>
-        <p style={{ color: "#766a79", fontSize: "8pt" }}>Copyright © 2026 iocky.com · Apache-2.0</p>
+        <p className="print-info-copy">{page.body}</p>
+        <p className="print-info-license">Copyright © 2026 iocky.com · Apache-2.0</p>
       </div>
     );
   }
-  return <div className="print-page-content" />;
+  return <div className="print-page-content" data-print-content="blank" />;
 }
 
 function requiredPage(plan: PrintPlan, pageNumber: number): LogicalPrintPage {
@@ -149,27 +157,31 @@ function LogicalPage({
   page,
   number,
   format,
+  idPrefix,
   logical = false,
 }: {
   page: LogicalPrintPage;
   number: number;
   format: "a4" | "a5";
+  idPrefix: string;
   logical?: boolean;
 }) {
   const firstSongPage = page.kind === "song" && page.pageInSong === 1;
   return (
     <article
-      id={firstSongPage ? `print-song-${page.songId}` : page.id}
+      id={firstSongPage ? `${idPrefix}-song-${page.songId}` : `${idPrefix}-${page.id}`}
       className={`${logical ? "print-logical-page" : `print-page ${format}`}${
         page.kind === "cover" ? " cover" : ""
       }`}
+      data-layout-status={page.kind === "song" ? page.layoutSafety : undefined}
       data-page-kind={page.kind}
       data-page-number={number}
+      data-print-page-id={page.id}
     >
-      <div className="print-page-inner">
-        <PageBody page={page} />
+      <div className="print-page-inner" data-print-inner>
+        <PageBody page={page} idPrefix={idPrefix} />
         {page.kind === "cover" ? null : (
-          <footer className="print-page-footer">
+          <footer className="print-page-footer" data-print-footer>
             <span>LYRICBOOK · IOCKY.COM</span>
             <span>{number}</span>
           </footer>
@@ -179,7 +191,7 @@ function LogicalPage({
   );
 }
 
-export function PrintDocument({ plan }: PrintDocumentProps) {
+export function PrintDocument({ plan, idPrefix = "print" }: PrintDocumentProps) {
   const format = plan.format;
   const themeStyle = {
     "--print-accent": plan.theme?.print?.accent ?? plan.theme?.tokens.accent ?? "#694e98",
@@ -187,15 +199,21 @@ export function PrintDocument({ plan }: PrintDocumentProps) {
   } as CSSProperties;
   if (format !== "booklet") {
     return (
-      <div className="print-preview-pages" style={themeStyle}>
+      <div className="print-preview-pages" data-print-document style={themeStyle}>
         {plan.pages.map((page, index) => (
-          <LogicalPage page={page} number={index + 1} format={format} key={page.id} />
+          <LogicalPage
+            page={page}
+            number={index + 1}
+            format={format}
+            idPrefix={idPrefix}
+            key={page.id}
+          />
         ))}
       </div>
     );
   }
   return (
-    <div className="print-preview-pages" style={themeStyle}>
+    <div className="print-preview-pages" data-print-document style={themeStyle}>
       {plan.bookletSheets.flatMap((sheet) => [
         <section
           className="booklet-sheet"
@@ -207,12 +225,14 @@ export function PrintDocument({ plan }: PrintDocumentProps) {
             page={requiredPage(plan, sheet.front[0])}
             number={sheet.front[0]}
             format="a5"
+            idPrefix={idPrefix}
             logical
           />
           <LogicalPage
             page={requiredPage(plan, sheet.front[1])}
             number={sheet.front[1]}
             format="a5"
+            idPrefix={idPrefix}
             logical
           />
         </section>,
@@ -226,12 +246,14 @@ export function PrintDocument({ plan }: PrintDocumentProps) {
             page={requiredPage(plan, sheet.back[0])}
             number={sheet.back[0]}
             format="a5"
+            idPrefix={idPrefix}
             logical
           />
           <LogicalPage
             page={requiredPage(plan, sheet.back[1])}
             number={sheet.back[1]}
             format="a5"
+            idPrefix={idPrefix}
             logical
           />
         </section>,

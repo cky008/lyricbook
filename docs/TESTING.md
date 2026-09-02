@@ -7,6 +7,8 @@ LyricBook uses TDD and multiple layers:
 - Playwright: Chromium, Firefox, WebKit, iPhone profile, accessibility, overlays, immersive navigation, and print preview.
 - Repository/content validators: required files, pinned modern stack, aligned Fluent keys, valid preset references, no React 16/vendor runtime, and no private lyric files.
 
+Print changes follow the synthetic fixture and PDF matrix in [PRINT_REGRESSION_TEST_PLAN.md](PRINT_REGRESSION_TEST_PLAN.md), including measured overflow, footer clearance, text completeness, contents links, strict-limit blocking, and A4/A5/booklet visual checks.
+
 Run:
 
 ```bash

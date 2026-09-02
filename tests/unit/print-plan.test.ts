@@ -1,13 +1,13 @@
-import { describe, expect, it } from "vitest";
 import {
   createBlankProject,
   createEmptySong,
-  parseSetlistText,
   type LyricBookProject,
   type PrintOptions,
+  parseSetlistText,
   type Song,
 } from "@domain/index";
 import { createPrintPlan } from "@print/index";
+import { describe, expect, it } from "vitest";
 import { requireValue } from "./test-utils";
 
 const options: PrintOptions = {
@@ -320,6 +320,136 @@ describe("print plan", () => {
     expect(strict.pages.filter((page) => page.kind === "song")).toHaveLength(1);
   });
 
+  it("separates language-track columns from balanced text columns", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("A medium song");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    track.text = Array.from({ length: 72 }, (_, index) => `Unique line ${index + 1}`).join("\n");
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, languageMode: "original" },
+      locale: "en-US",
+    });
+    const page = plan.pages.find((candidate) => candidate.kind === "song");
+
+    expect(page?.kind).toBe("song");
+    if (page?.kind !== "song") throw new Error("Expected a song page");
+    expect(page.trackColumns).toBe(1);
+    expect(page.textColumns).toBe(2);
+    expect(page.layoutMode).toBe("balanced-text");
+    expect(page.tracks).toHaveLength(1);
+  });
+
+  it("keeps aligned bilingual tracks parallel and independent tracks stacked", () => {
+    const project = createBlankProject("en-US");
+    const alignedSong = songWithTracks("Aligned bilingual");
+    project.songs = [alignedSong];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: alignedSong.id }];
+
+    const alignedPlan = createPrintPlan({ project, options, locale: "en-US" });
+    const alignedPage = alignedPlan.pages.find((page) => page.kind === "song");
+    expect(alignedPage?.kind === "song" ? alignedPage.layoutMode : undefined).toBe(
+      "parallel-tracks",
+    );
+    expect(alignedPage?.kind === "song" ? alignedPage.trackColumns : undefined).toBe(2);
+
+    const translation = requireValue(alignedSong.lyricVersions[0]?.tracks[1]);
+    delete translation.alignedTo;
+    const independentPlan = createPrintPlan({ project, options, locale: "en-US" });
+    const independentPage = independentPlan.pages.find((page) => page.kind === "song");
+    expect(independentPage?.kind === "song" ? independentPage.layoutMode : undefined).toBe(
+      "stacked-tracks",
+    );
+    expect(independentPage?.kind === "song" ? independentPage.trackColumns : undefined).toBe(1);
+  });
+
+  it("offers the largest readable font candidate for a short song", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Short song");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    track.text = "First line\nSecond line\nThird line";
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, languageMode: "original" },
+      locale: "en-US",
+    });
+    const page = plan.pages.find((candidate) => candidate.kind === "song");
+
+    expect(page?.kind).toBe("song");
+    if (page?.kind !== "song") throw new Error("Expected a song page");
+    expect(page.fontSize).toBe(page.maxFontSize);
+    expect(page.fontSize).toBeGreaterThanOrEqual(20);
+    expect(page.minFontSize).toBe(7);
+    expect(page.layoutSafety).toBe("pending");
+  });
+
+  it("preserves every unique lyric line in order when a long song is paginated", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Every line matters");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    const expectedLines = Array.from(
+      { length: 360 },
+      (_, index) => `UNIQUE-${String(index + 1).padStart(3, "0")}-保留此行`,
+    );
+    track.text = expectedLines.join("\n");
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: {
+        ...options,
+        format: "a5",
+        languageMode: "original",
+        strategy: "readable",
+      },
+      locale: "en-US",
+    });
+    const pages = plan.pages.filter((page) => page.kind === "song");
+    const actualLines = pages.flatMap((page) => page.tracks[0]?.text.split("\n") ?? []);
+
+    expect(pages.length).toBeGreaterThan(1);
+    expect(actualLines).toEqual(expectedLines);
+    expect(new Set(actualLines).size).toBe(expectedLines.length);
+    expect(pages.every((page) => page.pageCountForSong === pages.length)).toBe(true);
+  });
+
+  it("marks a strict one-page candidate unsafe instead of discarding text", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Strict limit");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    const expectedText = Array.from(
+      { length: 420 },
+      (_, index) => `${index + 1}. This line must remain available for measurement`,
+    ).join("\n");
+    track.text = expectedText;
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: {
+        ...options,
+        format: "a5",
+        languageMode: "original",
+        strategy: "strict-page-limit",
+      },
+      locale: "en-US",
+    });
+    const pages = plan.pages.filter((page) => page.kind === "song");
+
+    expect(pages).toHaveLength(1);
+    expect(pages[0]?.tracks[0]?.text).toBe(expectedText);
+    expect(pages[0]?.fontSize).toBe(7);
+    expect(pages[0]?.layoutSafety).toBe("unsafe");
+  });
+
   it("adapts table-of-contents columns to format and entry count", () => {
     const a4Medium = createPrintPlan({
       project: projectWithSongs(43),
@@ -341,6 +471,31 @@ describe("print plan", () => {
       locale: "en-US",
     });
     expect(a5.pages[0]?.kind === "toc" ? a5.pages[0].columns : 0).toBe(2);
+  });
+
+  it("paginates oversized contents with explicit columns and corrected song offsets", () => {
+    const project = projectWithSongs(180);
+    const plan = createPrintPlan({ project, options, locale: "en-US" });
+    const tocPages = plan.pages.filter((page) => page.kind === "toc");
+    const songPages = plan.pages.filter((page) => page.kind === "song");
+    const entries = tocPages.flatMap((page) =>
+      page.columnSections.flatMap((column) => column.flatMap((section) => section.entries)),
+    );
+
+    expect(tocPages.length).toBeGreaterThan(1);
+    expect(tocPages.map((page) => page.pageInToc)).toEqual(
+      Array.from({ length: tocPages.length }, (_, index) => index + 1),
+    );
+    expect(tocPages.every((page) => page.pageCountForToc === tocPages.length)).toBe(true);
+    expect(tocPages[0]?.continuation).toBe(false);
+    expect(tocPages.slice(1).every((page) => page.continuation)).toBe(true);
+    expect(tocPages.every((page) => page.columnSections.length === page.columns)).toBe(true);
+    expect(entries.map((entry) => entry.sequence)).toEqual(
+      Array.from({ length: 180 }, (_, index) => index + 1),
+    );
+    expect(new Set(entries.map((entry) => entry.songId)).size).toBe(180);
+    expect(entries[0]?.pageNumber).toBe(tocPages.length + 1);
+    expect(songPages[0]?.pageInSong).toBe(1);
   });
 
   it("supports no contents page, Chinese fallback section labels, and missing themes", () => {

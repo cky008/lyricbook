@@ -6,6 +6,31 @@ All notable changes follow Keep a Changelog principles.
 
 No unreleased changes.
 
+## [0.0.7] - 2026-09-02
+
+### Added
+
+- Added a release-blocking print regression matrix with synthetic short, long, CJK, bilingual, multi-version, sectionless, contents, A4, A5, booklet, and strict-limit fixtures.
+- Added explicit preview states for measurement, safe output, and layouts that require adjustment.
+
+### Changed
+
+- Measured printable pages in the browser after fonts and layout settle, selecting the largest safe type size for each song page.
+- Used natural export guidance that explains unique filenames without exposing implementation details.
+
+### Fixed
+
+- Paginated long lyrics without losing lines and prevented page content from entering the footer safety region.
+- Kept aligned bilingual tracks together, separated independent tracks and versions clearly, and removed the full-height lyric grid that caused clipping.
+- Measured complete contents at supported column densities before creating continuation pages, then recalculated linked song page numbers.
+- Disabled printing when a strict one-page layout remains unsafe at the 7pt minimum.
+- Updated the offline check to invoke the pinned TypeScript compiler through its supported command-line interface.
+
+### Tests
+
+- Added unit and Playwright coverage for adaptive typography, complete-text pagination, strict-limit blocking, contents links, accessibility, CJK, bilingual tracks, multiple versions, and booklet imposition.
+- Verified synthetic A4, A5, and imposed-booklet PDFs for page size, internal links, text completeness, footer clearance, and rendered appearance.
+
 ## [0.0.6] - 2026-09-02
 
 ### Added

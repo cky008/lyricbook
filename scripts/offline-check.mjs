@@ -1,7 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { createRequire } from "node:module";
 
 const root = process.cwd();
 const report = { status: "PASS", checks: [], warnings: [], runtime: { node: process.version } };
@@ -70,47 +69,31 @@ if (!process.version.startsWith(`v${expectedNode}`)) {
   );
 }
 
-let ts;
+const localTsc = path.join(
+  root,
+  "node_modules",
+  ".bin",
+  process.platform === "win32" ? "tsc.cmd" : "tsc",
+);
 try {
-  const require = createRequire(import.meta.url);
-  ts = require("typescript");
-} catch {
-  try {
-    const globalRoot = execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim();
-    const require = createRequire(import.meta.url);
-    ts = require(path.join(globalRoot, "typescript"));
+  const executable = existsSync(localTsc) ? localTsc : "tsc";
+  if (!existsSync(localTsc)) {
     report.warnings.push(
-      `Used globally installed TypeScript ${ts.version} for syntax-only checking; protected CI installs 7.0.2.`,
+      "Used the TypeScript executable from PATH; protected CI installs the committed version.",
     );
-  } catch (error) {
-    report.warnings.push(`TypeScript syntax check skipped: ${String(error)}`);
   }
-}
-if (ts) {
-  const files = ["apps", "packages", "tests"]
-    .flatMap((directory) => walk(path.join(root, directory)))
-    .filter((file) => /\.(ts|tsx)$/.test(file));
-  const diagnostics = [];
-  for (const file of files) {
-    const source = readFileSync(file, "utf8");
-    const output = ts.transpileModule(source, {
-      fileName: file,
-      reportDiagnostics: true,
-      compilerOptions: {
-        target: ts.ScriptTarget.ES2022,
-        module: ts.ModuleKind.ESNext,
-        jsx: ts.JsxEmit.ReactJSX,
-      },
-    });
-    for (const diagnostic of output.diagnostics ?? []) {
-      if (diagnostic.category === ts.DiagnosticCategory.Error) {
-        diagnostics.push(
-          `${path.relative(root, file)}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, " ")}`,
-        );
-      }
-    }
-  }
-  add("typescript-syntax", diagnostics.length === 0, diagnostics.slice(0, 30).join("\n"));
+  execFileSync(executable, ["--build", "--pretty", "false"], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: "pipe",
+  });
+  add("typescript-syntax", true);
+} catch (error) {
+  const detail =
+    error && typeof error === "object" && "stderr" in error
+      ? String(error.stderr || error)
+      : String(error);
+  add("typescript-syntax", false, detail);
 }
 
 const forbiddenPrivate = walk(root).filter((file) =>
