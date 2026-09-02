@@ -1,4 +1,3 @@
-import { getLocalized, setlistSongIds } from "@domain/index";
 import type {
   LyricBookProject,
   LyricTrack,
@@ -10,7 +9,8 @@ import type {
   Theme,
   UiLocale,
 } from "@domain/index";
-import { imposeBooklet, paddedBookletPageCount, type BookletSheet } from "./booklet";
+import { getLocalized, setlistSongIds } from "@domain/index";
+import { type BookletSheet, imposeBooklet, paddedBookletPageCount } from "./booklet";
 
 export interface PrintTrackBlock {
   id: string;
@@ -18,6 +18,7 @@ export interface PrintTrackBlock {
   language: string;
   role: string;
   text: string;
+  alignedTo?: string;
 }
 
 export interface TocEntry {
@@ -32,6 +33,8 @@ export interface TocSection {
   label: string;
   entries: TocEntry[];
 }
+
+export type TocDensity = "relaxed" | "standard" | "compact";
 
 export interface CoverPage {
   kind: "cover";
@@ -49,7 +52,20 @@ export interface TocPage {
   title: string;
   sections: TocSection[];
   columns: number;
+  density: TocDensity;
+  columnSections: TocSection[][];
+  pageInToc: number;
+  pageCountForToc: number;
+  continuation: boolean;
 }
+
+export type SongLayoutMode =
+  | "single-track"
+  | "balanced-text"
+  | "parallel-tracks"
+  | "stacked-tracks";
+
+export type PrintLayoutSafety = "pending" | "safe" | "unsafe";
 
 export interface SongPage {
   kind: "song";
@@ -61,8 +77,13 @@ export interface SongPage {
   pageCountForSong: number;
   tracks: PrintTrackBlock[];
   fontSize: number;
+  minFontSize: number;
+  maxFontSize: number;
   titleSize: number;
-  columns: number;
+  layoutMode: SongLayoutMode;
+  trackColumns: number;
+  textColumns: number;
+  layoutSafety: PrintLayoutSafety;
   compact: boolean;
 }
 
@@ -98,13 +119,21 @@ interface BuildContext {
   selectedVersionBySong?: Record<string, string>;
 }
 
-const CAPACITY: Record<Exclude<PrintFormat, "booklet">, Record<number, number>> = {
+const SONG_CAPACITY: Record<Exclude<PrintFormat, "booklet">, Record<number, number>> = {
   a4: { 1: 56, 2: 102, 3: 142 },
   a5: { 1: 39, 2: 70, 3: 96 },
 };
 
+const TOC_COLUMN_CAPACITY: Record<Exclude<PrintFormat, "booklet">, Record<number, number>> = {
+  a4: { 1: 43.5, 2: 39, 3: 32 },
+  a5: { 1: 30, 2: 21 },
+};
+
+const MIN_FONT_SIZE = 7;
+const PAGINATION_SAFETY_FACTOR = 0.72;
+
 function capacityFor(format: Exclude<PrintFormat, "booklet">, columns: number): number {
-  return CAPACITY[format][columns] ?? CAPACITY[format][1] ?? 1;
+  return SONG_CAPACITY[format][columns] ?? SONG_CAPACITY[format][1] ?? 1;
 }
 
 function lineWeight(line: string): number {
@@ -177,79 +206,180 @@ function songIdsForScope(context: BuildContext): string[] {
   return project.songs.map((song) => song.id);
 }
 
-function splitTrackText(text: string, lineLimit: number): string[] {
+function splitTrackText(text: string, lineLimit: number, charsPerLine: number): string[] {
   const rawLines = text.replace(/\r\n/g, "\n").split("\n");
   if (!rawLines.length) return [""];
+  const weightedLines = rawLines.map((line) => ({
+    line,
+    weight: Math.max(1, Math.ceil(lineWeight(line) / charsPerLine)),
+  }));
+  const totalWeight = weightedLines.reduce((sum, line) => sum + line.weight, 0);
+  const pageCount = Math.max(1, Math.ceil(totalWeight / lineLimit));
+  if (pageCount === 1) return [rawLines.join("\n")];
   const chunks: string[] = [];
   let current: string[] = [];
-  let currentLines = 0;
-  for (const line of rawLines) {
-    const estimated = Math.max(1, Math.ceil(lineWeight(line) / 34));
-    if (current.length && currentLines + estimated > lineLimit) {
+  let currentWeight = 0;
+  let remainingWeight = totalWeight;
+  let remainingPages = pageCount;
+  for (const weightedLine of weightedLines) {
+    const targetWeight = Math.min(lineLimit, Math.ceil(remainingWeight / remainingPages));
+    if (
+      current.length &&
+      chunks.length < pageCount - 1 &&
+      currentWeight + weightedLine.weight > targetWeight
+    ) {
       chunks.push(current.join("\n"));
+      remainingWeight -= currentWeight;
+      remainingPages -= 1;
       current = [];
-      currentLines = 0;
+      currentWeight = 0;
     }
-    current.push(line);
-    currentLines += estimated;
+    current.push(weightedLine.line);
+    currentWeight += weightedLine.weight;
   }
   if (current.length) chunks.push(current.join("\n"));
   return chunks.length ? chunks : [""];
 }
 
+interface SongLayoutCandidate {
+  layoutMode: SongLayoutMode;
+  trackColumns: number;
+  textColumns: number;
+}
+
+interface ChosenSongLayout extends SongLayoutCandidate {
+  fontSize: number;
+  minFontSize: number;
+  maxFontSize: number;
+  titleSize: number;
+  lineLimit: number;
+  charsPerLine: number;
+  layoutSafety: PrintLayoutSafety;
+  compact: boolean;
+  requiresPagination: boolean;
+}
+
+function fontBounds(format: Exclude<PrintFormat, "booklet">): {
+  minimum: number;
+  maximum: number;
+} {
+  return { minimum: MIN_FONT_SIZE, maximum: format === "a4" ? 22 : 16 };
+}
+
+function candidateColumns(candidate: SongLayoutCandidate): number {
+  return Math.max(candidate.trackColumns, candidate.textColumns);
+}
+
+function charsPerLineFor(candidate: SongLayoutCandidate): number {
+  const columns = candidateColumns(candidate);
+  if (columns === 1) return 42;
+  if (columns === 2) return 31;
+  return 24;
+}
+
+function lineLimitFor(
+  format: Exclude<PrintFormat, "booklet">,
+  candidate: SongLayoutCandidate,
+  fontSize: number,
+): number {
+  const referenceFontSize = format === "a4" ? 12 : 10.5;
+  return Math.max(
+    1,
+    Math.floor(capacityFor(format, candidateColumns(candidate)) * (referenceFontSize / fontSize)),
+  );
+}
+
+function visualLinesFor(trackTexts: string[], candidate: SongLayoutCandidate): number {
+  const charsPerLine = charsPerLineFor(candidate);
+  return trackTexts.reduce((total, text) => total + estimateVisualLines(text, charsPerLine), 0);
+}
+
+function layoutCandidates(
+  tracks: LyricTrack[],
+  strategy: PrintOptions["strategy"],
+): SongLayoutCandidate[] {
+  const trackCount = tracks.length;
+  if (trackCount <= 1) {
+    const single: SongLayoutCandidate = {
+      layoutMode: "single-track",
+      trackColumns: 1,
+      textColumns: 1,
+    };
+    const balanced: SongLayoutCandidate = {
+      layoutMode: "balanced-text",
+      trackColumns: 1,
+      textColumns: 2,
+    };
+    return strategy === "compact" ? [balanced, single] : [single, balanced];
+  }
+
+  const parallel: SongLayoutCandidate = {
+    layoutMode: "parallel-tracks",
+    trackColumns: Math.min(3, trackCount),
+    textColumns: 1,
+  };
+  const stacked: SongLayoutCandidate = {
+    layoutMode: "stacked-tracks",
+    trackColumns: 1,
+    textColumns: 1,
+  };
+  const aligned = tracks.slice(1).every((track) => Boolean(track.alignedTo));
+  return aligned ? [parallel, stacked] : [stacked];
+}
+
 function chooseLayout(
   format: Exclude<PrintFormat, "booklet">,
-  trackTexts: string[],
+  tracks: LyricTrack[],
   strategy: PrintOptions["strategy"],
-): {
-  columns: number;
-  fontSize: number;
-  titleSize: number;
-  pageCount: number;
-  lineLimit: number;
-  compact: boolean;
-} {
-  const baseFormat = format;
-  const candidates =
-    strategy === "readable" ? [1, 2] : strategy === "compact" ? [2, 3, 1] : [1, 2, 3];
-  const fontRange = baseFormat === "a4" ? [20, 18, 16, 14, 12, 10] : [15, 14, 13, 12, 11, 9];
-  for (const columns of candidates) {
-    for (const fontSize of fontRange) {
-      const scale = (baseFormat === "a4" ? 12 : 10.5) / fontSize;
-      const lineLimit = Math.floor(capacityFor(baseFormat, columns) * scale);
-      const visualLines = trackTexts.reduce(
-        (total, text) =>
-          total + estimateVisualLines(text, columns === 1 ? 42 : columns === 2 ? 31 : 24),
-        0,
-      );
-      if (visualLines <= lineLimit) {
+): ChosenSongLayout {
+  const bounds = fontBounds(format);
+  const candidates = layoutCandidates(tracks, strategy);
+  const trackTexts = tracks.map((track) => track.text);
+
+  for (let fontSize = bounds.maximum; fontSize >= bounds.minimum; fontSize -= 1) {
+    for (const candidate of candidates) {
+      const lineLimit = lineLimitFor(format, candidate, fontSize);
+      if (visualLinesFor(trackTexts, candidate) <= lineLimit) {
         return {
-          columns,
+          ...candidate,
           fontSize,
-          titleSize: Math.max(fontSize + 8, baseFormat === "a4" ? 22 : 18),
-          pageCount: 1,
+          minFontSize: bounds.minimum,
+          maxFontSize: bounds.maximum,
+          titleSize: Math.max(fontSize + 8, format === "a4" ? 22 : 18),
           lineLimit,
-          compact: fontSize <= (baseFormat === "a4" ? 12 : 10),
+          charsPerLine: charsPerLineFor(candidate),
+          layoutSafety: "pending",
+          compact: fontSize <= (format === "a4" ? 12 : 10),
+          requiresPagination: false,
         };
       }
     }
   }
-  const columns = strategy === "readable" ? 2 : 3;
-  const fontSize = baseFormat === "a4" ? 10 : 8;
-  const lineLimit = capacityFor(baseFormat, columns);
-  const totalLines = trackTexts.reduce(
-    (total, text) => total + estimateVisualLines(text, columns === 2 ? 31 : 24),
-    0,
+
+  const fallback = candidates.reduce<SongLayoutCandidate>(
+    (best, candidate) =>
+      lineLimitFor(format, candidate, bounds.minimum) > lineLimitFor(format, best, bounds.minimum)
+        ? candidate
+        : best,
+    candidates[0] ?? {
+      layoutMode: "single-track",
+      trackColumns: 1,
+      textColumns: 1,
+    },
   );
-  const maximum =
-    strategy === "strict-page-limit" ? 1 : Math.max(1, Math.ceil(totalLines / lineLimit));
+  const lineLimit = lineLimitFor(format, fallback, bounds.minimum);
+  const strict = strategy === "strict-page-limit";
   return {
-    columns,
-    fontSize,
-    titleSize: baseFormat === "a4" ? 18 : 15,
-    pageCount: maximum,
+    ...fallback,
+    fontSize: bounds.minimum,
+    minFontSize: bounds.minimum,
+    maxFontSize: bounds.maximum,
+    titleSize: format === "a4" ? 18 : 15,
     lineLimit,
+    charsPerLine: charsPerLineFor(fallback),
+    layoutSafety: strict ? "unsafe" : "pending",
     compact: true,
+    requiresPagination: !strict,
   };
 }
 
@@ -275,8 +405,13 @@ function buildSongPages(
         pageCountForSong: 1,
         tracks: [],
         fontSize: format === "a4" ? 16 : 12,
+        minFontSize: MIN_FONT_SIZE,
+        maxFontSize: fontBounds(format).maximum,
         titleSize: format === "a4" ? 27 : 20,
-        columns: 1,
+        layoutMode: "single-track",
+        trackColumns: 1,
+        textColumns: 1,
+        layoutSafety: "pending",
         compact: false,
       },
     ];
@@ -289,15 +424,20 @@ function buildSongPages(
       (track) => track.text.trim() || context.options.includeEmptySongs,
     );
     if (!nonEmptyTracks.length && !context.options.includeEmptySongs) continue;
-    const layout = chooseLayout(
-      format,
-      nonEmptyTracks.map((track) => track.text),
-      context.options.strategy,
-    );
+    const layout = chooseLayout(format, nonEmptyTracks, context.options.strategy);
     const versionLabel =
       song.lyricVersions.length > 1 ? getLocalized(version.label, context.locale) : undefined;
 
-    if (layout.pageCount === 1) {
+    const printTracks = nonEmptyTracks.map((track, trackIndex) => ({
+      id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
+      label: getLocalized(track.label, context.locale) || track.role,
+      language: track.language,
+      role: track.role,
+      text: track.text,
+      alignedTo: track.alignedTo,
+    }));
+
+    if (!layout.requiresPagination) {
       allPages.push({
         kind: "song",
         id: `print-song-${song.id}-${version.id}-1`,
@@ -306,23 +446,28 @@ function buildSongPages(
         versionLabel,
         pageInSong: 1,
         pageCountForSong: 1,
-        tracks: nonEmptyTracks.map((track, trackIndex) => ({
-          id: `${version.id}:${track.id ?? `${track.role}:${track.language}:${trackIndex}`}`,
-          label: getLocalized(track.label, context.locale) || track.role,
-          language: track.language,
-          role: track.role,
-          text: track.text,
-        })),
+        tracks: printTracks,
         fontSize: layout.fontSize,
+        minFontSize: layout.minFontSize,
+        maxFontSize: layout.maxFontSize,
         titleSize: layout.titleSize,
-        columns: Math.min(layout.columns, Math.max(1, nonEmptyTracks.length)),
+        layoutMode: layout.layoutMode,
+        trackColumns: layout.trackColumns,
+        textColumns: layout.textColumns,
+        layoutSafety: layout.layoutSafety,
         compact: layout.compact,
       });
       continue;
     }
 
+    const perTrackLineLimit = Math.max(
+      1,
+      Math.floor(
+        (layout.lineLimit * PAGINATION_SAFETY_FACTOR) / Math.max(1, nonEmptyTracks.length),
+      ),
+    );
     const chunksByTrack = nonEmptyTracks.map((track) =>
-      splitTrackText(track.text, layout.lineLimit),
+      splitTrackText(track.text, perTrackLineLimit, layout.charsPerLine),
     );
     const pageCount = Math.max(...chunksByTrack.map((chunks) => chunks.length));
     for (let index = 0; index < pageCount; index += 1) {
@@ -340,10 +485,16 @@ function buildSongPages(
           language: track.language,
           role: track.role,
           text: chunksByTrack[trackIndex]?.[index] ?? "",
+          alignedTo: track.alignedTo,
         })),
         fontSize: layout.fontSize,
+        minFontSize: layout.minFontSize,
+        maxFontSize: layout.maxFontSize,
         titleSize: layout.titleSize,
-        columns: Math.min(layout.columns, Math.max(1, nonEmptyTracks.length)),
+        layoutMode: layout.layoutMode,
+        trackColumns: layout.trackColumns,
+        textColumns: layout.textColumns,
+        layoutSafety: layout.layoutSafety,
         compact: true,
       });
     }
@@ -363,11 +514,118 @@ function coverSummary(value: string | undefined): string | undefined {
   return `${normalized.slice(0, 177).trimEnd()}…`;
 }
 
-function tocColumns(entryCount: number, format: Exclude<PrintFormat, "booklet">): number {
-  if (format === "a5") return entryCount > 38 ? 2 : 1;
-  if (entryCount <= 42) return 1;
-  if (entryCount <= 90) return 2;
-  return 3;
+interface TocRow {
+  sectionLabel: string;
+  entry: TocEntry;
+}
+
+interface TocColumnAllocation {
+  columnSections: TocSection[][];
+  nextRowIndex: number;
+}
+
+function tocCharactersPerLine(format: Exclude<PrintFormat, "booklet">, columns: number): number {
+  if (format === "a5") return columns === 1 ? 42 : 24;
+  if (columns === 1) return 64;
+  if (columns === 2) return 38;
+  return 25;
+}
+
+function tocEntryWeight(
+  entry: TocEntry,
+  format: Exclude<PrintFormat, "booklet">,
+  columns: number,
+): number {
+  const lines = Math.max(
+    1,
+    Math.ceil(
+      lineWeight(`${entry.sequence}. ${entry.title} ${entry.pageNumber}`) /
+        tocCharactersPerLine(format, columns),
+    ),
+  );
+  return 1 + (lines - 1) * 0.85;
+}
+
+function tocSectionWeight(
+  label: string,
+  format: Exclude<PrintFormat, "booklet">,
+  columns: number,
+): number {
+  const lines = Math.max(1, Math.ceil(lineWeight(label) / tocCharactersPerLine(format, columns)));
+  return 1.5 + (lines - 1) * 0.9;
+}
+
+function appendTocEntry(sections: TocSection[], row: TocRow): void {
+  const current = sections.at(-1);
+  if (current?.label === row.sectionLabel) {
+    current.entries.push(row.entry);
+    return;
+  }
+  sections.push({ label: row.sectionLabel, entries: [row.entry] });
+}
+
+function allocateTocColumns(
+  rows: TocRow[],
+  startRowIndex: number,
+  format: Exclude<PrintFormat, "booklet">,
+  columns: number,
+): TocColumnAllocation {
+  const capacity = TOC_COLUMN_CAPACITY[format][columns] ?? 1;
+  const columnSections: TocSection[][] = [];
+  let rowIndex = startRowIndex;
+
+  for (let columnIndex = 0; columnIndex < columns; columnIndex += 1) {
+    const sections: TocSection[] = [];
+    let used = 0;
+    while (rowIndex < rows.length) {
+      const row = rows[rowIndex];
+      if (!row) break;
+      const startsSection = sections.at(-1)?.label !== row.sectionLabel;
+      const weight =
+        tocEntryWeight(row.entry, format, columns) +
+        (startsSection ? tocSectionWeight(row.sectionLabel, format, columns) : 0);
+      if (sections.length && used + weight > capacity) break;
+      appendTocEntry(sections, row);
+      used += weight;
+      rowIndex += 1;
+    }
+    columnSections.push(sections);
+  }
+
+  return { columnSections, nextRowIndex: rowIndex };
+}
+
+function tocRows(sections: TocSection[]): TocRow[] {
+  return sections.flatMap((section) =>
+    section.entries.map((entry) => ({ sectionLabel: section.label, entry })),
+  );
+}
+
+function layoutTocColumns(
+  sections: TocSection[],
+  format: Exclude<PrintFormat, "booklet">,
+): TocSection[][][] {
+  const rows = tocRows(sections);
+  if (!rows.length) return [[[]]];
+  const candidates = format === "a4" ? [1, 2, 3] : [1, 2];
+
+  for (const columns of candidates) {
+    const allocation = allocateTocColumns(rows, 0, format, columns);
+    if (allocation.nextRowIndex === rows.length) return [allocation.columnSections];
+  }
+
+  const columns = candidates.at(-1) ?? 1;
+  const pages: TocSection[][][] = [];
+  let rowIndex = 0;
+  while (rowIndex < rows.length) {
+    const allocation = allocateTocColumns(rows, rowIndex, format, columns);
+    if (allocation.nextRowIndex <= rowIndex) {
+      throw new Error("Unable to allocate a table-of-contents entry");
+    }
+    pages.push(allocation.columnSections);
+    rowIndex = allocation.nextRowIndex;
+  }
+  return pages;
 }
 
 export function createPrintPlan(context: BuildContext): PrintPlan {
@@ -383,8 +641,6 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
   const songPages = songs.flatMap((song) => buildSongPages(song, context, baseFormat));
   const pages: LogicalPrintPage[] = [];
   const includeCover = context.options.format === "booklet" && context.options.includeCover;
-  const frontMatterOffset =
-    (includeCover ? 1 : 0) + (context.options.includeTableOfContents ? 1 : 0);
 
   if (includeCover) {
     const projectTitle = getLocalized(context.project.title, context.locale);
@@ -425,7 +681,6 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
 
   if (context.options.includeTableOfContents) {
     const tocSections = new Map<string, TocEntry[]>();
-    let cursor = frontMatterOffset + 1;
     let sequence = 1;
     for (const song of songs) {
       const count = songPages.filter((page) => page.songId === song.id).length;
@@ -436,24 +691,67 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
         songId: song.id,
         title: getLocalized(song.titles, context.locale),
         sequence,
-        pageNumber: cursor,
+        pageNumber: 0,
         section,
       };
       const existing = tocSections.get(section) ?? [];
       existing.push(entry);
       tocSections.set(section, existing);
-      cursor += count;
       sequence += 1;
     }
     const sectionList = [...tocSections].map(([label, entries]) => ({ label, entries }));
-    const count = sectionList.reduce((sum, section) => sum + section.entries.length, 0);
-    pages.push({
-      kind: "toc",
-      id: "print-toc-1",
-      title: context.locale === "zh-CN" ? "演出目录" : "Setlist contents",
-      sections: sectionList,
-      columns: tocColumns(count, baseFormat),
-    });
+    const entries = sectionList.flatMap((tocSection) => tocSection.entries);
+    const pageCountBySong = new Map<string, number>();
+    for (const page of songPages) {
+      pageCountBySong.set(page.songId, (pageCountBySong.get(page.songId) ?? 0) + 1);
+    }
+    const assignPageNumbers = (tocPageCount: number): void => {
+      let cursor = (includeCover ? 1 : 0) + tocPageCount + 1;
+      for (const song of songs) {
+        const entry = entries.find((candidate) => candidate.songId === song.id);
+        const count = pageCountBySong.get(song.id) ?? 0;
+        if (!entry || !count) continue;
+        entry.pageNumber = cursor;
+        cursor += count;
+      }
+    };
+
+    let tocColumnPages = layoutTocColumns(sectionList, baseFormat);
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      assignPageNumbers(tocColumnPages.length);
+      const measuredWithPageNumbers = layoutTocColumns(sectionList, baseFormat);
+      const stablePageCount = measuredWithPageNumbers.length === tocColumnPages.length;
+      tocColumnPages = measuredWithPageNumbers;
+      if (stablePageCount) break;
+    }
+    assignPageNumbers(tocColumnPages.length);
+    const tocPageCount = tocColumnPages.length;
+    for (let index = 0; index < tocColumnPages.length; index += 1) {
+      const columnSections = tocColumnPages[index] ?? [[]];
+      const baseTitle = context.locale === "zh-CN" ? "演出目录" : "Setlist contents";
+      pages.push({
+        kind: "toc",
+        id: `print-toc-${index + 1}`,
+        title:
+          index === 0
+            ? baseTitle
+            : context.locale === "zh-CN"
+              ? `${baseTitle}（续）`
+              : `${baseTitle} (continued)`,
+        sections: columnSections.flat(),
+        columns: columnSections.length,
+        density:
+          columnSections.length === 1
+            ? "relaxed"
+            : columnSections.length === 2
+              ? "standard"
+              : "compact",
+        columnSections,
+        pageInToc: index + 1,
+        pageCountForToc: tocPageCount,
+        continuation: index > 0,
+      });
+    }
   }
   pages.push(...songPages);
   pages.push({
