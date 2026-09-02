@@ -10,7 +10,7 @@ apps/web
   ├─ Radix overlays
   ├─ IndexedDB and File APIs
   ├─ Fluent UI localization
-  └─ DOM print measurement
+  └─ font-stable DOM print measurement and safety audit
 
 packages/domain
   ├─ Zod project schema
@@ -22,8 +22,8 @@ packages/domain
 packages/print-engine
   ├─ selection by scope
   ├─ version/track selection
-  ├─ logical pagination
-  ├─ contents planning
+  ├─ pure-data layout and pagination drafts
+  ├─ contents candidates and booklet page-number planning
   └─ booklet imposition
 
 crates/lyricbook-core

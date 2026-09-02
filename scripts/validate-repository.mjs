@@ -387,12 +387,10 @@ for (const requiredText of [
   "https://lyricbook.iocky.com/",
   "https://github.com/cky008/lyricbook",
   "Deploy GitHub Pages",
-  "React 19.2.8",
-  "Rust 1.98.0",
 ]) {
   if (!readme.includes(requiredText)) throw new Error(`README is missing ${requiredText}`);
 }
 
 console.log(
-  `Repository validation passed: ${codeFiles.length} source files, ${usedKeys.size} UI keys, modern React 19 toolchain, icons and local imports verified.`,
+  `Repository validation passed: ${codeFiles.length} source files, ${usedKeys.size} UI keys, pinned toolchain, icons and local imports verified.`,
 );

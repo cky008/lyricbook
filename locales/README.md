@@ -6,4 +6,4 @@ LyricBook keeps reviewable Fluent-style catalogs in this directory so that a loc
 - `zh-CN/main.ftl` is the Simplified Chinese catalog.
 - Both catalogs must expose the same message keys.
 
-The 0.0.1 browser bundle still carries a small built-in message map in `apps/web/src/i18n.ts`. The catalogs are the contribution surface and the migration target for the fuller Fluent runtime tracked in `ROADMAP.md`. When UI copy changes, update both the runtime map and these catalogs in the same pull request.
+The browser loads the selected catalog at runtime through `apps/web/src/lib/i18n.tsx`. Keep both catalogs aligned and update them together whenever UI copy changes.

@@ -2,7 +2,7 @@
 
 ## Product statement
 
-LyricBook is a privacy-first, local-first web application for building concert song libraries, setlists, immersive reading experiences, and printable lyric books. Version 0.0.6 is static and backend-free.
+LyricBook is a privacy-first, local-first web application for building concert song libraries, setlists, immersive reading experiences, and printable lyric books. Version 0.0.7 is static and backend-free.
 
 ## Required user outcomes
 
@@ -13,10 +13,10 @@ LyricBook is a privacy-first, local-first web application for building concert s
 5. Read the active setlist on mobile, reach the lyric bottom, and move directly to the next song at its top.
 6. Switch English/Chinese UI independently of lyric languages.
 7. Customize a safe token theme.
-8. Print A4, A5, or an imposed A4 folded booklet with linked contents and no footer collision.
+8. Print A4, A5, or an imposed A4 folded booklet with measured typography, complete-text pagination, linked contents, and no footer collision.
 9. Export uniquely named project backups and restore them on another device.
 10. Use the application without an account or backend.
 
 ## Explicit exclusions
 
-Version 0.0.6 does not provide AI extraction, automated web research, user accounts, paid services, cloud synchronization, LRC import, remote preset registry, social image generation, or native touch drag ordering. These remain in `ROADMAP.md`.
+Version 0.0.7 does not provide AI extraction, automated web research, user accounts, paid services, cloud synchronization, LRC import, remote preset registry, social image generation, or native touch drag ordering. These remain in `ROADMAP.md`.

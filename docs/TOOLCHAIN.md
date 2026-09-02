@@ -1,6 +1,6 @@
 # Toolchain policy
 
-LyricBook 0.0.6 continues the modern-runtime baseline introduced in 0.0.5. The exact toolchain is recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows must use the committed `package-lock.json` and `Cargo.lock` after the one-time repository bootstrap commit.
+LyricBook 0.0.7 uses the pinned, reproducible toolchain below. Exact versions are recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows install from the committed lockfiles.
 
 ## Pinned baseline
 
@@ -37,13 +37,13 @@ plugins: [
 ];
 ```
 
-The removed legacy inline `react({ babel: ... })` option must not return. React Compiler must run before other Babel transforms.
+React Compiler runs before other Babel transforms through the dedicated Rolldown Babel integration.
 
 ## Reproducibility
 
 - All direct JavaScript dependencies use exact versions.
-- `package-lock.json` and `Cargo.lock` are mandatory before the first normal pull request or release. CI contains a bootstrap-only fallback so a full repository replacement can generate them once.
-- CI, Pages, and Release use `npm ci`; they do not silently fall back to `npm install`.
+- `package-lock.json` and `Cargo.lock` are committed and required for normal development, CI, and release work.
+- CI, Pages, and Release use `npm ci` and the committed Rust lockfile.
 - `rust-toolchain.toml` pins Rust and the WebAssembly target.
 - `toolchain.json` is machine-readable documentation and is checked against package metadata.
 - Dependency changes belong in a dedicated commit and must update this file, lockfiles, workflows where applicable, and `CHANGELOG.md`.
