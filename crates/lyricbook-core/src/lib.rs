@@ -152,6 +152,7 @@ pub struct Setlist {
 
 /// Safe theme design tokens.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct ThemeTokens {
     /// Primary accent.
     pub accent: String,
@@ -175,10 +176,29 @@ pub struct ThemeTokens {
     /// Optional density multiplier.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub density: Option<f32>,
+    /// Optional heading font category.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub heading_font: Option<String>,
+    /// Optional body font category.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub body_font: Option<String>,
+}
+
+/// Safe presentation treatments selected by a theme.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ThemeStyleTokens {
+    /// Card surface treatment, such as solid or glass.
+    pub surface: String,
+    /// Elevation treatment, such as flat or soft.
+    pub elevation: String,
+    /// Decorative treatment, such as none, ink-wash, or porcelain-line.
+    pub ornament: String,
 }
 
 /// Theme preset.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Theme {
     /// Stable theme id.
     pub id: String,
@@ -189,6 +209,9 @@ pub struct Theme {
     /// Extra print settings retained as structured JSON for forward compatibility.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub print: BTreeMap<String, serde_json::Value>,
+    /// Optional safe presentation treatments.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub style: Option<ThemeStyleTokens>,
     /// Extra asset references retained as structured JSON for forward compatibility.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub assets: BTreeMap<String, serde_json::Value>,
@@ -544,6 +567,77 @@ mod tests {
             validate_project(&value),
             Err(ValidationError::DuplicateSourceId("source-a".into()))
         );
+    }
+
+    #[test]
+    fn theme_round_trip_preserves_fonts_style_and_forward_compatible_assets() {
+        let input = serde_json::json!({
+            "id": "theme-ink-jade",
+            "name": {
+                "en": "Ink Jade",
+                "zh-Hans": "墨玉"
+            },
+            "tokens": {
+                "accent": "#7fae9d",
+                "accent2": "#c6a15b",
+                "background": "#0f1c1a",
+                "surface": "#172825",
+                "surfaceStrong": "#223a35",
+                "text": "#f3f0e7",
+                "muted": "#aebdb5",
+                "radius": "18px",
+                "headingFont": "serif",
+                "bodyFont": "sans"
+            },
+            "print": {
+                "headingStyle": "classic"
+            },
+            "style": {
+                "surface": "glass",
+                "elevation": "soft",
+                "ornament": "ink-wash"
+            },
+            "assets": {
+                "cover": "covers/legacy.webp",
+                "background": "textures/paper.png",
+                "futureAsset": {
+                    "kind": "pattern",
+                    "layers": ["ink", "paper"]
+                }
+            }
+        });
+
+        let theme: Theme = serde_json::from_value(input.clone()).unwrap();
+        let output = serde_json::to_value(theme).unwrap();
+
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn legacy_theme_round_trip_omits_new_optional_fields_and_preserves_assets() {
+        let input = serde_json::json!({
+            "id": "theme-legacy",
+            "name": { "en": "Legacy" },
+            "tokens": {
+                "accent": "#123456",
+                "background": "#ffffff",
+                "surface": "#f8f8f8",
+                "text": "#111111",
+                "radius": "8px"
+            },
+            "assets": {
+                "legacyBackdrop": "backdrops/stage.png",
+                "futureAsset": {
+                    "enabled": true,
+                    "options": [1, 2, 3]
+                }
+            }
+        });
+
+        let theme: Theme = serde_json::from_value(input.clone()).unwrap();
+        let output = serde_json::to_value(theme).unwrap();
+
+        assert_eq!(output, input);
     }
 
     #[test]

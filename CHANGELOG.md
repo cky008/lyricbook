@@ -9,12 +9,14 @@ All notable changes follow Keep a Changelog principles.
 - Restored a user-selectable Markdown setlist editor alongside the structured controls, with lossless metadata comments, atomic apply, new-song creation, and unsaved-draft protection.
 - Added locally processed booklet covers with generated, image-only, and image-with-title modes.
 - Added automatic or explicit slash joining for consecutive short monolingual lyric lines so safe typography can remain larger.
+- Added a five-theme offline gallery with distinctive local typography, density, surface, ornament, and print treatments; catalog originals remain read-only and can be copied into a project for customization.
 
 ### Fixed
 
 - Captured project field values before deferred React state updates, preventing the post-import title and description editor crash.
 - Replaced stale cache-first entry navigation with build-specific caches, network-first HTML, previous-build asset retention, and guarded Service Worker updates.
 - Reorganized the narrow and iOS header into stable direct actions plus an accessible overflow menu without horizontal clipping.
+- Prevented inert legacy theme asset references from appearing in standalone theme exports, and preserved canonical catalog imports when a project owns the same reserved id.
 
 ### Security
 
@@ -23,6 +25,7 @@ All notable changes follow Keep a Changelog principles.
 ### Tests
 
 - Added unit and cross-browser regressions for Markdown setlists, short-line print flow, private cover modes, delayed field updates, stale hashed assets, Service Worker lifecycle, and 320/393/430px header geometry.
+- Added theme catalog, activation, collision, sanitization, contrast, customization, persistence, responsive layout, accessibility, and print-token regressions.
 
 ## [0.0.7] - 2026-09-02
 

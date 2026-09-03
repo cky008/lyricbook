@@ -17,6 +17,7 @@ packages/domain
   ├─ setlist parsing
   ├─ legacy migration
   ├─ theme sanitization
+  ├─ frozen built-in theme catalog and explicit project activation
   └─ export names
 
 packages/print-engine

@@ -1,8 +1,8 @@
 import {
   imposeBooklet,
-  paddedBookletPageCount,
   type LogicalPrintPage,
   type PrintPlan,
+  paddedBookletPageCount,
   type SongPage,
   type TocDensity,
   type TocPage,
@@ -15,6 +15,14 @@ const CSS_PIXELS_PER_MM = 96 / 25.4;
 const FONT_STEP_PT = 0.25;
 const TOC_COLUMN_GAP_MM = 8;
 const TOC_PACKING_RESERVE_MM = 2;
+const PRINT_CONTEXT_PROPERTIES = [
+  "--print-accent",
+  "--print-muted",
+  "--print-paper",
+  "--print-text",
+  "--print-heading-font",
+  "--print-body-font",
+] as const;
 
 export type PrintIssueCode =
   | "missing-page"
@@ -205,6 +213,11 @@ function unionMetrics(elements: HTMLElement[]): BoxMetrics | undefined {
   const scrollHeight = Math.max(...visible.map(({ element }) => element.scrollHeight));
   const clientWidth = Math.max(...visible.map(({ element }) => element.clientWidth));
   const clientHeight = Math.max(...visible.map(({ element }) => element.clientHeight));
+  const clipsOverflow = (element: HTMLElement, axis: "x" | "y") => {
+    const style = element.ownerDocument.defaultView?.getComputedStyle(element);
+    const overflow = axis === "x" ? style?.overflowX : style?.overflowY;
+    return overflow !== undefined && overflow !== "visible";
+  };
 
   return {
     left,
@@ -218,10 +231,14 @@ function unionMetrics(elements: HTMLElement[]): BoxMetrics | undefined {
     scrollWidth,
     scrollHeight,
     overflowX: visible.some(
-      ({ element }) => element.scrollWidth > element.clientWidth + LAYOUT_TOLERANCE_PX,
+      ({ element }) =>
+        clipsOverflow(element, "x") &&
+        element.scrollWidth > element.clientWidth + LAYOUT_TOLERANCE_PX,
     ),
     overflowY: visible.some(
-      ({ element }) => element.scrollHeight > element.clientHeight + LAYOUT_TOLERANCE_PX,
+      ({ element }) =>
+        clipsOverflow(element, "y") &&
+        element.scrollHeight > element.clientHeight + LAYOUT_TOLERANCE_PX,
     ),
   };
 }
@@ -393,6 +410,16 @@ function measureTocCandidate(
   candidate: TocCandidate,
 ): PackedTocCandidate | undefined {
   const page = templatePage.cloneNode(true) as HTMLElement;
+  const view = templatePage.ownerDocument.defaultView;
+  const templateStyle = view?.getComputedStyle(templatePage);
+  for (const property of PRINT_CONTEXT_PROPERTIES) {
+    const value = templateStyle?.getPropertyValue(property).trim();
+    if (value) page.style.setProperty(property, value);
+  }
+  const printDocument = templatePage.closest<HTMLElement>("[data-print-document]");
+  if (printDocument?.dataset.printHeadingStyle) {
+    page.dataset.printHeadingStyle = printDocument.dataset.printHeadingStyle;
+  }
   page.removeAttribute("id");
   page.removeAttribute("data-print-page-id");
   page.style.position = "absolute";

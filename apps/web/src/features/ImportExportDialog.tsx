@@ -1,22 +1,27 @@
-import { Download, FileJson, Link, PackageOpen, RotateCcw, Upload } from "lucide-react";
-import { useRef, useState } from "react";
-import {
-  createBlankProject,
-  createExportFilename,
-  migrateLegacyGemV4Backup,
-  parseProject,
-  parseSetlistText,
-  sanitizeTheme,
-  type LyricBookProject,
-  type PresetIndexEntry,
-  type Theme,
-  type UiLocale,
-} from "@domain/index";
 import { DialogShell } from "@app/components/DialogShell";
 import { createProjectArchive, importHttpsUrl, importProjectFile } from "@app/lib/archive";
 import { downloadBlob, downloadText } from "@app/lib/download";
 import { useI18n } from "@app/lib/i18n";
 import { loadPreset, loadPresetIndex } from "@app/lib/presets";
+import {
+  activateBuiltInTheme,
+  createBlankProject,
+  createExportFilename,
+  createId,
+  getBuiltInTheme,
+  getLocalized,
+  type LyricBookProject,
+  migrateLegacyGemV4Backup,
+  type PresetIndexEntry,
+  parseProject,
+  parseSetlistText,
+  parseTheme,
+  sanitizeStandaloneTheme,
+  themesEqual,
+  type UiLocale,
+} from "@domain/index";
+import { Download, FileJson, Link, PackageOpen, RotateCcw, Upload } from "lucide-react";
+import { useRef, useState } from "react";
 
 interface ImportExportDialogProps {
   open: boolean;
@@ -31,7 +36,7 @@ interface ImportExportDialogProps {
 
 type ImportMessage = { kind: "success" | "error" | "info"; text: string } | null;
 
-function isTheme(value: unknown): value is Theme {
+function looksLikeTheme(value: unknown): boolean {
   return Boolean(
     value && typeof value === "object" && "id" in value && "tokens" in value && "name" in value,
   );
@@ -85,8 +90,24 @@ export function ImportExportDialog({
       return;
     }
 
-    if (isTheme(value)) {
-      const theme = sanitizeTheme(value);
+    if (looksLikeTheme(value)) {
+      let theme = parseTheme(value);
+      const catalogTheme = getBuiltInTheme(theme.id);
+      if (catalogTheme) {
+        const projectVersion = project.themes.find((item) => item.id === theme.id);
+        const projectHasCanonicalVersion = Boolean(
+          projectVersion && themesEqual(projectVersion, catalogTheme),
+        );
+        if (themesEqual(theme, catalogTheme) && (!projectVersion || projectHasCanonicalVersion)) {
+          onChange(activateBuiltInTheme(project, theme.id));
+          setMessage({ kind: "success", text: t("import-success") });
+          return;
+        }
+        theme = {
+          ...theme,
+          id: createId("theme", `${getLocalized(theme.name, locale)} custom`),
+        };
+      }
       const exists = project.themes.some((item) => item.id === theme.id);
       onChange({
         ...project,
@@ -157,7 +178,11 @@ export function ImportExportDialog({
     const theme = project.themes.find((item) => item.id === project.activeThemeId);
     if (!theme) return;
     const filename = createExportFilename(`${project.id}-${theme.id}`, "theme.json");
-    downloadText(`${JSON.stringify(theme, null, 2)}\n`, filename, "application/json;charset=utf-8");
+    downloadText(
+      `${JSON.stringify(sanitizeStandaloneTheme(theme), null, 2)}\n`,
+      filename,
+      "application/json;charset=utf-8",
+    );
     setMessage({ kind: "success", text: `${t("file-ready")}: ${filename}` });
   };
 
