@@ -13,3 +13,9 @@ Studio Slate is the canonical default for newly created projects. Projects saved
 Catalog originals are read-only. “Copy and customize” creates a new stable project theme id, after which its safe tokens may be edited. Project copies remain self-contained in `.lyricbook` and JSON exports so print output and offline restoration do not depend on the application catalog.
 
 Content and theme packages remain independent so one concert library can be rendered with multiple designs. Theme selection never changes lyrics, versions, tracks, setlists, or sources.
+
+## Interface composition
+
+The Studio and Garden Editorial interface styles are browser-local workspace compositions, not project themes. The selected style is stored under `lyricbook-interface-style`, applied through the fixed `data-interface-style` value on the document root, and deliberately omitted from IndexedDB project records and every export format. Replacing or importing a project therefore leaves this browser preference unchanged.
+
+Interface styles may arrange and decorate existing application components, but they consume rather than replace safe theme tokens. They must not select, copy, mutate, or serialize a project theme. Their stylesheets may not target printable content, the print portal, or the `--print-*` namespace; a given theme and print configuration must produce the same measured document under every interface style.

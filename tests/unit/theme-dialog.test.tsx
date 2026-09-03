@@ -5,7 +5,7 @@ import {
   type LyricBookProject,
   type Theme,
 } from "@domain/index";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -50,6 +50,12 @@ vi.mock("@app/lib/i18n", () => ({
         "font-serif": "Serif",
         "heading-font": "Heading type",
         "heading-style": "Print heading",
+        "interface-style": "Interface style",
+        "interface-style-garden": "Garden Editorial",
+        "interface-style-garden-help": "A calm Chinese editorial workspace.",
+        "interface-style-help": "Choose how LyricBook looks in this browser.",
+        "interface-style-studio": "Studio",
+        "interface-style-studio-help": "The familiar LyricBook workspace.",
         "my-themes": "Project themes",
         "my-themes-help": "Stored with this project.",
         "new-custom-theme": "New custom theme",
@@ -95,6 +101,7 @@ vi.mock("@app/lib/i18n", () => ({
 
 function renderDialog(project = createBlankProject("en-US")) {
   const onChange = vi.fn<(next: LyricBookProject) => void>();
+  const onInterfaceStyleChange = vi.fn<(style: "studio" | "garden") => void>();
   const onOpenChange = vi.fn<(open: boolean) => void>();
   const view = render(
     <ThemeDialog
@@ -103,9 +110,11 @@ function renderDialog(project = createBlankProject("en-US")) {
       project={project}
       locale="en-US"
       onChange={onChange}
+      interfaceStyle="studio"
+      onInterfaceStyleChange={onInterfaceStyleChange}
     />,
   );
-  return { ...view, onChange, onOpenChange, project };
+  return { ...view, onChange, onInterfaceStyleChange, onOpenChange, project };
 }
 
 afterEach(() => {
@@ -115,6 +124,26 @@ afterEach(() => {
 });
 
 describe("ThemeDialog gallery", () => {
+  it("offers two accessible browser-local interface styles without changing the project", async () => {
+    const user = userEvent.setup();
+    const { onChange, onInterfaceStyleChange } = renderDialog();
+    const group = screen.getByRole("radiogroup", { name: "Interface style" });
+    const styles = within(group).getAllByRole("radio");
+    const studio = within(group).getByRole("radio", { name: /^Studio\b/ });
+    const garden = within(group).getByRole("radio", { name: /^Garden Editorial\b/ });
+
+    expect(styles).toHaveLength(2);
+    expect(studio).toBeChecked();
+    expect(garden).not.toBeChecked();
+    expect(screen.getByText("Choose how LyricBook looks in this browser.")).toBeInTheDocument();
+
+    await user.click(garden);
+
+    expect(onInterfaceStyleChange).toHaveBeenCalledTimes(1);
+    expect(onInterfaceStyleChange).toHaveBeenCalledWith("garden");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("shows every crafted theme without modifying the project", () => {
     const project = createBlankProject("en-US");
     const snapshot = structuredClone(project);
@@ -153,6 +182,8 @@ describe("ThemeDialog gallery", () => {
         project={activated}
         locale="en-US"
         onChange={onChange}
+        interfaceStyle="studio"
+        onInterfaceStyleChange={() => undefined}
       />,
     );
     await user.click(screen.getByRole("button", { name: "Use theme: Porcelain Blue" }));
@@ -287,6 +318,8 @@ describe("ThemeDialog gallery", () => {
         project={{ ...project, activeThemeId: second.id }}
         locale="en-US"
         onChange={onChange}
+        interfaceStyle="studio"
+        onInterfaceStyleChange={() => undefined}
       />,
     );
 

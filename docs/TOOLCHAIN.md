@@ -1,6 +1,6 @@
 # Toolchain policy
 
-LyricBook 0.0.7 uses the pinned, reproducible toolchain below. Exact versions are recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows install from the committed lockfiles.
+LyricBook 0.0.8 uses the pinned, reproducible toolchain below. Exact versions are recorded in `package.json`, `rust-toolchain.toml`, and `toolchain.json`; protected CI and release workflows install from the committed lockfiles.
 
 ## Pinned baseline
 
@@ -20,8 +20,10 @@ LyricBook 0.0.7 uses the pinned, reproducible toolchain below. Exact versions ar
 | Vitest | 4.1.11 | unit tests and coverage |
 | Playwright | 1.62.1 | Chromium, Firefox, WebKit, mobile, accessibility, and print regression |
 | Rust | 1.98.0, edition 2024 | deterministic domain core, CLI, and WASM adapter |
+| Rust toolchain action | `6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772` | immutable GitHub Actions setup revision |
 | wasm-bindgen | 0.2.127 | Rust/JavaScript bindings |
 | wasm-pack | 0.15.0 | reproducible browser WASM packaging |
+| cargo-audit | 0.22.2 | RustSec vulnerability audit |
 
 ## React Compiler integration
 

@@ -4,19 +4,29 @@ All notable changes follow Keep a Changelog principles.
 
 ## [Unreleased]
 
+## [0.0.8] - 2026-09-03
+
 ### Added
 
 - Restored a user-selectable Markdown setlist editor alongside the structured controls, with lossless metadata comments, atomic apply, new-song creation, and unsaved-draft protection.
 - Added locally processed booklet covers with generated, image-only, and image-with-title modes.
 - Added automatic or explicit slash joining for consecutive short monolingual lyric lines so safe typography can remain larger.
 - Added a five-theme offline gallery with distinctive local typography, density, surface, ornament, and print treatments; catalog originals remain read-only and can be copied into a project for customization.
+- Added Studio and Garden Editorial workspace compositions as a browser-local preference independent of project themes and exports.
+
+### Changed
+
+- Required committed npm and Cargo lockfiles in protected workflows, locked Cargo resolution, pinned the Rust setup and audit tools, and expanded the release gate to include browser, offline, and security checks.
+- Required release tags to match the package version, current commit, and `main`; built source archives directly from the tagged Git object; and isolated write permission in the final publishing job.
 
 ### Fixed
 
 - Captured project field values before deferred React state updates, preventing the post-import title and description editor crash.
 - Replaced stale cache-first entry navigation with build-specific caches, network-first HTML, previous-build asset retention, and guarded Service Worker updates.
+- Fingerprinted locale requests and used network-first catalogs with an offline cache fallback so the first load after an upgrade cannot show stale translation keys.
 - Reorganized the narrow and iOS header into stable direct actions plus an accessible overflow menu without horizontal clipping.
 - Prevented inert legacy theme asset references from appearing in standalone theme exports, and preserved canonical catalog imports when a project owns the same reserved id.
+- Kept long unbroken next-song titles visible at 320px and raised interface-card text contrast across every crafted theme.
 
 ### Security
 
@@ -26,6 +36,7 @@ All notable changes follow Keep a Changelog principles.
 
 - Added unit and cross-browser regressions for Markdown setlists, short-line print flow, private cover modes, delayed field updates, stale hashed assets, Service Worker lifecycle, and 320/393/430px header geometry.
 - Added theme catalog, activation, collision, sanitization, contrast, customization, persistence, responsive layout, accessibility, and print-token regressions.
+- Added interface-style isolation, persistence, theme-permutation, print-equivalence, stale-locale, and narrow-title regressions.
 
 ## [0.0.7] - 2026-09-02
 
