@@ -603,7 +603,7 @@ describe("print plan", () => {
     expect(songPages[0]?.pageInSong).toBe(1);
   });
 
-  it("supports no contents page, Chinese fallback section labels, and missing themes", () => {
+  it("supports no contents page, Chinese fallback section labels, and safe theme fallback", () => {
     const project = projectWithSongs(1);
     project.activeThemeId = "missing";
     const plan = createPrintPlan({
@@ -612,7 +612,7 @@ describe("print plan", () => {
       locale: "zh-CN",
     });
     expect(plan.pages[0]?.kind).toBe("song");
-    expect(plan.theme).toBeUndefined();
+    expect(plan.theme?.id).toBe("default");
 
     const withContents = createPrintPlan({ project, options, locale: "zh-CN" });
     const toc = withContents.pages[0];

@@ -147,6 +147,12 @@ export async function seedSyntheticProject(
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".app-shell")).toBeVisible();
 
+  // A fresh project selects its first song after mount and persists that preference on a debounce.
+  // Let that initial write finish so it cannot race with the synthetic IndexedDB replacement below.
+  const saveStatus = page.locator(".status-line");
+  await expect(saveStatus).toContainText(/Saving|正在保存/i);
+  await expect(saveStatus).toContainText(/Saved locally|已保存到本机/i);
+
   await page.evaluate(async (nextProject) => {
     localStorage.setItem("lyricbook-ui-locale", "en-US");
     localStorage.setItem("lyricbook-current-project", JSON.stringify(nextProject));

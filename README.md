@@ -22,6 +22,8 @@ LyricBook is a privacy-first, local-first concert lyric-book editor, immersive s
 - Supports studio, live, language, acoustic, or custom versions under one song.
 - Treats setlist sections as optional records; a setlist may be a plain song sequence.
 - Lets each user switch between structured setlist controls and a lossless Markdown editor.
+- Offers five offline crafted themes—including Ink Jade, Porcelain Blue, Cinnabar Silk, and Moonlit Paper—with distinct typography, spacing, surfaces, and print palettes.
+- Keeps catalog themes read-only while allowing an explicit project-local copy to be customized and exported with the project.
 - Provides safe up/down ordering on every device; touch drag-and-drop remains a tracked enhancement.
 - Navigates previous/next songs from the active setlist and shows a next-song card at the lyric bottom.
 - Generates measured A4, A5, and imposed A4 folded-booklet layouts with adaptive type, optional slash-joined short lines, linked contents, and a protected footer area.
