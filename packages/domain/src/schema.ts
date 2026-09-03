@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { sanitizeStandaloneTheme, sanitizeTheme } from "./theme";
 import {
   type LocalCoverImage,
   type LyricBookProject,
   SCHEMA_VERSION,
+  type Theme,
   type ValidationResult,
 } from "./types";
 
@@ -80,37 +82,50 @@ const setlistSchema = z.object({
   items: z.array(setlistItemSchema),
 });
 
-const themeSchema = z.object({
-  id: z.string().min(1),
-  name: localizedTextSchema,
-  tokens: z.object({
-    accent: z.string().min(1),
-    accent2: z.string().min(1).optional(),
-    background: z.string().min(1),
-    surface: z.string().min(1),
-    surfaceStrong: z.string().min(1).optional(),
-    text: z.string().min(1),
-    muted: z.string().min(1).optional(),
-    radius: z.string().min(1),
-    density: z.number().positive().optional(),
-    headingFont: z.enum(["serif", "sans"]).optional(),
-    bodyFont: z.enum(["serif", "sans"]).optional(),
-  }),
-  print: z
-    .object({
-      accent: z.string().optional(),
-      paper: z.string().optional(),
-      text: z.string().optional(),
-      headingStyle: z.enum(["editorial", "modern", "classic"]).optional(),
-    })
-    .optional(),
-  assets: z
-    .object({
-      cover: z.string().optional(),
-      background: z.string().optional(),
-    })
-    .optional(),
-});
+const themeSchema = z
+  .object({
+    id: z.string().min(1),
+    name: localizedTextSchema,
+    tokens: z.object({
+      accent: z.string().min(1),
+      accent2: z.string().min(1).optional(),
+      background: z.string().min(1),
+      surface: z.string().min(1),
+      surfaceStrong: z.string().min(1).optional(),
+      text: z.string().min(1),
+      muted: z.string().min(1).optional(),
+      radius: z.string().min(1),
+      density: z.number().positive().optional(),
+      headingFont: z.enum(["serif", "sans"]).optional(),
+      bodyFont: z.enum(["serif", "sans"]).optional(),
+    }),
+    print: z
+      .object({
+        accent: z.string().optional(),
+        paper: z.string().optional(),
+        text: z.string().optional(),
+        headingStyle: z.enum(["editorial", "modern", "classic"]).optional(),
+      })
+      .optional(),
+    style: z
+      .object({
+        surface: z.enum(["solid", "glass"]),
+        elevation: z.enum(["flat", "soft"]),
+        ornament: z.enum(["none", "ink-wash", "porcelain-line"]),
+      })
+      .optional(),
+    assets: z
+      .object({
+        cover: z.string().optional(),
+        background: z.string().optional(),
+      })
+      .optional(),
+  })
+  .transform((theme) => sanitizeTheme(theme as Theme));
+
+export function parseTheme(input: unknown): Theme {
+  return sanitizeStandaloneTheme(themeSchema.parse(input));
+}
 
 const sourceSchema = z.object({
   id: z.string().min(1),

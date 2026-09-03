@@ -100,11 +100,18 @@ export interface ThemePrintTokens {
   headingStyle?: "editorial" | "modern" | "classic";
 }
 
+export interface ThemeStyleTokens {
+  surface: "solid" | "glass";
+  elevation: "flat" | "soft";
+  ornament: "none" | "ink-wash" | "porcelain-line";
+}
+
 export interface Theme {
   id: string;
   name: LocalizedText;
   tokens: ThemeTokens;
   print?: ThemePrintTokens;
+  style?: ThemeStyleTokens;
   assets?: {
     cover?: string;
     background?: string;

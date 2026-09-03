@@ -1,7 +1,7 @@
 import { createId } from "./ids";
 import {
-  SCHEMA_VERSION,
   type LyricBookProject,
+  SCHEMA_VERSION,
   type Song,
   type Theme,
   type UiLocale,

@@ -11,7 +11,7 @@ import type {
   Theme,
   UiLocale,
 } from "@domain/index";
-import { getLocalized, setlistSongIds } from "@domain/index";
+import { getLocalized, resolveActiveTheme, setlistSongIds } from "@domain/index";
 import { type BookletSheet, imposeBooklet, paddedBookletPageCount } from "./booklet";
 
 export interface PrintTrackBlock {
@@ -923,7 +923,7 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
   const padded =
     context.options.format === "booklet" ? paddedBookletPageCount(pages.length) : pages.length;
   while (pages.length < padded) pages.push({ kind: "blank", id: `blank-${pages.length + 1}` });
-  const theme = context.project.themes.find((item) => item.id === context.project.activeThemeId);
+  const theme = resolveActiveTheme(context.project);
   return {
     format: context.options.format,
     pages,

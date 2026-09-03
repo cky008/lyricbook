@@ -1,8 +1,43 @@
+import { DialogShell } from "@app/components/DialogShell";
+import { Header } from "@app/components/Header";
+import { ImmersiveReader } from "@app/components/ImmersiveReader";
+import { SongEditor } from "@app/components/SongEditor";
+import { SongReader } from "@app/components/SongReader";
+import { SongSidebar } from "@app/components/SongSidebar";
+import { ImportExportDialog } from "@app/features/ImportExportDialog";
+import { PrintDialog } from "@app/features/PrintDialog";
+import { SetlistDialog } from "@app/features/SetlistDialog";
+import { ThemeDialog } from "@app/features/ThemeDialog";
+import { useLyricBookProject } from "@app/hooks/useLyricBookProject";
+import {
+  APPEARANCE_STORAGE_KEY,
+  type AppearanceMode,
+  applyAppearance,
+  storedAppearance,
+} from "@app/lib/appearance";
+import { useI18n } from "@app/lib/i18n";
+import { loadPresetIndex } from "@app/lib/presets";
+import {
+  activeSetlist,
+  currentVersionId,
+  orderedSongIds,
+  songTitle,
+} from "@app/lib/projectHelpers";
+import { forceReleaseScrollLocks } from "@app/lib/scrollLock";
+import {
+  createEmptySong,
+  getLocalized,
+  type LyricBookProject,
+  type PresetIndexEntry,
+  resolveActiveTheme,
+  type Song,
+  setlistSongIds,
+} from "@domain/index";
 import {
   BookOpenText,
   CheckCircle2,
-  FileText,
   CodeXml,
+  FileText,
   Info,
   ListMusic,
   Pencil,
@@ -10,41 +45,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import {
-  createEmptySong,
-  getLocalized,
-  setlistSongIds,
-  type LyricBookProject,
-  type PresetIndexEntry,
-  type Song,
-} from "@domain/index";
 import packageJson from "../../../package.json";
-import { Header } from "@app/components/Header";
-import { ImmersiveReader } from "@app/components/ImmersiveReader";
-import { SongEditor } from "@app/components/SongEditor";
-import { SongReader } from "@app/components/SongReader";
-import { SongSidebar } from "@app/components/SongSidebar";
-import { DialogShell } from "@app/components/DialogShell";
-import { ImportExportDialog } from "@app/features/ImportExportDialog";
-import { PrintDialog } from "@app/features/PrintDialog";
-import { SetlistDialog } from "@app/features/SetlistDialog";
-import { ThemeDialog } from "@app/features/ThemeDialog";
-import { useLyricBookProject } from "@app/hooks/useLyricBookProject";
-import { useI18n } from "@app/lib/i18n";
-import {
-  APPEARANCE_STORAGE_KEY,
-  applyAppearance,
-  storedAppearance,
-  type AppearanceMode,
-} from "@app/lib/appearance";
-import {
-  activeSetlist,
-  currentVersionId,
-  orderedSongIds,
-  songTitle,
-} from "@app/lib/projectHelpers";
-import { loadPresetIndex } from "@app/lib/presets";
-import { forceReleaseScrollLocks } from "@app/lib/scrollLock";
 
 type DialogName = "setlist" | "theme" | "transfer" | "print" | "about" | null;
 
@@ -93,7 +94,7 @@ export default function App() {
 
   const activeTheme = useMemo(() => {
     if (!project) return undefined;
-    return project.themes.find((item) => item.id === project.activeThemeId) ?? project.themes[0];
+    return resolveActiveTheme(project);
   }, [project]);
 
   useEffect(() => {

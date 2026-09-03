@@ -1,5 +1,6 @@
-import type { CSSProperties } from "react";
+import { derivePrintPalette, themeFontStack } from "@app/lib/appearance";
 import type { CoverPage, LogicalPrintPage, PrintPlan, SongPage, TocPage } from "@print/index";
+import type { CSSProperties } from "react";
 
 interface PrintDocumentProps {
   plan: PrintPlan;
@@ -211,13 +212,29 @@ function LogicalPage({
 
 export function PrintDocument({ plan, idPrefix = "print" }: PrintDocumentProps) {
   const format = plan.format;
+  const headingStyle = plan.theme?.print?.headingStyle ?? "editorial";
+  const headingFont =
+    headingStyle === "modern" || plan.theme?.tokens.headingFont === "sans"
+      ? themeFontStack("sans")
+      : themeFontStack("serif");
+  const bodyFont = themeFontStack(plan.theme?.tokens.bodyFont, "serif");
+  const printPalette = derivePrintPalette(plan.theme);
   const themeStyle = {
-    "--print-accent": plan.theme?.print?.accent ?? plan.theme?.tokens.accent ?? "#694e98",
-    "--print-paper": plan.theme?.print?.paper ?? "#fffdf8",
+    "--print-accent": printPalette.accent,
+    "--print-muted": printPalette.muted,
+    "--print-paper": printPalette.paper,
+    "--print-text": printPalette.text,
+    "--print-heading-font": headingFont,
+    "--print-body-font": bodyFont,
   } as CSSProperties;
   if (format !== "booklet") {
     return (
-      <div className="print-preview-pages" data-print-document style={themeStyle}>
+      <div
+        className="print-preview-pages"
+        data-print-document
+        data-print-heading-style={headingStyle}
+        style={themeStyle}
+      >
         {plan.pages.map((page, index) => (
           <LogicalPage
             page={page}
@@ -231,7 +248,12 @@ export function PrintDocument({ plan, idPrefix = "print" }: PrintDocumentProps) 
     );
   }
   return (
-    <div className="print-preview-pages" data-print-document style={themeStyle}>
+    <div
+      className="print-preview-pages"
+      data-print-document
+      data-print-heading-style={headingStyle}
+      style={themeStyle}
+    >
       {plan.bookletSheets.flatMap((sheet) => [
         <section
           className="booklet-sheet"
