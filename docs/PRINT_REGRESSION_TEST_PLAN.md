@@ -21,6 +21,7 @@ This plan defines the release-blocking checks for adaptive lyric sizing, paginat
 | Case | Fixture | Expected behavior |
 | --- | --- | --- |
 | Short monolingual | Six short invented lines | One page; type is near the format maximum; no footer collision |
+| Many short lines | Eighty uniquely marked short invented lines | Automatic slash flow uses a larger safe type size than preserved line breaks; every marker appears exactly once |
 | Medium monolingual | Forty-eight mixed-length lines and stanza gaps | One or two balanced text columns at a readable size |
 | Long monolingual | Numbered lines with unique first/last markers | Multiple pages when required; every marker appears exactly once |
 | Extreme strict limit | More text than one page can hold at 7pt | Complete text remains present; preview is unsafe; print action is disabled |
@@ -30,6 +31,7 @@ This plan defines the release-blocking checks for adaptive lyric sizing, paginat
 | Independent bilingual | Unequal original and translation line counts | Each track remains complete in a safe parallel or stacked layout |
 | Multiple tracks | Original, translation, transliteration, and adaptation | Tracks are grouped or paginated without overlap or loss |
 | Multiple versions | Two invented versions with distinct markers | Version headings are retained and each version's text stays separate |
+| Local booklet cover | Tiny generated JPEG/PNG/WebP fixtures | Generated, image-only, and image-with-text modes render locally; invalid signatures are rejected; persisted data has no source file name |
 | Sectionless setlist | Songs without Part/Act records | A valid contents page uses the fallback section label |
 | Representative contents | Thirty-four songs in five sections, including optional entries | One safe contents page when the selected format can contain it |
 | Large contents | Long section names, long song titles, and enough entries for continuation | The smallest safe column count is used; continuation pages are dense and ordered |

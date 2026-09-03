@@ -1,17 +1,27 @@
-import { BookOpen, FileText, LoaderCircle, Printer, TriangleAlert } from "lucide-react";
-import { createPortal } from "react-dom";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { LyricBookProject, PrintOptions, UiLocale } from "@domain/index";
-import { createPrintPlan, type PrintPlan } from "@print/index";
 import { DialogShell } from "@app/components/DialogShell";
 import { PrintDocument } from "@app/components/PrintDocument";
 import { useI18n } from "@app/lib/i18n";
+import { processLocalCoverImage } from "@app/lib/localCover";
+import { STORAGE_WARNING_EVENT, type StorageWarningDetail } from "@app/lib/storage";
 import {
   auditRenderedPlan,
   type MeasuredPrintPlan,
   resolveRenderedDraft,
   waitForStableLayout,
 } from "@app/print/measurement";
+import type { LyricBookProject, PrintOptions, UiLocale } from "@domain/index";
+import { createPrintPlan, type PrintPlan } from "@print/index";
+import {
+  BookOpen,
+  FileImage,
+  FileText,
+  LoaderCircle,
+  Printer,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface PrintDialogProps {
   open: boolean;
@@ -21,6 +31,7 @@ interface PrintDialogProps {
   currentSongId?: string;
   filteredSongIds: string[];
   selectedVersionBySong: Record<string, string>;
+  onOptionsChange: (options: PrintOptions) => void;
 }
 
 type PreviewState =
@@ -40,6 +51,8 @@ const DEFAULT_OPTIONS: PrintOptions = {
   includeSources: false,
   includeTableOfContents: true,
   includeCover: true,
+  lineFlow: "auto",
+  coverMode: "generated",
 };
 
 function pageStyle(format: PrintOptions["format"]): string {
@@ -120,6 +133,7 @@ export function PrintDialog({
   currentSongId,
   filteredSongIds,
   selectedVersionBySong,
+  onOptionsChange,
 }: PrintDialogProps) {
   const { t } = useI18n();
   const [options, setOptions] = useState<PrintOptions>(() => ({
@@ -128,7 +142,18 @@ export function PrintDialog({
   }));
   const [preview, setPreview] = useState<PreviewState>({ status: "idle" });
   const [printing, setPrinting] = useState(false);
+  const [coverProcessing, setCoverProcessing] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const [coverStorageWarning, setCoverStorageWarning] = useState(false);
   const requestIdRef = useRef(0);
+  const coverRequestIdRef = useRef(0);
+  const optionsVersionRef = useRef(0);
+  const optionsRef = useRef(options);
+  const projectRef = useRef(project);
+  const openRef = useRef(open);
+  optionsRef.current = options;
+  projectRef.current = project;
+  openRef.current = open;
   const portal = document.getElementById("print-portal");
   const result = preview.status === "ready" || preview.status === "unsafe" ? preview.result : null;
   const plan = result?.plan ?? null;
@@ -139,22 +164,79 @@ export function PrintDialog({
       sheets: plan.format === "booklet" ? plan.bookletSheets.length : 0,
     };
   }, [plan]);
+  const resetPreview = useCallback(() => {
+    requestIdRef.current += 1;
+    setPreview({ status: "idle" });
+    setPrinting(false);
+  }, []);
 
   useEffect(() => {
     if (open) return;
     requestIdRef.current += 1;
+    coverRequestIdRef.current += 1;
     setPreview({ status: "idle" });
     setPrinting(false);
+    setCoverProcessing(false);
   }, [open]);
 
-  const resetPreview = () => {
-    requestIdRef.current += 1;
-    setPreview({ status: "idle" });
-    setPrinting(false);
+  useEffect(() => {
+    const onStorageWarning = (event: Event) => {
+      const detail = (event as CustomEvent<StorageWarningDetail>).detail;
+      if (detail?.code === "cover-omitted") setCoverStorageWarning(true);
+    };
+    window.addEventListener(STORAGE_WARNING_EVENT, onStorageWarning);
+    return () => window.removeEventListener(STORAGE_WARNING_EVENT, onStorageWarning);
+  }, []);
+
+  useEffect(() => {
+    const next = { ...DEFAULT_OPTIONS, ...project.preferences?.print };
+    optionsRef.current = next;
+    setOptions(next);
+    setCoverError(null);
+    setCoverStorageWarning(false);
+    resetPreview();
+  }, [project, resetPreview]);
+
+  const replaceOptions = (next: PrintOptions, keepCoverRequest = false) => {
+    if (!keepCoverRequest) {
+      coverRequestIdRef.current += 1;
+      setCoverProcessing(false);
+    }
+    optionsVersionRef.current += 1;
+    optionsRef.current = next;
+    setOptions(next);
+    onOptionsChange(next);
+    resetPreview();
   };
   const update = <K extends keyof PrintOptions>(key: K, value: PrintOptions[K]) => {
-    setOptions((current) => ({ ...current, [key]: value }));
-    resetPreview();
+    replaceOptions({ ...options, [key]: value });
+  };
+  const chooseCoverImage = async (file: File) => {
+    const coverRequestId = coverRequestIdRef.current + 1;
+    coverRequestIdRef.current = coverRequestId;
+    const optionsVersion = optionsVersionRef.current;
+    const startingProject = projectRef.current;
+    const startingProjectId = startingProject.id;
+    const isCurrentRequest = () =>
+      coverRequestIdRef.current === coverRequestId &&
+      optionsVersionRef.current === optionsVersion &&
+      openRef.current &&
+      projectRef.current === startingProject &&
+      projectRef.current.id === startingProjectId;
+    setCoverProcessing(true);
+    setCoverError(null);
+    setCoverStorageWarning(false);
+    try {
+      const coverImage = await processLocalCoverImage(file);
+      if (!isCurrentRequest()) return;
+      replaceOptions({ ...optionsRef.current, coverImage, coverMode: "image-with-text" }, true);
+    } catch (error) {
+      if (isCurrentRequest()) {
+        setCoverError(error instanceof Error ? error.message : String(error));
+      }
+    } finally {
+      if (coverRequestIdRef.current === coverRequestId) setCoverProcessing(false);
+    }
   };
   const build = () => {
     const requestId = requestIdRef.current + 1;
@@ -316,6 +398,20 @@ export function PrintDialog({
                 <option value="strict-page-limit">{t("strict-page-limit")}</option>
               </select>
             </label>
+            <label className="field-label">
+              {t("line-flow")}
+              <select
+                className="select"
+                value={options.lineFlow}
+                onChange={(event) =>
+                  update("lineFlow", event.currentTarget.value as PrintOptions["lineFlow"])
+                }
+              >
+                <option value="auto">{t("line-flow-auto")}</option>
+                <option value="preserve">{t("line-flow-preserve")}</option>
+                <option value="slash">{t("line-flow-slash")}</option>
+              </select>
+            </label>
             {(
               [
                 ["includeOptional", "include-optional"],
@@ -342,6 +438,89 @@ export function PrintDialog({
                   />
                   {t("include-cover")}
                 </label>
+                {options.includeCover ? (
+                  <fieldset className="cover-settings">
+                    <legend>{t("cover-style")}</legend>
+                    <div className="cover-mode-grid">
+                      {(
+                        [
+                          ["generated", "cover-generated"],
+                          ["image", "cover-image-only"],
+                          ["image-with-text", "cover-image-with-text"],
+                        ] as const
+                      ).map(([mode, label]) => (
+                        <label className="cover-mode-option" key={mode}>
+                          <input
+                            type="radio"
+                            name="cover-mode"
+                            value={mode}
+                            checked={options.coverMode === mode}
+                            disabled={mode !== "generated" && !options.coverImage}
+                            onChange={() => update("coverMode", mode)}
+                          />
+                          <span>{t(label)}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <div className="inline-actions">
+                      <label className="button" aria-disabled={coverProcessing}>
+                        {coverProcessing ? (
+                          <LoaderCircle className="spin" size={15} aria-hidden="true" />
+                        ) : (
+                          <FileImage size={15} aria-hidden="true" />
+                        )}
+                        {coverProcessing ? t("cover-processing") : t("choose-cover-image")}
+                        <input
+                          className="visually-hidden"
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          disabled={coverProcessing}
+                          aria-label={t("choose-cover-image")}
+                          onChange={(event) => {
+                            const input = event.currentTarget;
+                            const file = input.files?.[0];
+                            input.value = "";
+                            if (file) void chooseCoverImage(file);
+                          }}
+                        />
+                      </label>
+                      {options.coverImage ? (
+                        <button
+                          type="button"
+                          className="button"
+                          onClick={() =>
+                            replaceOptions({
+                              ...options,
+                              coverMode: "generated",
+                              coverImage: undefined,
+                            })
+                          }
+                        >
+                          <Trash2 size={15} aria-hidden="true" /> {t("remove-cover-image")}
+                        </button>
+                      ) : null}
+                    </div>
+                    {options.coverImage ? (
+                      <div className="status-line" role="status">
+                        <span className="status-dot" />
+                        {t("cover-ready")} · {options.coverImage.width} ×{" "}
+                        {options.coverImage.height}
+                      </div>
+                    ) : (
+                      <p className="panel-copy">{t("cover-local-help")}</p>
+                    )}
+                    {coverError ? (
+                      <div className="notice error" role="alert">
+                        {t("cover-invalid")}: {coverError}
+                      </div>
+                    ) : null}
+                    {coverStorageWarning ? (
+                      <div className="notice" role="status">
+                        {t("cover-storage-fallback")}
+                      </div>
+                    ) : null}
+                  </fieldset>
+                ) : null}
                 <div className="notice">
                   <BookOpen size={15} style={{ display: "inline", marginRight: 7 }} />
                   {t("booklet-help")}

@@ -1,10 +1,12 @@
-import tailwindcss from "@tailwindcss/vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
-import babel from "@rolldown/plugin-babel";
-import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { cp, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import babel from "@rolldown/plugin-babel";
+import tailwindcss from "@tailwindcss/vite";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
+import { buildServiceWorkerSource } from "./scripts/service-worker.ts";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.join(rootDir, "apps/web");
@@ -43,25 +45,36 @@ function staticAssetsPlugin(): Plugin {
         version: string;
       };
       const buildTime = new Date().toISOString();
+      const files = (await listFiles(outDir))
+        .filter((file) => !["sw.js", "version.json"].includes(file))
+        .map((file) => `./${file}`)
+        .sort();
+      const hash = createHash("sha256");
+      for (const file of files) {
+        hash.update(file);
+        hash.update("\0");
+        hash.update(await readFile(path.join(outDir, file.slice(2))));
+        hash.update("\0");
+      }
+      hash.update("scripts/service-worker.ts\0");
+      hash.update(await readFile(path.join(rootDir, "scripts/service-worker.ts")));
+      const buildId = hash.digest("hex").slice(0, 12);
+      const cachePrefix = "lyricbook-build-";
+      const cacheId = `${packageJson.version}-${buildId}`;
       await writeFile(
         path.join(outDir, "version.json"),
         `${JSON.stringify(
           {
             version: packageJson.version,
             schemaVersion: 1,
+            buildId,
             buildTime,
           },
           null,
           2,
         )}\n`,
       );
-
-      const files = (await listFiles(outDir))
-        .filter((file) => !["sw.js", "version.json"].includes(file))
-        .map((file) => `./${file}`)
-        .sort();
-      const cacheName = `lyricbook-v${packageJson.version}`;
-      const sw = `const CACHE_NAME = ${JSON.stringify(cacheName)};\nconst PRECACHE = ${JSON.stringify(files, null, 2)};\nself.addEventListener("install", (event) => {\n  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));\n});\nself.addEventListener("activate", (event) => {\n  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("lyricbook-v") && key !== CACHE_NAME).map((key) => caches.delete(key)))).then(() => self.clients.claim()));\n});\nself.addEventListener("fetch", (event) => {\n  if (event.request.method !== "GET") return;\n  const url = new URL(event.request.url);\n  if (url.origin !== self.location.origin) return;\n  if (url.pathname.endsWith("version.json")) {\n    event.respondWith(fetch(event.request, { cache: "no-store" }).catch(() => caches.match(event.request)));\n    return;\n  }\n  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {\n    if (response.ok && response.type === "basic") {\n      const copy = response.clone();\n      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));\n    }\n    return response;\n  }).catch(() => caches.match("./index.html"))));\n});\n`;
+      const sw = buildServiceWorkerSource({ cacheId, cachePrefix, precache: files });
       await writeFile(path.join(outDir, "sw.js"), sw);
 
       await mkdir(path.join(outDir, ".well-known"), { recursive: true });

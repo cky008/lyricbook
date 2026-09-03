@@ -11,6 +11,7 @@ function SongPageContent({ page }: { page: SongPage }) {
     <div
       className={`print-page-content print-song-content ${page.layoutMode}`}
       data-print-content="song"
+      data-line-flow={page.lineFlow}
       data-song-page-id={page.id}
       style={
         {
@@ -110,21 +111,38 @@ function TocContent({ page, idPrefix }: { page: TocPage; idPrefix: string }) {
 }
 
 function CoverContent({ page }: { page: CoverPage }) {
+  const showText = page.mode !== "image";
   return (
-    <div className="print-page-content print-cover" data-print-content="cover">
-      <div className="print-cover-rule" aria-hidden="true" />
-      <div className="print-cover-kicker">{page.kicker}</div>
-      <div className="print-cover-copy">
-        <h1>{page.title}</h1>
-        {page.subtitle ? <p className="print-cover-subtitle">{page.subtitle}</p> : null}
-      </div>
-      <div className="print-cover-details">
-        {page.setlistTitle ? <span>{page.setlistTitle}</span> : null}
-        <span>{page.songCountLabel}</span>
-      </div>
-      <div className="print-cover-mark" aria-hidden="true">
-        LB
-      </div>
+    <div
+      className={`print-page-content print-cover print-cover-${page.mode}`}
+      data-cover-mode={page.mode}
+      data-print-content="cover"
+    >
+      {page.image ? (
+        <img className="print-cover-image" data-print-cover-image src={page.image.dataUrl} alt="" />
+      ) : null}
+      {page.mode === "image-with-text" ? (
+        <div className="print-cover-image-shade" aria-hidden="true" />
+      ) : null}
+      {showText ? (
+        <>
+          <div className="print-cover-rule" aria-hidden="true" />
+          <div className="print-cover-kicker">{page.kicker}</div>
+          <div className="print-cover-copy">
+            <h1>{page.title}</h1>
+            {page.subtitle ? <p className="print-cover-subtitle">{page.subtitle}</p> : null}
+          </div>
+          <div className="print-cover-details">
+            {page.setlistTitle ? <span>{page.setlistTitle}</span> : null}
+            <span>{page.songCountLabel}</span>
+          </div>
+          <div className="print-cover-mark" aria-hidden="true">
+            LB
+          </div>
+        </>
+      ) : (
+        <h1 className="visually-hidden">{page.title}</h1>
+      )}
     </div>
   );
 }

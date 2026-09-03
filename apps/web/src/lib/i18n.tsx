@@ -27,6 +27,7 @@ const FALLBACK: Record<UiLocale, Record<string, string>> = {
     export: "Export",
     print: "Print",
     search: "Search songs",
+    "more-actions": "More actions",
   },
   "zh-CN": {
     "app-name": "LyricBook",
@@ -37,6 +38,7 @@ const FALLBACK: Record<UiLocale, Record<string, string>> = {
     export: "导出",
     print: "打印",
     search: "搜索歌曲",
+    "more-actions": "更多操作",
   },
 };
 

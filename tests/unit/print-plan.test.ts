@@ -6,7 +6,7 @@ import {
   parseSetlistText,
   type Song,
 } from "@domain/index";
-import { createPrintPlan } from "@print/index";
+import { createPrintPlan, mergeShortLyricLines } from "@print/index";
 import { describe, expect, it } from "vitest";
 import { requireValue } from "./test-utils";
 
@@ -21,6 +21,8 @@ const options: PrintOptions = {
   includeSources: false,
   includeTableOfContents: true,
   includeCover: false,
+  lineFlow: "auto",
+  coverMode: "generated",
 };
 
 function songWithTracks(title: string): Song {
@@ -154,6 +156,36 @@ describe("print plan", () => {
       locale: "en-US",
     });
     expect(a4.pages.some((page) => page.kind === "cover")).toBe(false);
+  });
+
+  it("supports local image-only and image-with-text booklet covers", () => {
+    const project = projectWithSongs(1);
+    const localImage = {
+      dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB",
+      mediaType: "image/png" as const,
+      width: 1,
+      height: 1,
+      byteLength: 33,
+    };
+
+    for (const coverMode of ["image", "image-with-text"] as const) {
+      const plan = createPrintPlan({
+        project,
+        options: {
+          ...options,
+          format: "booklet",
+          includeCover: true,
+          coverMode,
+          coverImage: localImage,
+        },
+        locale: "en-US",
+      });
+      const cover = plan.pages[0];
+      expect(cover?.kind).toBe("cover");
+      if (cover?.kind !== "cover") throw new Error("Expected a cover page");
+      expect(cover.mode).toBe(coverMode);
+      expect(cover.image).toEqual(localImage);
+    }
   });
 
   it("covers current, filtered, library, and optional setlist scopes", () => {
@@ -330,7 +362,7 @@ describe("print plan", () => {
 
     const plan = createPrintPlan({
       project,
-      options: { ...options, languageMode: "original" },
+      options: { ...options, languageMode: "original", lineFlow: "preserve" },
       locale: "en-US",
     });
     const page = plan.pages.find((candidate) => candidate.kind === "song");
@@ -389,6 +421,78 @@ describe("print plan", () => {
     expect(page.layoutSafety).toBe("pending");
   });
 
+  it("combines consecutive short lines with slashes without losing structural breaks", () => {
+    const source =
+      "[Verse 1]\nOne\nTwo\nThree\n\nA deliberately much longer lyric line that must stay alone\nFour\nFive";
+    const merged = mergeShortLyricLines(source, "a4");
+
+    expect(merged).toBe(
+      "[Verse 1]\nOne / Two / Three\n\nA deliberately much longer lyric line that must stay alone\nFour / Five",
+    );
+  });
+
+  it("does not merge bare CJK structural labels into lyric lines", () => {
+    const source = "主歌 1\n一句\n二句\n\n副歌：\n三句\n四句\n\n间奏\n五句";
+
+    expect(mergeShortLyricLines(source, "a4")).toBe(
+      "主歌 1\n一句 / 二句\n\n副歌：\n三句 / 四句\n\n间奏\n五句",
+    );
+  });
+
+  it("uses slash flow when it lets a monolingual song retain larger type", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Forty short lines");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    track.text = Array.from(
+      { length: 80 },
+      (_, index) => `L${String(index + 1).padStart(2, "0")}`,
+    ).join("\n");
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const automatic = createPrintPlan({ project, options, locale: "en-US" });
+    const automaticPage = automatic.pages.find((page) => page.kind === "song");
+    expect(automaticPage?.kind).toBe("song");
+    if (automaticPage?.kind !== "song") throw new Error("Expected song page");
+    expect(automaticPage.lineFlow).toBe("slash");
+    expect(automaticPage.tracks[0]?.text).toContain(" / ");
+    for (let index = 1; index <= 80; index += 1) {
+      expect(automaticPage.tracks[0]?.text).toContain(`L${String(index).padStart(2, "0")}`);
+    }
+
+    const preserved = createPrintPlan({
+      project,
+      options: { ...options, lineFlow: "preserve" },
+      locale: "en-US",
+    });
+    const preservedPage = preserved.pages.find((page) => page.kind === "song");
+    expect(preservedPage?.kind === "song" ? preservedPage.lineFlow : undefined).toBe("preserve");
+    expect(preservedPage?.kind === "song" ? preservedPage.tracks[0]?.text : "").not.toContain(
+      " / ",
+    );
+    expect(automaticPage.fontSize).toBeGreaterThan(
+      preservedPage?.kind === "song" ? preservedPage.fontSize : Number.POSITIVE_INFINITY,
+    );
+  });
+
+  it("never slash-merges line-aligned bilingual tracks", () => {
+    const project = createBlankProject("en-US");
+    const song = songWithTracks("Aligned lines stay aligned");
+    const version = requireValue(song.lyricVersions[0]);
+    requireValue(version.tracks[0]).text = "One\nTwo\nThree";
+    requireValue(version.tracks[1]).text = "一\n二\n三";
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({ project, options, locale: "en-US" });
+    const page = plan.pages.find((candidate) => candidate.kind === "song");
+    expect(page?.kind === "song" ? page.lineFlow : undefined).toBe("preserve");
+    expect(page?.kind === "song" ? page.tracks.map((track) => track.text) : []).toEqual([
+      "One\nTwo\nThree",
+      "一\n二\n三",
+    ]);
+  });
+
   it("preserves every unique lyric line in order when a long song is paginated", () => {
     const project = createBlankProject("en-US");
     const song = createEmptySong("Every line matters");
@@ -408,6 +512,7 @@ describe("print plan", () => {
         format: "a5",
         languageMode: "original",
         strategy: "readable",
+        lineFlow: "preserve",
       },
       locale: "en-US",
     });
