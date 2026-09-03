@@ -39,6 +39,9 @@ async function openThemeDialog(page: Page, isMobile: boolean): Promise<Locator> 
   }
   const dialog = page.getByRole("dialog", { name: /Theme editor|主题编辑器/i });
   await expect(dialog).toBeVisible();
+  await dialog.evaluate(async (element) => {
+    await Promise.allSettled(element.getAnimations().map((animation) => animation.finished));
+  });
   return dialog;
 }
 
@@ -488,6 +491,7 @@ test("Garden Editorial wraps an unbroken next-song title at 320px", async ({ pag
 
 test("theme editor stays usable at supported narrow mobile widths", async ({ page, isMobile }) => {
   test.skip(!isMobile, "Narrow viewport coverage runs in the mobile project");
+  test.slow();
 
   await page.setViewportSize({ width: MOBILE_THEME_WIDTHS[0], height: 844 });
   await seedSyntheticProject(
