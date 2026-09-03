@@ -208,6 +208,78 @@ test("long lyrics paginate without losing markers or entering the footer", async
   expectSafeGeometry(geometry, pageCount * 2);
 });
 
+test("an unbroken Unicode lyric paginates safely without losing text", async ({ page }) => {
+  const expectedText = "纸上灯火🌙".repeat(2_000);
+  const project = syntheticProject({
+    songs: [syntheticSong("unbroken-song", "One Continuous Synthetic Line", expectedText)],
+  });
+  await seedSyntheticProject(page, project);
+  const dialog = await buildCurrentSongPreview(page);
+  await expect(dialog.getByRole("button", { name: /Print \/ Save PDF/i })).toBeEnabled({
+    timeout: 20_000,
+  });
+
+  const songPages = page.locator(`${PORTAL} [data-page-kind="song"]`);
+  const pageCount = await songPages.count();
+  expect(pageCount).toBeGreaterThan(1);
+  expect((await songPages.locator(".print-lyrics").allTextContents()).join("")).toBe(expectedText);
+  expectSafeGeometry(await printableGeometry(page, "song"), pageCount * 2);
+});
+
+test("A4 keeps independent original and translation tracks in safe parallel columns", async ({
+  page,
+}) => {
+  const originalCount = 46;
+  const translationCount = 39;
+  const originalText = numberedLines("ORIGINAL", originalCount);
+  const translationText = Array.from(
+    { length: translationCount },
+    (_, index) => `TRANSLATION-${String(index + 1).padStart(3, "0")} 合成灯火穿过纸上夜空`,
+  ).join("\n");
+  const song = syntheticSong("independent-bilingual", "Two Independent Lanterns", originalText, [
+    {
+      id: "original",
+      language: "en",
+      role: "original",
+      text: originalText,
+      label: { en: "Original", "zh-Hans": "原文" },
+    },
+    {
+      id: "translation",
+      language: "zh-Hans",
+      role: "translation",
+      text: translationText,
+      label: { en: "Translation", "zh-Hans": "翻译" },
+    },
+  ]);
+  await seedSyntheticProject(page, syntheticProject({ songs: [song] }));
+  const dialog = await buildCurrentSongPreview(page);
+  await expect(dialog.getByRole("button", { name: /Print \/ Save PDF/i })).toBeEnabled({
+    timeout: 20_000,
+  });
+
+  const songPages = page.locator(`${PORTAL} [data-page-kind="song"]`);
+  const pageCount = await songPages.count();
+  expect(pageCount).toBeGreaterThan(0);
+  await expect(songPages.first().locator(".print-song-content")).toHaveClass(/parallel-tracks/);
+  const firstPageColumns = await songPages
+    .first()
+    .locator(".print-track")
+    .evaluateAll((tracks) => ({
+      count: tracks.length,
+      lefts: tracks.map((track) => track.getBoundingClientRect().left),
+      template: getComputedStyle(tracks[0]?.parentElement as Element).gridTemplateColumns,
+    }));
+  expect(firstPageColumns.count).toBe(2);
+  expect(firstPageColumns.lefts[1] ?? 0).toBeGreaterThan(firstPageColumns.lefts[0] ?? 0);
+  expect(firstPageColumns.template.trim().split(/\s+/)).toHaveLength(2);
+
+  const text = (await songPages.locator(".print-lyrics").allTextContents()).join("\n");
+  expectEveryMarkerExactlyOnce(text, "ORIGINAL", originalCount);
+  expectEveryMarkerExactlyOnce(text, "TRANSLATION", translationCount);
+  expectSafeGeometry(await printableGeometry(page, "song"), pageCount * 2);
+});
+
 test("strict page limits preserve extreme text and block unsafe printing", async ({ page }) => {
   const lineCount = 500;
   const project = syntheticProject({
@@ -284,6 +356,94 @@ test("measured A5 contents paginate, wrap titles, and link to final song page nu
 
   const geometry = await printableGeometry(page, "toc");
   expectSafeGeometry(geometry, tocPageCount * 2);
+});
+
+test("A4 contents keeps optional songs visible without creating a sparse continuation", async ({
+  page,
+}) => {
+  const songs = Array.from({ length: 34 }, (_, index) =>
+    syntheticSong(
+      `optional-toc-${index + 1}`,
+      `Invented lantern song ${String(index + 1).padStart(2, "0")}`,
+      `OPTIONAL-TOC-${String(index + 1).padStart(3, "0")}`,
+    ),
+  );
+  const project = syntheticProject({ songs, sectionSize: 7 });
+  const setlist = project.setlists[0];
+  if (!setlist) throw new Error("Expected synthetic setlist");
+  const sections = setlist.items.filter((item) => item.type === "section");
+  if (sections[1]?.type === "section") sections[1].optional = true;
+  const firstSongItem = setlist.items.find(
+    (item) => item.type === "song" && item.songId === songs[1]?.id,
+  );
+  if (firstSongItem?.type === "song") firstSongItem.optional = true;
+
+  await seedSyntheticProject(page, project);
+  const dialog = await openPrintDialog(page);
+  await dialog.getByRole("button", { name: /Build preview|生成预览/i }).click();
+  await expect(dialog.getByRole("button", { name: /Print \/ Save PDF/i })).toBeEnabled({
+    timeout: 20_000,
+  });
+
+  const tocPages = page.locator(`${PORTAL} [data-page-kind="toc"]`);
+  await expect(tocPages).toHaveCount(1);
+  await expect(tocPages.getByText(/continued|续/u)).toHaveCount(0);
+  await expect(tocPages.locator('[data-toc-optional="section"]')).toHaveCount(1);
+  await expect(tocPages.locator('[data-toc-optional="entry"]')).toHaveCount(8);
+  await expect(tocPages.locator(".print-toc-entry")).toHaveCount(34);
+  expectSafeGeometry(await printableGeometry(page, "toc"), 2);
+});
+
+test("generated booklet cover keeps long copy inside three non-overlapping regions", async ({
+  page,
+}) => {
+  const project = syntheticProject({
+    songs: [syntheticSong("cover-song", "Cover song", numberedLines("COVER", 5))],
+  });
+  project.title = {
+    en: "A Deliberately Long Synthetic Concert Notebook Title Without Hidden Clipping",
+    "zh-Hans": "灯火穿过很长很长的纸上天空并照亮每一段合成演唱会歌词本标题",
+  };
+  project.description = {
+    en: "A private, local booklet assembled from invented lines for cover geometry verification. ".repeat(
+      2,
+    ),
+  };
+  await seedSyntheticProject(page, project);
+  const dialog = await openPrintDialog(page);
+  await dialog.getByLabel(/Page format|页面格式/i).selectOption("booklet");
+  await dialog.getByRole("button", { name: /Build preview|生成预览/i }).click();
+  await expect(dialog.getByRole("button", { name: /Print \/ Save PDF/i })).toBeEnabled({
+    timeout: 20_000,
+  });
+
+  const cover = page.locator(`${PORTAL} [data-page-kind="cover"]`).first();
+  const geometry = await cover.evaluate((element) => {
+    const pageRect = element.getBoundingClientRect();
+    const frame = element.querySelector<HTMLElement>("[data-print-cover-frame]");
+    const regions = Array.from(
+      element.querySelectorAll<HTMLElement>(
+        ".print-cover-header, .print-cover-copy, .print-cover-details",
+      ),
+    ).map((region) => region.getBoundingClientRect());
+    const frameRect = frame?.getBoundingClientRect();
+    return {
+      count: regions.length,
+      frameInside:
+        Boolean(frameRect) &&
+        (frameRect?.left ?? 0) >= pageRect.left &&
+        (frameRect?.right ?? 0) <= pageRect.right &&
+        (frameRect?.top ?? 0) >= pageRect.top &&
+        (frameRect?.bottom ?? 0) <= pageRect.bottom,
+      ordered: regions.every(
+        (region, index) => index === 0 || region.top >= (regions[index - 1]?.bottom ?? 0) - 1,
+      ),
+      frameOverflow:
+        frame &&
+        (frame.scrollHeight > frame.clientHeight + 1 || frame.scrollWidth > frame.clientWidth + 1),
+    };
+  });
+  expect(geometry).toEqual({ count: 3, frameInside: true, ordered: true, frameOverflow: false });
 });
 
 test("booklet keeps CJK, bilingual tracks, versions, and sectionless contents complete", async ({

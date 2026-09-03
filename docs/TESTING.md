@@ -18,6 +18,10 @@ npm run check
 npm run test:e2e
 ```
 
+Before a signed application commit, run the complete matrix listed in `AGENTS.md`, including WASM, offline HTTP, JavaScript audit, and RustSec audit. Focused tests are useful during TDD but do not replace that final matrix.
+
+Pushes to `develop`, `feature/**`, `fix/**`, and `release/**` run both the web/Rust CI workflow and the cross-browser full-quality workflow. Pull requests into `main` run both again. A local green run is required before pushing; remote checks verify the committed branch in GitHub's clean environment.
+
 The first dependency installation must create and commit `package-lock.json`.
 
 ## End-to-end selector and overlay rules
@@ -26,6 +30,7 @@ The first dependency installation must create and commit `package-lock.json`.
 - Scope controls to their active overlay or dialog. Do not use a global accessible-name selector when the backdrop and close button intentionally share a label.
 - Closed mobile overlays must be unmounted or inert; an `aria-hidden` container must never retain focusable descendants.
 - The visible print preview lives under `.print-preview-shell`; the system-print copy lives under the hidden direct-body `#print-portal`. Visibility assertions target the former, while geometry and attachment assertions may target the latter.
+- Optional TOC badges and cover controls must be present in measurement fixtures; a visually added label that is missing from the hidden measurement DOM is a regression.
 - Immersive navigation tests must force a scrollable fixture, confirm the old song is scrolled, select the next song, and then verify both the title change and a synchronous return to the top.
 
 ## Coverage and warning policy

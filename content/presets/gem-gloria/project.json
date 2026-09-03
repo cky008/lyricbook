@@ -1259,22 +1259,39 @@
   ],
   "themes": [
     {
-      "id": "gloria",
+      "id": "builtin-studio-slate",
       "name": {
-        "zh-Hans": "GLORIA 紫粉星光",
-        "en": "GLORIA Violet Starlight"
+        "en": "Studio Slate",
+        "zh-Hans": "影棚岩灰"
       },
       "tokens": {
-        "accent": "#d66cff",
-        "background": "#120c1c",
-        "surface": "#24152e",
-        "text": "#fbf6ff",
-        "radius": "24px"
+        "accent": "#8f67ff",
+        "accent2": "#e05ca7",
+        "background": "#17132b",
+        "surface": "#25203a",
+        "surfaceStrong": "#30294b",
+        "text": "#f9f7ff",
+        "muted": "#bbb5cf",
+        "radius": "22px",
+        "density": 1,
+        "headingFont": "sans",
+        "bodyFont": "sans"
+      },
+      "print": {
+        "accent": "#694e98",
+        "paper": "#fffdf8",
+        "text": "#18161a",
+        "headingStyle": "modern"
+      },
+      "style": {
+        "surface": "glass",
+        "elevation": "soft",
+        "ornament": "none"
       }
     }
   ],
   "activeSetlistId": "gem-gloria-core",
-  "activeThemeId": "gloria",
+  "activeThemeId": "builtin-studio-slate",
   "sources": [
     {
       "id": "gem-setlist-reference",

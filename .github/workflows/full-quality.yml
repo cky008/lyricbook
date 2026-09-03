@@ -1,6 +1,8 @@
 name: Full quality
 
 on:
+  push:
+    branches: [develop, "feature/**", "fix/**", "release/**"]
   pull_request:
     branches: [main]
   schedule:
@@ -48,6 +50,8 @@ jobs:
           npm run build
       - name: Cross-browser end-to-end tests
         run: npm run test:e2e
+      - name: Offline production smoke test
+        run: npm run check:offline
       - uses: actions/upload-artifact@v7
         if: always()
         with:

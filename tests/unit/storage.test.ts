@@ -7,6 +7,7 @@ vi.mock("idb", () => ({ openDB: openDBMock }));
 
 import {
   STORAGE_WARNING_EVENT,
+  replaceStoredProject,
   type StorageWarningDetail,
   saveStoredProject,
 } from "@app/lib/storage";
@@ -69,5 +70,45 @@ describe("project storage fallback", () => {
       code: "cover-omitted",
     });
     expect(warning?.message).toMatch(/saved without the local cover/i);
+  });
+
+  it("does not replace a project when its required backup cannot be created", async () => {
+    const current = createBlankProject("en-US");
+    const next = { ...createBlankProject("en-US"), title: { en: "Replacement" } };
+    const setItem = vi.fn();
+    vi.stubGlobal("localStorage", {
+      getItem: vi.fn(() => null),
+      setItem,
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    });
+
+    await expect(replaceStoredProject(current, next, "Required backup")).rejects.toThrow(
+      "IndexedDB unavailable",
+    );
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it("still replaces a project after a successful backup when old-backup pruning fails", async () => {
+    vi.resetModules();
+    const database = {
+      put: vi.fn().mockResolvedValue(undefined),
+      getAllKeysFromIndex: vi.fn().mockRejectedValue(new Error("Pruning unavailable")),
+      delete: vi.fn(),
+    };
+    openDBMock.mockResolvedValue(database);
+    const { replaceStoredProject: replaceWithFreshDatabase } = await import("@app/lib/storage");
+    const current = createBlankProject("en-US");
+    const next = { ...createBlankProject("en-US"), title: { en: "Replacement" } };
+
+    await expect(
+      replaceWithFreshDatabase(current, next, "Successful required backup"),
+    ).resolves.toBeUndefined();
+    expect(database.put).toHaveBeenNthCalledWith(
+      1,
+      "backups",
+      expect.objectContaining({ project: current, reason: "Successful required backup" }),
+    );
+    expect(database.put).toHaveBeenNthCalledWith(2, "state", next, "current");
   });
 });

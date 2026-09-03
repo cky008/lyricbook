@@ -122,14 +122,14 @@ describe("ThemeDialog gallery", () => {
 
     expect(screen.getByRole("button", { name: "Use theme: Studio Slate" })).toHaveAttribute(
       "aria-pressed",
-      "false",
+      "true",
     );
     for (const name of ["Ink Jade", "Porcelain Blue", "Cinnabar Silk", "Moonlit Paper"]) {
       expect(screen.getByRole("button", { name: `Use theme: ${name}` })).toBeInTheDocument();
     }
     expect(project).toEqual(snapshot);
-    expect(screen.getByRole("textbox", { name: "Theme name" })).toHaveValue("Default Night");
-    expect(screen.queryByText("Crafted themes are read-only.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Theme name" })).not.toBeInTheDocument();
+    expect(screen.getByText("Crafted themes are read-only.")).toBeInTheDocument();
   });
 
   it("activates and stores a catalog theme once", async () => {
@@ -140,7 +140,7 @@ describe("ThemeDialog gallery", () => {
     const activated = onChange.mock.calls[0]?.[0];
     expect(activated?.activeThemeId).toBe("builtin-porcelain-blue");
     expect(activated?.themes.map((theme) => theme.id)).toEqual([
-      "default",
+      "builtin-studio-slate",
       "builtin-porcelain-blue",
     ]);
 
@@ -336,7 +336,14 @@ describe("ThemeDialog gallery", () => {
 
   it("shows and preserves the effective glass surface for legacy themes without style data", async () => {
     const user = userEvent.setup();
-    const { onChange } = renderDialog(createBlankProject("en-US"));
+    const project = createBlankProject("en-US");
+    const legacy = structuredClone(project.themes[0]) as Theme;
+    legacy.id = "legacy-without-style";
+    legacy.name = { en: "Legacy without style" };
+    delete legacy.style;
+    project.themes = [legacy];
+    project.activeThemeId = legacy.id;
+    const { onChange } = renderDialog(project);
 
     expect(screen.getByRole("combobox", { name: "Surface style" })).toHaveValue("glass");
     await user.selectOptions(screen.getByRole("combobox", { name: "Ornament" }), "ink-wash");
@@ -383,8 +390,10 @@ describe("ThemeDialog gallery", () => {
     expect(screen.getByRole("textbox", { name: "Theme name" })).toHaveValue("Private Moon");
     await user.click(screen.getByRole("button", { name: "Remove" }));
     expect(confirm).toHaveBeenCalledWith("Remove this custom theme?");
-    expect(onChange.mock.calls[0]?.[0].themes.map((theme) => theme.id)).toEqual(["default"]);
-    expect(onChange.mock.calls[0]?.[0].activeThemeId).toBe("default");
+    expect(onChange.mock.calls[0]?.[0].themes.map((theme) => theme.id)).toEqual([
+      "builtin-studio-slate",
+    ]);
+    expect(onChange.mock.calls[0]?.[0].activeThemeId).toBe("builtin-studio-slate");
   });
 
   it("recognizes a catalog theme when localized keys arrive in a different order", () => {

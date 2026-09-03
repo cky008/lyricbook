@@ -1,13 +1,21 @@
-import { ArrowLeft, ArrowRight, BookOpenText, Pencil, Sparkles } from "lucide-react";
+import { useI18n } from "@app/lib/i18n";
+import { keyedLyricTracks } from "@app/lib/renderKeys";
 import {
   getLocalized,
-  languageDisplayName,
   type LyricVersion,
+  languageDisplayName,
   type Song,
   type UiLocale,
 } from "@domain/index";
-import { useI18n } from "@app/lib/i18n";
-import { keyedLyricTracks } from "@app/lib/renderKeys";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpenText,
+  ExternalLink,
+  Music2,
+  Pencil,
+  Sparkles,
+} from "lucide-react";
 
 interface SongReaderProps {
   song: Song;
@@ -44,6 +52,13 @@ export function SongReader({
   const version = activeVersion(song, selectedVersionId);
   const tracks = version?.tracks.filter((track) => track.text.trim()) ?? [];
   const renderedTracks = keyedLyricTracks(tracks);
+  const title = getLocalized(song.titles, locale);
+  const searchLinks = title
+    ? {
+        appleMusic: `https://music.apple.com/search?term=${encodeURIComponent(title)}`,
+        youtube: `https://www.youtube.com/results?search_query=${encodeURIComponent(title)}`,
+      }
+    : null;
   return (
     <article className="reader-card" id={`song-${song.id}`}>
       <div className="reader-kicker">
@@ -51,7 +66,7 @@ export function SongReader({
         <span>{version ? getLocalized(version.label, locale) : t("lyrics")}</span>
         {sequence ? <span>{t("reader-progress", sequence)}</span> : null}
       </div>
-      <h1 className="reader-title">{getLocalized(song.titles, locale) || song.id}</h1>
+      <h1 className="reader-title">{title || song.id}</h1>
       {song.aliases.length ? <div className="reader-alias">{song.aliases.join(" · ")}</div> : null}
       {song.tags.length ? (
         <div className="reader-tags">
@@ -62,13 +77,37 @@ export function SongReader({
           ))}
         </div>
       ) : null}
-      <div className="inline-actions">
+      <div className="inline-actions reader-top-actions">
         <button type="button" className="button" onClick={onEdit}>
           <Pencil size={15} /> {t("edit")}
         </button>
         <button type="button" className="button primary" onClick={onImmersive}>
           <BookOpenText size={15} /> {t("immersive-mode")}
         </button>
+        {searchLinks ? (
+          <>
+            <a
+              className="button ghost"
+              href={searchLinks.appleMusic}
+              target="_blank"
+              rel="noopener noreferrer"
+              referrerPolicy="no-referrer"
+              aria-label={t("search-apple-music", { title })}
+            >
+              <Music2 size={15} aria-hidden="true" /> Apple Music
+            </a>
+            <a
+              className="button ghost"
+              href={searchLinks.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              referrerPolicy="no-referrer"
+              aria-label={t("search-youtube", { title })}
+            >
+              <ExternalLink size={15} aria-hidden="true" /> YouTube
+            </a>
+          </>
+        ) : null}
       </div>
       {song.lyricVersions.length > 1 ? (
         <div className="version-tabs" role="tablist" aria-label={t("versions")}>

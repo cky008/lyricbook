@@ -1974,34 +1974,39 @@
   ],
   "themes": [
     {
-      "id": "kampung-girl",
+      "id": "builtin-ink-jade",
       "name": {
-        "zh-Hans": "KAMPUNG GIRL 田野暖光",
-        "en": "KAMPUNG GIRL Field Glow"
+        "en": "Ink Jade",
+        "zh-Hans": "墨玉"
       },
       "tokens": {
-        "accent": "#e79a3b",
-        "accent2": "#8fbd72",
-        "background": "#13241f",
-        "surface": "#24382e",
-        "surfaceStrong": "#314c3d",
-        "text": "#fff8e7",
-        "muted": "#d8d1bd",
-        "radius": "20px",
-        "density": 1,
+        "accent": "#7fae9d",
+        "accent2": "#c6a15b",
+        "background": "#0f1c1a",
+        "surface": "#172825",
+        "surfaceStrong": "#223a35",
+        "text": "#f3f0e7",
+        "muted": "#aebdb5",
+        "radius": "18px",
+        "density": 0.95,
         "headingFont": "serif",
-        "bodyFont": "sans"
+        "bodyFont": "serif"
       },
       "print": {
-        "accent": "#9b5b19",
-        "paper": "#fffaf0",
-        "text": "#28251f",
-        "headingStyle": "editorial"
+        "accent": "#315f54",
+        "paper": "#f5f0e5",
+        "text": "#18201d",
+        "headingStyle": "classic"
+      },
+      "style": {
+        "surface": "glass",
+        "elevation": "soft",
+        "ornament": "ink-wash"
       }
     }
   ],
   "activeSetlistId": "dior-london-likely",
-  "activeThemeId": "kampung-girl",
+  "activeThemeId": "builtin-ink-jade",
   "sources": [
     {
       "id": "dior-london-promoter",

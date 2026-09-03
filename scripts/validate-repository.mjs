@@ -1,4 +1,4 @@
-import { access, readFile, readdir, stat } from "node:fs/promises";
+import { access, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
@@ -23,7 +23,6 @@ const required = [
   "packages/domain/src/schema.ts",
   "packages/print-engine/src/layout.ts",
   "content/presets/index.json",
-  "themes/default/theme.json",
   "locales/en-US/main.ftl",
   "locales/zh-CN/main.ftl",
   "public/CNAME",
@@ -102,9 +101,11 @@ const workflowVersionRequirements = new Map([
   ["actions/dependency-review-action", "v5"],
 ]);
 const workflowDirectory = path.join(root, ".github/workflows");
+const workflowContents = new Map();
 for (const entry of await readdir(workflowDirectory, { withFileTypes: true })) {
   if (!entry.isFile() || !/\.ya?ml$/i.test(entry.name)) continue;
   const workflow = await readFile(path.join(workflowDirectory, entry.name), "utf8");
+  workflowContents.set(entry.name, workflow);
   for (const [action, version] of workflowVersionRequirements) {
     const pattern = new RegExp(`${action.replace("/", "\\/")}@([^\\s]+)`, "g");
     for (const match of workflow.matchAll(pattern)) {
@@ -113,6 +114,18 @@ for (const entry of await readdir(workflowDirectory, { withFileTypes: true })) {
       }
     }
   }
+}
+
+for (const workflowName of ["ci.yml", "full-quality.yml"]) {
+  const workflow = workflowContents.get(workflowName) ?? "";
+  for (const branchPattern of ["develop", "feature/**", "fix/**", "release/**"]) {
+    if (!workflow.includes(branchPattern)) {
+      throw new Error(`${workflowName} must run for pushed ${branchPattern} branches`);
+    }
+  }
+}
+if (!(workflowContents.get("full-quality.yml") ?? "").includes("npm run check:offline")) {
+  throw new Error("full-quality.yml must exercise the production build over HTTP");
 }
 
 const requiredWorkflowActions = new Map([

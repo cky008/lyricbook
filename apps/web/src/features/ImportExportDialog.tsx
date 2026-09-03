@@ -247,8 +247,19 @@ export function ImportExportDialog({
             disabled={busy}
             onClick={async () => {
               if (!window.confirm(t("confirm-clear"))) return;
-              await onReplace(createBlankProject(locale), "Blank project");
-              setMessage({ kind: "success", text: t("load-preset-success") });
+              setBusy(true);
+              setMessage(null);
+              try {
+                await onReplace(createBlankProject(locale), "Blank project");
+                setMessage({ kind: "success", text: t("load-preset-success") });
+              } catch (error) {
+                setMessage({
+                  kind: "error",
+                  text: error instanceof Error ? error.message : String(error),
+                });
+              } finally {
+                setBusy(false);
+              }
             }}
           >
             <RotateCcw size={15} /> {t("blank-project")}

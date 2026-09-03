@@ -204,30 +204,7 @@ export function sanitizeStandaloneTheme(theme: Theme): Theme {
   return standalone;
 }
 
-const STUDIO_SLATE: Theme = {
-  id: "builtin-studio-slate",
-  name: { en: "Studio Slate", "zh-Hans": "影棚岩灰" },
-  tokens: {
-    accent: "#8f67ff",
-    accent2: "#e05ca7",
-    background: "#17132b",
-    surface: "#25203a",
-    surfaceStrong: "#30294b",
-    text: "#f9f7ff",
-    muted: "#bbb5cf",
-    radius: "22px",
-    density: 1,
-    headingFont: "sans",
-    bodyFont: "sans",
-  },
-  print: {
-    accent: "#694e98",
-    paper: "#fffdf8",
-    text: "#18161a",
-    headingStyle: "modern",
-  },
-  style: { surface: "glass", elevation: "soft", ornament: "none" },
-};
+const STUDIO_SLATE: Theme = DEFAULT_THEME;
 
 const INK_JADE: Theme = {
   id: "builtin-ink-jade",
@@ -338,8 +315,7 @@ function freezeTheme(theme: Theme): Theme {
 }
 
 /**
- * A virtual catalog. A catalog theme is copied into a project only after the user selects it.
- * The legacy `default` theme remains project-owned and outside this reserved id namespace.
+ * A virtual catalog. A catalog theme is copied into a project when it becomes active.
  */
 export const BUILT_IN_THEMES: readonly Theme[] = Object.freeze(
   [STUDIO_SLATE, INK_JADE, PORCELAIN_BLUE, CINNABAR_SILK, MOONLIT_PAPER].map((theme) =>
@@ -356,6 +332,132 @@ export function isBuiltInThemeId(id: string): boolean {
 export function getBuiltInTheme(id: string): Theme | undefined {
   const theme = BUILT_IN_THEME_BY_ID.get(id);
   return theme ? structuredClone(theme) : undefined;
+}
+
+const LEGACY_DEFAULT_MINIMAL: Theme = {
+  id: "default",
+  name: { "zh-Hans": "默认星夜", en: "Default Night" },
+  tokens: {
+    accent: "#8f67ff",
+    background: "#17132b",
+    surface: "#25203a",
+    text: "#f9f7ff",
+    radius: "22px",
+  },
+};
+
+const LEGACY_DEFAULT_COMPLETE: Theme = {
+  ...LEGACY_DEFAULT_MINIMAL,
+  tokens: {
+    ...LEGACY_DEFAULT_MINIMAL.tokens,
+    accent2: "#e05ca7",
+    surfaceStrong: "#30294b",
+    muted: "#bbb5cf",
+    density: 1,
+    headingFont: "serif",
+    bodyFont: "serif",
+  },
+  print: {
+    accent: "#694e98",
+    paper: "#fffdf8",
+    text: "#18161a",
+    headingStyle: "editorial",
+  },
+};
+
+const LEGACY_GLORIA: Theme = {
+  id: "gloria",
+  name: { "zh-Hans": "GLORIA 紫粉星光", en: "GLORIA Violet Starlight" },
+  tokens: {
+    accent: "#d66cff",
+    background: "#120c1c",
+    surface: "#24152e",
+    text: "#fbf6ff",
+    radius: "24px",
+  },
+};
+
+const LEGACY_KAMPUNG_GIRL_MINIMAL: Theme = {
+  id: "kampung-girl",
+  name: { "zh-Hans": "KAMPUNG GIRL 田野暖光", en: "KAMPUNG GIRL Field Glow" },
+  tokens: {
+    accent: "#e79a3b",
+    background: "#13241f",
+    surface: "#24382e",
+    text: "#fff8e7",
+    radius: "20px",
+  },
+};
+
+const LEGACY_KAMPUNG_GIRL_COMPLETE: Theme = {
+  ...LEGACY_KAMPUNG_GIRL_MINIMAL,
+  tokens: {
+    ...LEGACY_KAMPUNG_GIRL_MINIMAL.tokens,
+    accent2: "#8fbd72",
+    surfaceStrong: "#314c3d",
+    muted: "#d8d1bd",
+    density: 1,
+    headingFont: "serif",
+    bodyFont: "sans",
+  },
+  print: {
+    accent: "#9b5b19",
+    paper: "#fffaf0",
+    text: "#28251f",
+    headingStyle: "editorial",
+  },
+};
+
+const LEGACY_THEME_MIGRATIONS: ReadonlyArray<{
+  signatures: readonly Theme[];
+  targetId: string;
+}> = [
+  {
+    signatures: [LEGACY_DEFAULT_MINIMAL, LEGACY_DEFAULT_COMPLETE, LEGACY_GLORIA],
+    targetId: "builtin-studio-slate",
+  },
+  {
+    signatures: [LEGACY_KAMPUNG_GIRL_MINIMAL, LEGACY_KAMPUNG_GIRL_COMPLETE],
+    targetId: "builtin-ink-jade",
+  },
+];
+
+function legacyMigrationFor(theme: Theme): (typeof LEGACY_THEME_MIGRATIONS)[number] | undefined {
+  return LEGACY_THEME_MIGRATIONS.find((migration) =>
+    migration.signatures.some((signature) => themesEqual(theme, signature)),
+  );
+}
+
+/**
+ * Replace only byte-for-byte-equivalent published legacy theme data (after normal sanitization)
+ * with its closest catalog theme. User edits and reserved-id collisions stay project-owned.
+ */
+export function migrateLegacyThemes(project: LyricBookProject): LyricBookProject {
+  const sourceThemes = Array.isArray(project.themes) ? project.themes : [];
+  let themes = sourceThemes;
+  let activeThemeId = project.activeThemeId;
+  let changed = false;
+
+  for (const sourceTheme of sourceThemes) {
+    const migration = legacyMigrationFor(sourceTheme);
+    if (!migration) continue;
+    const target = getBuiltInTheme(migration.targetId);
+    if (!target) continue;
+
+    const existingTarget = themes.find((theme) => theme.id === target.id);
+    if (existingTarget && !themesEqual(existingTarget, target)) continue;
+
+    if (!changed) themes = [...sourceThemes];
+    const sourceIndex = themes.indexOf(sourceTheme);
+    if (sourceIndex < 0) continue;
+
+    if (existingTarget) themes.splice(sourceIndex, 1);
+    else themes.splice(sourceIndex, 1, target);
+    if (activeThemeId === sourceTheme.id) activeThemeId = target.id;
+    changed = true;
+  }
+
+  return changed ? { ...project, themes, activeThemeId } : project;
 }
 
 export function activateBuiltInTheme(project: LyricBookProject, id: string): LyricBookProject {

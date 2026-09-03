@@ -100,6 +100,7 @@ npm run validate:repo
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-targets
+npm run build:wasm
 npm run build
 ```
 
@@ -107,6 +108,9 @@ For changes touching UI, overlays, storage, imports, reading, printing, themes, 
 
 ```bash
 npm run test:e2e
+npm run check:offline
+npm audit --audit-level=high
+cargo audit
 ```
 
 Print changes additionally require fixtures for short, long, bilingual, multi-version, CJK, long-title, sectionless, A4, A5, and booklet cases. Check for text clipping, footer collision, missing tracks, incorrect booklet order, and broken TOC links.
@@ -132,6 +136,9 @@ Maintain Playwright coverage using a WebKit/iPhone project for these paths.
 - Strict page limits may reduce typography but must never silently delete text.
 - A4 folded booklet output is already imposed; instructions must say duplex, short-edge flip, 100% scale, one PDF page per sheet side.
 - TOC entries should link to the first page of each song when supported by the PDF browser.
+- Optional sections and songs must remain visibly distinct in the TOC, and those labels must be included in layout measurement.
+- Original and translation tracks may use independent parallel columns even when migrated data has no row-alignment marker; do not use `alignedTo` as the sole layout gate.
+- Generated covers must use sanitized theme print tokens and measurable safety regions. Do not clip long cover text to make a page appear valid.
 
 ## 9. Data and migration rules
 
@@ -208,6 +215,8 @@ git diff --cached --check
 ```
 
 For small changes, stage explicit paths instead of `git add .`.
+
+Each commit must contain a complete behavior slice: its implementation, regression coverage, and directly affected documentation. Do not create WIP commits or commit a known-red test. Run the complete required matrix against the exact working tree immediately before every commit, sign the commit with the configured SSH signing key, and verify the resulting commit object locally. When a user authorizes a push, push only the named non-`main` branch and wait for every triggered GitHub check to finish before reporting success.
 
 ## 14. Destructive Git operations
 
