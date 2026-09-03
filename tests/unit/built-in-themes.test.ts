@@ -7,6 +7,7 @@ import {
   isBuiltInThemeId,
   isSafeThemeColorToken,
   isSafeThemeLengthToken,
+  migrateLegacyThemes,
   parseProject,
   parseTheme,
   resolveActiveTheme,
@@ -17,6 +18,8 @@ import {
   validateProject,
 } from "@domain/index";
 import { describe, expect, it } from "vitest";
+import diorPreset from "../../content/presets/dior-kampung-girl-london/project.json";
+import gemPreset from "../../content/presets/gem-gloria/project.json";
 
 const EXPECTED_BUILT_INS = new Map([
   ["builtin-studio-slate", "Studio Slate"],
@@ -25,6 +28,81 @@ const EXPECTED_BUILT_INS = new Map([
   ["builtin-cinnabar-silk", "Cinnabar Silk"],
   ["builtin-moonlit-paper", "Moonlit Paper"],
 ]);
+
+const LEGACY_DEFAULT_MINIMAL: Theme = {
+  id: "default",
+  name: { "zh-Hans": "默认星夜", en: "Default Night" },
+  tokens: {
+    accent: "#8f67ff",
+    background: "#17132b",
+    surface: "#25203a",
+    text: "#f9f7ff",
+    radius: "22px",
+  },
+};
+
+const LEGACY_DEFAULT_COMPLETE: Theme = {
+  ...LEGACY_DEFAULT_MINIMAL,
+  name: { en: "Default Night", "zh-Hans": "默认星夜" },
+  tokens: {
+    ...LEGACY_DEFAULT_MINIMAL.tokens,
+    accent2: "#e05ca7",
+    surfaceStrong: "#30294b",
+    muted: "#bbb5cf",
+    density: 1,
+    headingFont: "serif",
+    bodyFont: "serif",
+  },
+  print: {
+    accent: "#694e98",
+    paper: "#fffdf8",
+    text: "#18161a",
+    headingStyle: "editorial",
+  },
+};
+
+const LEGACY_GLORIA: Theme = {
+  id: "gloria",
+  name: { "zh-Hans": "GLORIA 紫粉星光", en: "GLORIA Violet Starlight" },
+  tokens: {
+    accent: "#d66cff",
+    background: "#120c1c",
+    surface: "#24152e",
+    text: "#fbf6ff",
+    radius: "24px",
+  },
+};
+
+const LEGACY_KAMPUNG_GIRL: Theme = {
+  id: "kampung-girl",
+  name: { "zh-Hans": "KAMPUNG GIRL 田野暖光", en: "KAMPUNG GIRL Field Glow" },
+  tokens: {
+    accent: "#e79a3b",
+    background: "#13241f",
+    surface: "#24382e",
+    text: "#fff8e7",
+    radius: "20px",
+  },
+};
+
+const LEGACY_KAMPUNG_GIRL_COMPLETE: Theme = {
+  ...LEGACY_KAMPUNG_GIRL,
+  tokens: {
+    ...LEGACY_KAMPUNG_GIRL.tokens,
+    accent2: "#8fbd72",
+    surfaceStrong: "#314c3d",
+    muted: "#d8d1bd",
+    density: 1,
+    headingFont: "serif",
+    bodyFont: "sans",
+  },
+  print: {
+    accent: "#9b5b19",
+    paper: "#fffaf0",
+    text: "#28251f",
+    headingStyle: "editorial",
+  },
+};
 
 function customTheme(id = "custom-theme"): Theme {
   return {
@@ -49,45 +127,30 @@ describe("built-in theme catalog", () => {
     );
     expect(BUILT_IN_THEMES.every((theme) => Boolean(theme.name["zh-Hans"]))).toBe(true);
     expect([...EXPECTED_BUILT_INS.keys()].every((id) => isBuiltInThemeId(id))).toBe(true);
-    expect(isBuiltInThemeId(DEFAULT_THEME.id)).toBe(false);
+    expect(isBuiltInThemeId(DEFAULT_THEME.id)).toBe(true);
     expect(isBuiltInThemeId("custom-theme")).toBe(false);
-    expect(getBuiltInTheme(DEFAULT_THEME.id)).toBeUndefined();
+    expect(getBuiltInTheme(DEFAULT_THEME.id)).toEqual(DEFAULT_THEME);
     expect(getBuiltInTheme("builtin-studio-slate")).toMatchObject({
       tokens: { headingFont: "sans", bodyFont: "sans" },
       print: { headingStyle: "modern" },
     });
   });
 
-  it("keeps the legacy default theme id, names, tokens, and shape unchanged", () => {
-    expect(DEFAULT_THEME).toEqual({
-      id: "default",
-      name: { en: "Default Night", "zh-Hans": "默认星夜" },
-      tokens: {
-        accent: "#8f67ff",
-        accent2: "#e05ca7",
-        background: "#17132b",
-        surface: "#25203a",
-        surfaceStrong: "#30294b",
-        text: "#f9f7ff",
-        muted: "#bbb5cf",
-        radius: "22px",
-        density: 1,
-        headingFont: "serif",
-        bodyFont: "serif",
-      },
-      print: {
-        accent: "#694e98",
-        paper: "#fffdf8",
-        text: "#18161a",
-        headingStyle: "editorial",
-      },
-    });
-    expect(DEFAULT_THEME).not.toHaveProperty("style");
-
+  it("uses the canonical Studio Slate catalog theme for new and empty projects", () => {
+    expect(DEFAULT_THEME).toEqual(getBuiltInTheme("builtin-studio-slate"));
     const project = createBlankProject("en-US");
-    expect(project.activeThemeId).toBe("default");
+    expect(project.activeThemeId).toBe("builtin-studio-slate");
     expect(project.themes).toEqual([DEFAULT_THEME]);
     expect(resolveActiveTheme(project)).toEqual(DEFAULT_THEME);
+  });
+
+  it.each([
+    [gemPreset, "builtin-studio-slate"],
+    [diorPreset, "builtin-ink-jade"],
+  ])("ships each content preset with its canonical built-in theme", (preset, themeId) => {
+    const parsed = parseProject(preset);
+    expect(parsed.activeThemeId).toBe(themeId);
+    expect(parsed.themes).toEqual([getBuiltInTheme(themeId)]);
   });
 
   it("contains only fixed safe data tokens and sanitizes idempotently", () => {
@@ -221,16 +284,14 @@ describe("built-in theme activation", () => {
     }
   });
 
-  it("preserves the legacy default project theme when Studio Slate is activated", () => {
+  it("does not duplicate the canonical default when it is activated again", () => {
     const project = createBlankProject("en-US");
     const snapshot = structuredClone(project);
 
     const activated = activateBuiltInTheme(project, "builtin-studio-slate");
+    expect(activated).toBe(project);
     expect(project).toEqual(snapshot);
-    expect(activated.activeThemeId).toBe("builtin-studio-slate");
-    expect(activated.themes.map((theme) => theme.id)).toEqual(["default", "builtin-studio-slate"]);
-    expect(activated.themes[0]).toEqual(DEFAULT_THEME);
-    expect(activated.themes[1]).toEqual(getBuiltInTheme("builtin-studio-slate"));
+    expect(activated.themes.map((theme) => theme.id)).toEqual(["builtin-studio-slate"]);
   });
 
   it("resolves missing active themes and empty projects without mutating them", () => {
@@ -245,6 +306,91 @@ describe("built-in theme activation", () => {
     const empty = { ...project, themes: [], activeThemeId: "missing" };
     expect(resolveActiveTheme(empty)).toEqual(DEFAULT_THEME);
     expect(empty.themes).toEqual([]);
+  });
+});
+
+describe("legacy theme migration", () => {
+  function projectWithThemes(themes: Theme[], activeThemeId: string) {
+    return {
+      ...createBlankProject("en-US"),
+      themes: structuredClone(themes),
+      activeThemeId,
+    };
+  }
+
+  it.each([LEGACY_DEFAULT_MINIMAL, LEGACY_DEFAULT_COMPLETE])(
+    "maps each published Default Night shape to canonical Studio Slate",
+    (legacy) => {
+      const project = projectWithThemes([legacy], legacy.id);
+      const snapshot = structuredClone(project);
+
+      const migrated = migrateLegacyThemes(project);
+
+      expect(migrated).not.toBe(project);
+      expect(migrated.activeThemeId).toBe("builtin-studio-slate");
+      expect(migrated.themes).toEqual([getBuiltInTheme("builtin-studio-slate")]);
+      expect(project).toEqual(snapshot);
+      expect(migrateLegacyThemes(migrated)).toBe(migrated);
+    },
+  );
+
+  it.each([LEGACY_KAMPUNG_GIRL, LEGACY_KAMPUNG_GIRL_COMPLETE])(
+    "maps the published preset themes to the closest canonical catalog themes",
+    (kampungGirl) => {
+      const project = projectWithThemes([LEGACY_GLORIA, kampungGirl], kampungGirl.id);
+
+      const migrated = migrateLegacyThemes(project);
+
+      expect(migrated.activeThemeId).toBe("builtin-ink-jade");
+      expect(migrated.themes).toEqual([
+        getBuiltInTheme("builtin-studio-slate"),
+        getBuiltInTheme("builtin-ink-jade"),
+      ]);
+      expect(migrateLegacyThemes(migrated)).toBe(migrated);
+    },
+  );
+
+  it("deduplicates an official legacy theme when its canonical target already exists", () => {
+    const studioSlate = getBuiltInTheme("builtin-studio-slate");
+    if (!studioSlate) throw new Error("Expected Studio Slate");
+    const project = projectWithThemes([LEGACY_GLORIA, studioSlate], LEGACY_GLORIA.id);
+
+    const migrated = migrateLegacyThemes(project);
+
+    expect(migrated.activeThemeId).toBe(studioSlate.id);
+    expect(migrated.themes).toEqual([studioSlate]);
+  });
+
+  it("preserves user-modified legacy ids instead of overwriting private theme data", () => {
+    const customized = {
+      ...structuredClone(LEGACY_GLORIA),
+      tokens: { ...LEGACY_GLORIA.tokens, accent: "#123456" },
+    };
+    const project = projectWithThemes([customized], customized.id);
+    const snapshot = structuredClone(project);
+
+    expect(migrateLegacyThemes(project)).toBe(project);
+    expect(project).toEqual(snapshot);
+  });
+
+  it("preserves an official legacy theme when a project-owned reserved id blocks its target", () => {
+    const collision = customTheme("builtin-studio-slate");
+    const project = projectWithThemes([LEGACY_DEFAULT_COMPLETE, collision], "default");
+    const snapshot = structuredClone(project);
+
+    expect(migrateLegacyThemes(project)).toBe(project);
+    expect(project).toEqual(snapshot);
+  });
+
+  it("normalizes legacy themes at the project parse boundary without mutating the input", () => {
+    const input = projectWithThemes([LEGACY_KAMPUNG_GIRL], LEGACY_KAMPUNG_GIRL.id);
+    const snapshot = structuredClone(input);
+
+    const parsed = parseProject(input);
+
+    expect(parsed.activeThemeId).toBe("builtin-ink-jade");
+    expect(parsed.themes).toEqual([getBuiltInTheme("builtin-ink-jade")]);
+    expect(input).toEqual(snapshot);
   });
 });
 

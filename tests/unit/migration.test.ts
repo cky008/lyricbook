@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { createBlankProject, migrateGemV4Backup } from "@domain/index";
+import { describe, expect, it } from "vitest";
 import { requireValue } from "./test-utils";
 
 describe("G.E.M. v4 migration", () => {
@@ -45,7 +45,7 @@ describe("G.E.M. v4 migration", () => {
     expect(migrated.songs[1]?.lyricVersions).toEqual([]);
     expect(migrated.id).toBe("gem-gloria-migrated");
     expect(migrated.title.en).toContain("migrated");
-    expect(migrated.themes[0]?.id).toBe("default");
+    expect(migrated.themes[0]?.id).toBe("builtin-studio-slate");
     expect(migrated.createdAt).toBe("2026-08-31T12:00:00.000Z");
     expect(migrated.parentRevisionId).toBe(metadata.revisionId);
   });

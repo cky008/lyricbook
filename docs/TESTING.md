@@ -6,8 +6,9 @@ LyricBook uses TDD and multiple layers:
 - Rust tests/proptest: validation, booklet invariants, and deterministic helpers.
 - Playwright: Chromium, Firefox, WebKit, iPhone profile, accessibility, overlays, immersive navigation, and print preview.
 - Repository/content validators: required files, pinned modern stack, aligned Fluent keys, valid preset references, no React 16/vendor runtime, and no private lyric files.
-- Service Worker lifecycle tests: build-specific caches, network-first navigation, previous-build fallback, update checks, and a stale-HTML normal-reload regression.
+- Service Worker lifecycle tests: build-specific caches, network-first navigation and locale catalogs, previous-build fallback, update checks, and stale-shell/catalog upgrade regressions.
 - Theme tests: frozen catalog data, explicit append-once activation, project id collisions, standalone import/export sanitization, safe contrast-derived appearance variables, responsive gallery controls, persistence, and print-token application.
+- Interface-style tests: strict Studio/Garden values, storage failure fallback, pre-mount restoration, project-import independence, responsive accessibility, and byte-for-byte equivalent print geometry and tokens.
 
 Print changes follow the synthetic fixture and PDF matrix in [PRINT_REGRESSION_TEST_PLAN.md](PRINT_REGRESSION_TEST_PLAN.md), including measured overflow, footer clearance, text completeness, contents links, strict-limit blocking, and A4/A5/booklet visual checks.
 
@@ -18,6 +19,10 @@ npm run check
 npm run test:e2e
 ```
 
+Before a signed application commit, run the complete matrix listed in `AGENTS.md`, including WASM, offline HTTP, JavaScript audit, and RustSec audit. Focused tests are useful during TDD but do not replace that final matrix.
+
+Pushes to `develop`, `feature/**`, `fix/**`, and `release/**` run both the web/Rust CI workflow and the cross-browser full-quality workflow. Pull requests into `main` run both again. A local green run is required before pushing; remote checks verify the committed branch in GitHub's clean environment.
+
 The first dependency installation must create and commit `package-lock.json`.
 
 ## End-to-end selector and overlay rules
@@ -26,6 +31,7 @@ The first dependency installation must create and commit `package-lock.json`.
 - Scope controls to their active overlay or dialog. Do not use a global accessible-name selector when the backdrop and close button intentionally share a label.
 - Closed mobile overlays must be unmounted or inert; an `aria-hidden` container must never retain focusable descendants.
 - The visible print preview lives under `.print-preview-shell`; the system-print copy lives under the hidden direct-body `#print-portal`. Visibility assertions target the former, while geometry and attachment assertions may target the latter.
+- Optional TOC badges and cover controls must be present in measurement fixtures; a visually added label that is missing from the hidden measurement DOM is a regression.
 - Immersive navigation tests must force a scrollable fixture, confirm the old song is scrolled, select the next song, and then verify both the title change and a synchronous return to the top.
 
 ## Coverage and warning policy

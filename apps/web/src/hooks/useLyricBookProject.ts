@@ -1,11 +1,3 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  createBlankProject,
-  parseProject,
-  touchProject,
-  type LyricBookProject,
-  type UiLocale,
-} from "@domain/index";
 import { loadPreset, loadPresetIndex } from "@app/lib/presets";
 import {
   backupProject,
@@ -13,12 +5,29 @@ import {
   replaceStoredProject,
   saveStoredProject,
 } from "@app/lib/storage";
+import {
+  createBlankProject,
+  type LyricBookProject,
+  migrateLegacyThemes,
+  parseProject,
+  touchProject,
+  type UiLocale,
+} from "@domain/index";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ProjectState {
   project: LyricBookProject | null;
   loading: boolean;
   saving: boolean;
   error: string | null;
+}
+
+function hasPersistedThemeMigration(stored: LyricBookProject, parsed: LyricBookProject): boolean {
+  return (
+    stored.activeThemeId !== parsed.activeThemeId ||
+    stored.themes.length !== parsed.themes.length ||
+    stored.themes.some((theme, index) => theme.id !== parsed.themes[index]?.id)
+  );
 }
 
 export function useLyricBookProject(locale: UiLocale) {
@@ -38,7 +47,29 @@ export function useLyricBookProject(locale: UiLocale) {
         const stored = await loadStoredProject();
         if (cancelled) return;
         if (stored) {
-          setState({ project: parseProject(stored), loading: false, saving: false, error: null });
+          const parsed = parseProject(stored, { migrateLegacyThemeData: false });
+          const project = migrateLegacyThemes(parsed);
+          let visibleProject = project;
+          let migrationError: string | null = null;
+          if (hasPersistedThemeMigration(parsed, project)) {
+            try {
+              await replaceStoredProject(
+                stored,
+                project,
+                "Migrate published themes to the built-in collection",
+              );
+            } catch (error) {
+              visibleProject = parsed;
+              migrationError = error instanceof Error ? error.message : String(error);
+            }
+          }
+          if (cancelled) return;
+          setState({
+            project: visibleProject,
+            loading: false,
+            saving: false,
+            error: migrationError,
+          });
           initialized.current = true;
           return;
         }

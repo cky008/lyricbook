@@ -4,6 +4,7 @@ import {
   type PrintPlan,
   paddedBookletPageCount,
   type SongPage,
+  splitContinuousText,
   type TocDensity,
   type TocPage,
   type TocSection,
@@ -300,11 +301,13 @@ function collectedTocSections(pages: TocPage[]): TocSection[] {
     for (const column of page.columnSections) {
       for (const section of column) {
         const previous = sections.at(-1);
-        if (previous?.label === section.label) {
+        if (previous?.label === section.label && previous.optional === section.optional) {
           previous.entries.push(...section.entries.map((entry) => ({ ...entry })));
         } else {
           sections.push({
             label: section.label,
+            optional: section.optional,
+            optionalLabel: section.optionalLabel,
             entries: section.entries.map((entry) => ({ ...entry })),
           });
         }
@@ -325,22 +328,41 @@ function createTocSectionElement(document: Document, section: TocSection): HTMLE
   const container = document.createElement("section");
   container.className = "print-toc-section";
   const heading = document.createElement("h3");
-  heading.textContent = section.label;
+  const headingLabel = document.createElement("span");
+  headingLabel.textContent = section.label;
+  heading.append(headingLabel);
+  if (section.optionalLabel) {
+    const badge = document.createElement("span");
+    badge.className = "print-toc-optional";
+    badge.dataset.tocOptional = "section";
+    badge.textContent = section.optionalLabel;
+    heading.append(badge);
+  }
   container.append(heading);
   for (const entry of section.entries) {
     const link = document.createElement("a");
     link.className = "print-toc-entry";
     link.dataset.tocSongId = entry.songId;
     link.href = `#print-song-${entry.songId}`;
-    for (const value of [
-      String(entry.sequence).padStart(2, "0"),
-      entry.title,
-      String(entry.pageNumber),
-    ]) {
-      const span = document.createElement("span");
-      span.textContent = value;
-      link.append(span);
+    const sequence = document.createElement("span");
+    sequence.textContent = String(entry.sequence).padStart(2, "0");
+    link.append(sequence);
+    const title = document.createElement("span");
+    title.className = "print-toc-entry-title";
+    const titleText = document.createElement("span");
+    titleText.textContent = entry.title;
+    title.append(titleText);
+    if (entry.optionalLabel) {
+      const badge = document.createElement("span");
+      badge.className = "print-toc-optional";
+      badge.dataset.tocOptional = "entry";
+      badge.textContent = entry.optionalLabel;
+      title.append(badge);
     }
+    link.append(title);
+    const pageNumber = document.createElement("span");
+    pageNumber.textContent = String(entry.pageNumber);
+    link.append(pageNumber);
     container.append(link);
   }
   return container;
@@ -371,7 +393,8 @@ function packMeasuredToc(
       let used = usedHeights[columnIndex] ?? 0;
       if (!column) continue;
       let targetSection = column.at(-1);
-      let startsSection = targetSection?.label !== section.label;
+      let startsSection =
+        targetSection?.label !== section.label || targetSection.optional !== section.optional;
       let height =
         (measured.entryHeights[entryIndex] ?? 0) + (startsSection ? measured.headingHeight : 0);
 
@@ -387,7 +410,12 @@ function packMeasuredToc(
       }
 
       if (startsSection) {
-        targetSection = { label: section.label, entries: [] };
+        targetSection = {
+          label: section.label,
+          optional: section.optional,
+          optionalLabel: section.optionalLabel,
+          entries: [],
+        };
         column.push(targetSection);
       }
       targetSection?.entries.push({ ...entry });
@@ -602,10 +630,13 @@ function inspectPage(pageElement: HTMLElement, page: LogicalPrintPage): PageSafe
   const innerBox = innerElement ? metricsFor(innerElement) : undefined;
   const contentBox = contentElement ? metricsFor(contentElement) : undefined;
   const footerBox = footerElement ? metricsFor(footerElement) : undefined;
-  const bodyBox =
-    contentElement && page.kind !== "cover"
-      ? unionMetrics(Array.from(contentElement.querySelectorAll<HTMLElement>("*")))
-      : undefined;
+  const bodyElements =
+    page.kind === "cover"
+      ? Array.from(pageElement.querySelectorAll<HTMLElement>("[data-print-cover-frame]"))
+      : contentElement
+        ? Array.from(contentElement.querySelectorAll<HTMLElement>("*"))
+        : [];
+  const bodyBox = unionMetrics(bodyElements);
   const coverImage = pageElement.querySelector<HTMLImageElement>("[data-print-cover-image]");
 
   if (
@@ -740,18 +771,126 @@ function inspectPlan(root: HTMLElement, plan: PrintPlan): PrintSafetyReport {
 }
 
 function clonePlan(draft: PrintPlan): PrintPlan {
+  const cloneSections = (sections: TocSection[]): TocSection[] =>
+    sections.map((section) => ({
+      ...section,
+      entries: section.entries.map((entry) => ({ ...entry })),
+    }));
   return {
     ...draft,
-    pages: draft.pages.map((page) =>
-      page.kind === "song"
-        ? { ...page, tracks: page.tracks.map((track) => ({ ...track })) }
-        : { ...page },
-    ),
+    pages: draft.pages.map((page) => {
+      if (page.kind === "song") {
+        return { ...page, tracks: page.tracks.map((track) => ({ ...track })) };
+      }
+      if (page.kind === "toc") {
+        return {
+          ...page,
+          sections: cloneSections(page.sections),
+          columnSections: page.columnSections.map(cloneSections),
+        };
+      }
+      if (page.kind === "cover") {
+        return {
+          ...page,
+          image: page.image ? { ...page.image } : undefined,
+        };
+      }
+      return { ...page };
+    }),
     bookletSheets: draft.bookletSheets.map((sheet) => ({
       ...sheet,
       front: [...sheet.front],
       back: [...sheet.back],
     })),
+  };
+}
+
+function splitTextInHalf(text: string): [string, string] | undefined {
+  const lines = text.replace(/\r\n?/g, "\n").split("\n");
+  if (lines.length < 2) {
+    const chunks = splitContinuousText(text, 2);
+    const first = chunks[0];
+    const second = chunks[1];
+    return first !== undefined && second !== undefined ? [first, second] : undefined;
+  }
+  const midpoint = Math.ceil(lines.length / 2);
+  const searchRadius = Math.max(1, Math.floor(lines.length * 0.2));
+  let splitIndex = midpoint;
+  for (let distance = 0; distance <= searchRadius; distance += 1) {
+    const before = midpoint - distance;
+    const after = midpoint + distance;
+    if (before > 0 && before < lines.length && !lines[before]?.trim()) {
+      splitIndex = before + 1;
+      break;
+    }
+    if (after > 0 && after < lines.length && !lines[after]?.trim()) {
+      splitIndex = after + 1;
+      break;
+    }
+  }
+  return [lines.slice(0, splitIndex).join("\n"), lines.slice(splitIndex).join("\n")];
+}
+
+function splitUnsafeSongPage(page: SongPage): [SongPage, SongPage] | undefined {
+  if (page.layoutSafety !== "unsafe" || !page.paginateOnOverflow) return undefined;
+  const splits = page.tracks.map((track) => splitTextInHalf(track.text));
+  if (!splits.some(Boolean)) return undefined;
+  const part = (index: 0 | 1, suffix: string): SongPage => ({
+    ...page,
+    id: `${page.id}-measured-${suffix}`,
+    tracks: page.tracks.map((track, trackIndex) => ({
+      ...track,
+      text: splits[trackIndex]?.[index] ?? (index === 0 ? track.text : ""),
+    })),
+    layoutSafety: "pending",
+    compact: true,
+  });
+  return [part(0, "a"), part(1, "b")];
+}
+
+/**
+ * Split ordinary pages that still overflow at the measured 7pt minimum.
+ * Strict one-page output remains intact and unsafe so the print action stays disabled.
+ */
+export function repaginateUnsafeSongPages(plan: PrintPlan): PrintPlan {
+  const next = clonePlan(plan);
+  const sourcePages = next.pages.filter((page) => page.kind !== "blank");
+  let changed = false;
+  const pages = sourcePages.flatMap<LogicalPrintPage>((page) => {
+    if (page.kind !== "song") return [page];
+    const split = splitUnsafeSongPage(page);
+    if (!split) return [page];
+    changed = true;
+    return split;
+  });
+  if (!changed) return plan;
+
+  const songPageCounts = new Map<string, number>();
+  for (const page of pages) {
+    if (page.kind === "song") {
+      songPageCounts.set(page.songId, (songPageCounts.get(page.songId) ?? 0) + 1);
+    }
+  }
+  const songPageIndexes = new Map<string, number>();
+  for (const page of pages) {
+    if (page.kind !== "song") continue;
+    const pageInSong = (songPageIndexes.get(page.songId) ?? 0) + 1;
+    songPageIndexes.set(page.songId, pageInSong);
+    page.pageInSong = pageInSong;
+    page.pageCountForSong = songPageCounts.get(page.songId) ?? 1;
+  }
+
+  const paddedPageCount =
+    next.format === "booklet" ? paddedBookletPageCount(pages.length) : pages.length;
+  while (pages.length < paddedPageCount) {
+    pages.push({ kind: "blank", id: `blank-${pages.length + 1}` });
+  }
+  assignTocPageNumbers(pages);
+  return {
+    ...next,
+    pages,
+    paddedPageCount,
+    bookletSheets: next.format === "booklet" ? imposeBooklet(pages.length) : [],
   };
 }
 
@@ -839,7 +978,7 @@ export async function resolveRenderedDraft(
     return resolveSongPage(pageElement, content, page, signal);
   });
 
-  return resolved;
+  return repaginateUnsafeSongPages(resolved);
 }
 
 /** Audit all rendered page regions, including TOC pages, without mutating the plan. */

@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { seedSyntheticProject, syntheticProject, syntheticSong } from "./print-fixtures";
 
 async function waitForApplication(page: Page): Promise<void> {
   await expect(page.locator(".app-shell")).toBeVisible();
@@ -206,7 +207,23 @@ test("highlights the selected song without an inset left rail", async ({ page, i
   expect(styles.transform).not.toBe("none");
 });
 
-test("keeps breathing room between reader actions and the lyric panel", async ({ page }) => {
+test("keeps reader actions close to the lyric panel without crowding the next-song card", async ({
+  page,
+  isMobile,
+}) => {
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [
+        syntheticSong(
+          "long-title",
+          "这是一个需要自然换行但不能挤压操作按钮的非常非常长的中文歌曲标题",
+          "PRIVATE-LYRIC-NOT-FOR-SEARCH\nAn invented second line",
+        ),
+        syntheticSong("next", "Next Synthetic Song", "Another invented line"),
+      ],
+    }),
+  );
   const actions = page.locator(".reader-card > .inline-actions").first();
   const lyrics = page
     .locator(".reader-card > .lyric-layout, .reader-card > .lyric-placeholder")
@@ -217,9 +234,129 @@ test("keeps breathing room between reader actions and the lyric panel", async ({
   const lyricBox = await lyrics.boundingBox();
   expect(actionBox).not.toBeNull();
   expect(lyricBox).not.toBeNull();
+  const actionToLyrics = (lyricBox?.y ?? 0) - ((actionBox?.y ?? 0) + (actionBox?.height ?? 0));
+  expect(actionToLyrics).toBeGreaterThanOrEqual(16);
+  expect(actionToLyrics).toBeLessThanOrEqual(28);
+
+  const titleBox = await page.locator(".reader-card > .reader-title").boundingBox();
+  expect(titleBox).not.toBeNull();
+  expect(actionBox?.y ?? 0).toBeGreaterThanOrEqual((titleBox?.y ?? 0) + (titleBox?.height ?? 0));
+  const actionButtons = actions.locator("a, button");
+  await expect(actionButtons).toHaveCount(4);
+  const actionsBounds = await actionButtons.evaluateAll((elements) =>
+    elements.map((element) => {
+      const box = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        width: box.width,
+        left: box.left,
+        right: box.right,
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        flexShrink: style.flexShrink,
+        whiteSpace: style.whiteSpace,
+      };
+    }),
+  );
+  const readerBox = await page.locator(".reader-card").boundingBox();
+  expect(readerBox).not.toBeNull();
   expect(
-    (lyricBox?.y ?? 0) - ((actionBox?.y ?? 0) + (actionBox?.height ?? 0)),
-  ).toBeGreaterThanOrEqual(28);
+    actionsBounds.every(
+      (box) =>
+        box.width > 0 &&
+        box.left >= (readerBox?.x ?? 0) &&
+        box.right <= (readerBox?.x ?? 0) + (readerBox?.width ?? 0) &&
+        box.scrollWidth <= box.clientWidth + 1 &&
+        box.flexShrink === "0" &&
+        box.whiteSpace === "nowrap",
+    ),
+  ).toBe(true);
+  expect(
+    await page
+      .locator(".reader-card")
+      .evaluate((element) => element.scrollWidth <= element.clientWidth + 1),
+  ).toBe(true);
+
+  const nextSong = page.locator(".reader-card > .next-song-card");
+  const nextBox = await nextSong.boundingBox();
+  expect(nextBox).not.toBeNull();
+  const lyricsToNext = (nextBox?.y ?? 0) - ((lyricBox?.y ?? 0) + (lyricBox?.height ?? 0));
+  expect(lyricsToNext).toBeGreaterThanOrEqual(25);
+  expect(lyricsToNext).toBeLessThanOrEqual(27);
+
+  const appleMusic = page.getByRole("link", { name: /Apple Music/i });
+  const youtube = page.getByRole("link", { name: /YouTube/i });
+  await expect(appleMusic).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(youtube).toHaveAttribute("rel", "noopener noreferrer");
+  const urls = await Promise.all([appleMusic.getAttribute("href"), youtube.getAttribute("href")]);
+  expect(urls.join(" ")).toContain(
+    encodeURIComponent("这是一个需要自然换行但不能挤压操作按钮的非常非常长的中文歌曲标题"),
+  );
+  expect(urls.join(" ")).not.toContain("PRIVATE-LYRIC-NOT-FOR-SEARCH");
+
+  await chooseHeaderAction(page, /^(Language|语言)$/i, isMobile);
+  await expect(page.getByRole("link", { name: /^在 Apple Music 搜索《.*》$/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^在 YouTube 搜索《.*》$/ })).toBeVisible();
+});
+
+test("keeps the empty lyric state close to reader actions and clear of the next song", async ({
+  page,
+}) => {
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [
+        syntheticSong("empty-reader", "Empty Synthetic Song", ""),
+        syntheticSong("after-empty", "After Empty", "An invented lyric line"),
+      ],
+    }),
+  );
+
+  const actionsBox = await page.locator(".reader-card > .reader-top-actions").boundingBox();
+  const placeholderBox = await page.locator(".reader-card > .lyric-placeholder").boundingBox();
+  const nextBox = await page.locator(".reader-card > .next-song-card").boundingBox();
+  expect(actionsBox).not.toBeNull();
+  expect(placeholderBox).not.toBeNull();
+  expect(nextBox).not.toBeNull();
+
+  const actionsToEmpty =
+    (placeholderBox?.y ?? 0) - ((actionsBox?.y ?? 0) + (actionsBox?.height ?? 0));
+  const emptyToNext =
+    (nextBox?.y ?? 0) - ((placeholderBox?.y ?? 0) + (placeholderBox?.height ?? 0));
+  expect(actionsToEmpty).toBeGreaterThanOrEqual(16);
+  expect(actionsToEmpty).toBeLessThanOrEqual(28);
+  expect(emptyToNext).toBeGreaterThanOrEqual(25);
+  expect(emptyToNext).toBeLessThanOrEqual(27);
+});
+
+test("keeps two-column transfer cards at their natural content height", async ({
+  page,
+  isMobile,
+}) => {
+  await chooseHeaderAction(page, /^(Import|导入)$/i, isMobile);
+  const dialog = page.getByRole("dialog", { name: /Import \/ Export|导入 \/ 导出/i });
+  await expect(dialog).toBeVisible();
+
+  const layout = dialog.locator(".two-columns").first();
+  const presetPanel = dialog
+    .getByRole("heading", { name: /^(Preset|预设)$/i })
+    .locator("..")
+    .locator("..");
+  const importPanel = dialog
+    .getByRole("heading", { name: /^(Import|导入)$/i })
+    .locator("..")
+    .locator("..");
+  await expect(presetPanel).toHaveClass(/panel/);
+  await expect(importPanel).toHaveClass(/panel/);
+  const computed = await layout.evaluate((element) => getComputedStyle(element).alignItems);
+  expect(computed).toBe("start");
+  const [presetBox, importBox] = await Promise.all([
+    presetPanel.boundingBox(),
+    importPanel.boundingBox(),
+  ]);
+  expect(presetBox).not.toBeNull();
+  expect(importBox).not.toBeNull();
+  expect(Math.abs((presetBox?.height ?? 0) - (importBox?.height ?? 0))).toBeGreaterThan(8);
 });
 
 test("print studio creates measurable A4 pages without marked overflow", async ({ page }) => {

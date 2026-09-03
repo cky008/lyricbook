@@ -8,8 +8,8 @@ import {
 } from "./types";
 
 export const DEFAULT_THEME: Theme = {
-  id: "default",
-  name: { en: "Default Night", "zh-Hans": "默认星夜" },
+  id: "builtin-studio-slate",
+  name: { en: "Studio Slate", "zh-Hans": "影棚岩灰" },
   tokens: {
     accent: "#8f67ff",
     accent2: "#e05ca7",
@@ -20,15 +20,16 @@ export const DEFAULT_THEME: Theme = {
     muted: "#bbb5cf",
     radius: "22px",
     density: 1,
-    headingFont: "serif",
-    bodyFont: "serif",
+    headingFont: "sans",
+    bodyFont: "sans",
   },
   print: {
     accent: "#694e98",
     paper: "#fffdf8",
     text: "#18161a",
-    headingStyle: "editorial",
+    headingStyle: "modern",
   },
+  style: { surface: "glass", elevation: "soft", ornament: "none" },
 };
 
 export function createBlankProject(locale: UiLocale = "en-US"): LyricBookProject {
@@ -58,7 +59,7 @@ export function createBlankProject(locale: UiLocale = "en-US"): LyricBookProject
     ],
     themes: [structuredClone(DEFAULT_THEME)],
     activeSetlistId: "main-setlist",
-    activeThemeId: "default",
+    activeThemeId: DEFAULT_THEME.id,
     preferences: {
       uiLocale: locale,
       activeVersionBySong: {},

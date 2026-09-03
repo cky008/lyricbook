@@ -11,8 +11,12 @@ import { ThemeDialog } from "@app/features/ThemeDialog";
 import { useLyricBookProject } from "@app/hooks/useLyricBookProject";
 import {
   APPEARANCE_STORAGE_KEY,
+  applyInterfaceStyle,
   type AppearanceMode,
   applyAppearance,
+  DEFAULT_INTERFACE_STYLE,
+  type InterfaceStyle,
+  persistInterfaceStyle,
   storedAppearance,
 } from "@app/lib/appearance";
 import { useI18n } from "@app/lib/i18n";
@@ -49,6 +53,10 @@ import packageJson from "../../../package.json";
 
 type DialogName = "setlist" | "theme" | "transfer" | "print" | "about" | null;
 
+interface AppProps {
+  initialInterfaceStyle?: InterfaceStyle;
+}
+
 function normalize(value: string): string {
   return value.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
 }
@@ -72,7 +80,7 @@ function loadingView() {
   );
 }
 
-export default function App() {
+export default function App({ initialInterfaceStyle = DEFAULT_INTERFACE_STYLE }: AppProps) {
   const { locale, t } = useI18n();
   const projectState = useLyricBookProject(locale);
   const project = projectState.project;
@@ -85,6 +93,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [immersive, setImmersive] = useState(false);
   const [appearance, setAppearance] = useState<AppearanceMode>(() => storedAppearance());
+  const [interfaceStyle, setInterfaceStyle] = useState<InterfaceStyle>(initialInterfaceStyle);
 
   useEffect(() => {
     loadPresetIndex()
@@ -196,6 +205,11 @@ export default function App() {
   const closeDialog = () => {
     setDialog(null);
     window.requestAnimationFrame(() => window.requestAnimationFrame(forceReleaseScrollLocks));
+  };
+  const changeInterfaceStyle = (next: InterfaceStyle) => {
+    const applied = applyInterfaceStyle(next);
+    setInterfaceStyle(applied);
+    persistInterfaceStyle(applied);
   };
   const addSong = () => {
     const title = locale === "zh-CN" ? "新歌曲" : "New song";
@@ -454,6 +468,8 @@ export default function App() {
         project={project}
         locale={locale}
         onChange={update}
+        interfaceStyle={interfaceStyle}
+        onInterfaceStyleChange={changeInterfaceStyle}
       />
       <ImportExportDialog
         open={dialog === "transfer"}

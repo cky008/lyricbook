@@ -10,7 +10,7 @@
 
 LyricBook is a privacy-first, local-first concert lyric-book editor, immersive setlist reader, and printable PDF/booklet generator. It stores user lyrics in the browser, separates reusable content from themes, supports multilingual and multi-version songs, and deploys as a static GitHub Pages application without a backend.
 
-> **Version 0.0.7 improves printable lyric books.** Pages now use browser-measured font sizing, complete-text pagination, linked multi-page contents when needed, and a safety check before PDF export.
+> **Version 0.0.8 brings a new workspace choice to the reliable print foundation.** Switch between Studio and Garden Editorial while project themes, measured pagination, and PDF output remain consistent.
 
 ## What it does
 
@@ -23,11 +23,14 @@ LyricBook is a privacy-first, local-first concert lyric-book editor, immersive s
 - Treats setlist sections as optional records; a setlist may be a plain song sequence.
 - Lets each user switch between structured setlist controls and a lossless Markdown editor.
 - Offers five offline crafted themes—including Ink Jade, Porcelain Blue, Cinnabar Silk, and Moonlit Paper—with distinct typography, spacing, surfaces, and print palettes.
+- Switches between the familiar Studio workspace and Garden Editorial, a calm paper-led composition stored only in the current browser.
 - Keeps catalog themes read-only while allowing an explicit project-local copy to be customized and exported with the project.
 - Provides safe up/down ordering on every device; touch drag-and-drop remains a tracked enhancement.
 - Navigates previous/next songs from the active setlist and shows a next-song card at the lyric bottom.
-- Generates measured A4, A5, and imposed A4 folded-booklet layouts with adaptive type, optional slash-joined short lines, linked contents, and a protected footer area.
-- Supports generated booklet covers or locally processed JPEG, PNG, and WebP cover images; selected files are never uploaded.
+- Opens privacy-preserving Apple Music and YouTube searches from a song title without sending lyrics, aliases, or tags.
+- Generates measured A4, A5, and imposed A4 folded-booklet layouts with adaptive type, independent bilingual pagination, linked contents, optional-song labels, and a protected footer area.
+- Retries unsafe long-song layouts by paragraph or line boundaries instead of clipping text, while strict page limits keep printing disabled until every page is safe.
+- Supports theme-aware generated booklet covers or locally processed JPEG, PNG, and WebP cover images; selected files are never uploaded.
 - Keeps narrow headers usable through two direct actions and an accessible overflow menu.
 - Uses build-specific offline caches and network-first navigation so routine reloads move safely between deployments.
 - Ships offline snapshots for G.E.M. GLORIA and DIOR 大颖 London prediction validation.

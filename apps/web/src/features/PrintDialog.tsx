@@ -92,6 +92,7 @@ function PrintMeasurementRun({
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [candidate, setCandidate] = useState(draft);
   const [phase, setPhase] = useState<"resolve" | "verify">("resolve");
+  const [resolutionRound, setResolutionRound] = useState(0);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -100,9 +101,16 @@ function PrintMeasurementRun({
     const run = async () => {
       try {
         if (phase === "resolve") {
-          const resolved = await resolveRenderedDraft(root, draft, controller.signal);
+          const resolved = await resolveRenderedDraft(root, candidate, controller.signal);
           if (controller.signal.aborted) return;
+          const needsAnotherPass = resolved.pages.some(
+            (page) => page.kind === "song" && page.layoutSafety === "pending",
+          );
           setCandidate(resolved);
+          if (needsAnotherPass && resolutionRound < 10) {
+            setResolutionRound((current) => current + 1);
+            return;
+          }
           setPhase("verify");
           return;
         }
@@ -116,7 +124,7 @@ function PrintMeasurementRun({
     };
     void run();
     return () => controller.abort();
-  }, [candidate, draft, onComplete, phase, requestId]);
+  }, [candidate, onComplete, phase, requestId, resolutionRound]);
 
   return (
     <div aria-hidden="true" data-print-measurement-root ref={rootRef}>

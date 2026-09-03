@@ -14,6 +14,10 @@ interface WorkerRequestLike {
   readonly url: string;
 }
 
+interface WorkerCacheQueryOptions {
+  ignoreSearch?: boolean;
+}
+
 type RequestInput = string | WorkerRequestLike;
 type FetchBehavior = (request: WorkerRequestLike) => Promise<Response>;
 
@@ -37,8 +41,19 @@ class MemoryCache {
     for (const [url, response] of pending) this.entries.set(url, response);
   }
 
-  async match(request: RequestInput): Promise<Response | undefined> {
-    const response = this.entries.get(typeof request === "string" ? request : request.url);
+  async match(
+    request: RequestInput,
+    options: WorkerCacheQueryOptions = {},
+  ): Promise<Response | undefined> {
+    const requestUrl = typeof request === "string" ? request : request.url;
+    const key = options.ignoreSearch
+      ? [...this.entries.keys()].find((candidate) => {
+          const cached = new URL(candidate);
+          const requested = new URL(requestUrl);
+          return cached.origin === requested.origin && cached.pathname === requested.pathname;
+        })
+      : requestUrl;
+    const response = key ? this.entries.get(key) : undefined;
     return response?.clone();
   }
 
@@ -94,7 +109,7 @@ function workerSource(cacheId: string): string {
   return buildServiceWorkerSource({
     cacheId,
     cachePrefix: "lyricbook-build-",
-    precache: ["./index.html", `./assets/${cacheId}.js`],
+    precache: ["./index.html", `./assets/${cacheId}.js`, "./locales/en-US/main.ftl"],
   });
 }
 
@@ -203,6 +218,29 @@ describe("service worker update safety", () => {
       throw new TypeError("offline");
     };
     expect(await (await harness.fetch(scope, "navigate")).text()).toBe("A shell");
+  });
+
+  it("loads fingerprinted locale catalogs from the network before using cached fallbacks", async () => {
+    const scope = "https://example.test/lyricbook/";
+    const harness = createWorkerHarness(workerSource("build-a"), scope);
+    harness.cacheStorage.fetchBehavior = async (request) =>
+      new Response(request.url.includes("main.ftl") ? "old catalog" : "build asset");
+    await harness.dispatch("install");
+    await harness.dispatch("activate");
+
+    harness.cacheStorage.fetchBehavior = async (request) =>
+      new Response(request.url.includes("main.ftl") ? "new catalog" : "network asset");
+    const localeUrl = `${scope}locales/en-US/main.ftl?v=next-build`;
+    expect(await (await harness.fetch(localeUrl)).text()).toBe("new catalog");
+    expect(harness.workerFetch).toHaveBeenLastCalledWith(
+      expect.objectContaining({ url: localeUrl }),
+      { cache: "no-store" },
+    );
+
+    harness.cacheStorage.fetchBehavior = async () => {
+      throw new TypeError("offline");
+    };
+    expect(await (await harness.fetch(localeUrl)).text()).toBe("old catalog");
   });
 
   it("deletes a newly created cache when precaching fails", async () => {

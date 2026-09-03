@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sanitizeStandaloneTheme, sanitizeTheme } from "./theme";
+import { migrateLegacyThemes, sanitizeStandaloneTheme, sanitizeTheme } from "./theme";
 import {
   type LocalCoverImage,
   type LyricBookProject,
@@ -548,11 +548,16 @@ export function validateProject(input: unknown): ValidationResult {
   return { ok: issues.length === 0, issues };
 }
 
-export function parseProject(input: unknown): LyricBookProject {
+export interface ParseProjectOptions {
+  migrateLegacyThemeData?: boolean;
+}
+
+export function parseProject(input: unknown, options: ParseProjectOptions = {}): LyricBookProject {
   const parsed = projectSchema.parse(input);
   const validation = validateProject(parsed);
   if (!validation.ok) {
     throw new Error(validation.issues.map((issue) => `${issue.path}: ${issue.message}`).join("\n"));
   }
-  return parsed as LyricBookProject;
+  const project = parsed as LyricBookProject;
+  return options.migrateLegacyThemeData === false ? project : migrateLegacyThemes(project);
 }

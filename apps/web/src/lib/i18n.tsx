@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { detectUiLocale, type UiLocale } from "@domain/index";
+import packageJson from "../../../../package.json";
 
 interface I18nContextValue {
   locale: UiLocale;
@@ -44,8 +45,10 @@ const FALLBACK: Record<UiLocale, Record<string, string>> = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function localeUrl(locale: UiLocale): URL {
-  return new URL(`locales/${locale}/main.ftl`, document.baseURI);
+export function localeUrl(locale: UiLocale, baseUrl = document.baseURI): URL {
+  const url = new URL(`locales/${locale}/main.ftl`, baseUrl);
+  url.searchParams.set("v", packageJson.version);
+  return url;
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {

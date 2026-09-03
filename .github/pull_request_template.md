@@ -12,6 +12,8 @@
 - [ ] Rust tests/clippy when domain logic changed
 - [ ] No private lyrics or user archives were added
 - [ ] Screenshots/PDF artifacts attached when visual or print behavior changed
+- [ ] Every included commit has a verified SSH signature
+- [ ] All GitHub checks triggered for the source branch are green
 
 ## Documentation
 

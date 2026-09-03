@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop]
+    branches: [develop, "feature/**", "fix/**", "release/**"]
   pull_request:
     branches: [develop, main]
   workflow_dispatch:
@@ -26,15 +26,10 @@ jobs:
           node-version: 26.8.1
       - name: Pin npm 12.0.2
         run: npm install --global npm@12.0.2
+      - name: Require committed JavaScript lockfile
+        run: test -f package-lock.json
       - name: Install dependencies
-        shell: bash
-        run: |
-          if [[ -f package-lock.json ]]; then
-            npm ci
-          else
-            echo "package-lock.json is absent on this bootstrap commit; generating it with npm install."
-            npm install --no-audit --no-fund
-          fi
+        run: npm ci
       - name: Format check
         run: npm run format:check
       - name: Lint
@@ -56,21 +51,20 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
           toolchain: 1.98.0
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
-      - name: Generate Cargo lockfile on bootstrap commits
-        shell: bash
-        run: test -f Cargo.lock || cargo generate-lockfile
+      - name: Require committed Rust lockfile
+        run: test -f Cargo.lock
       - name: Rust format
         run: cargo fmt --all -- --check
       - name: Clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
       - name: Rust tests
-        run: cargo test --workspace --all-targets
+        run: cargo test --locked --workspace --all-targets
       - name: Install wasm-pack 0.15.0
         run: cargo install wasm-pack --version 0.15.0 --locked
       - name: Build WASM adapter
-        run: wasm-pack build crates/lyricbook-wasm --target web --out-dir ../../packages/wasm/pkg --release
+        run: wasm-pack build crates/lyricbook-wasm --target web --out-dir ../../packages/wasm/pkg --release -- --locked

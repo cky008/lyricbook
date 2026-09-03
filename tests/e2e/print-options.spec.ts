@@ -219,6 +219,33 @@ test("a private local booklet cover supports generated, image-only, and image-wi
   await expect(dialog.getByLabel(/My image only|仅使用我的图片/i)).toBeChecked();
 });
 
+test("booklet cover choices have separate, readable click targets", async ({ page }) => {
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [syntheticSong("cover-controls", "Cover Controls", "An invented lyric line")],
+    }),
+  );
+  const dialog = await openPrintDialog(page);
+  await dialog.getByLabel(/Page format|页面格式/i).selectOption("booklet");
+
+  const choices = dialog.locator(".cover-mode-option");
+  await expect(choices).toHaveCount(3);
+  const gridDisplay = await dialog
+    .locator(".cover-mode-grid")
+    .evaluate((element) => getComputedStyle(element).display);
+  expect(gridDisplay).toBe("grid");
+  const metrics = await choices.evaluateAll((elements) =>
+    elements.map((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return { display: style.display, height: box.height, width: box.width };
+    }),
+  );
+  expect(metrics.every((choice) => choice.display === "flex")).toBe(true);
+  expect(metrics.every((choice) => choice.height >= 40 && choice.width > 0)).toBe(true);
+});
+
 test("only the latest cover request may apply and it cannot roll back newer print options", async ({
   page,
 }) => {

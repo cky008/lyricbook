@@ -352,6 +352,30 @@ describe("print plan", () => {
     expect(strict.pages.filter((page) => page.kind === "song")).toHaveLength(1);
   });
 
+  it("paginates a single unbroken lyric without losing Unicode text", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Unbroken synthetic lyric");
+    const track = requireValue(song.lyricVersions[0]?.tracks[0]);
+    const expectedText = "纸上灯火🌙".repeat(2_500);
+    track.text = expectedText;
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, format: "a5", languageMode: "original", lineFlow: "preserve" },
+      locale: "en-US",
+    });
+    const pages = plan.pages.filter(
+      (page): page is Extract<(typeof plan.pages)[number], { kind: "song" }> =>
+        page.kind === "song",
+    );
+
+    expect(pages.length).toBeGreaterThan(1);
+    expect(pages.map((page) => page.tracks[0]?.text ?? "").join("")).toBe(expectedText);
+    expect(pages.every((page) => (page.tracks[0]?.text.length ?? 0) > 0)).toBe(true);
+  });
+
   it("separates language-track columns from balanced text columns", () => {
     const project = createBlankProject("en-US");
     const song = createEmptySong("A medium song");
@@ -375,7 +399,7 @@ describe("print plan", () => {
     expect(page.tracks).toHaveLength(1);
   });
 
-  it("keeps aligned bilingual tracks parallel and independent tracks stacked", () => {
+  it("keeps original and translation tracks parallel without requiring alignment metadata", () => {
     const project = createBlankProject("en-US");
     const alignedSong = songWithTracks("Aligned bilingual");
     project.songs = [alignedSong];
@@ -393,9 +417,67 @@ describe("print plan", () => {
     const independentPlan = createPrintPlan({ project, options, locale: "en-US" });
     const independentPage = independentPlan.pages.find((page) => page.kind === "song");
     expect(independentPage?.kind === "song" ? independentPage.layoutMode : undefined).toBe(
+      "parallel-tracks",
+    );
+    expect(independentPage?.kind === "song" ? independentPage.trackColumns : undefined).toBe(2);
+
+    const allIndependentPlan = createPrintPlan({
+      project,
+      options: { ...options, languageMode: "all-tracks" },
+      locale: "en-US",
+    });
+    const allIndependentPage = allIndependentPlan.pages.find((page) => page.kind === "song");
+    expect(allIndependentPage?.kind === "song" ? allIndependentPage.layoutMode : undefined).toBe(
       "stacked-tracks",
     );
-    expect(independentPage?.kind === "song" ? independentPage.trackColumns : undefined).toBe(1);
+    expect(allIndependentPage?.kind === "song" ? allIndependentPage.trackColumns : undefined).toBe(
+      1,
+    );
+  });
+
+  it("paginates uneven independent bilingual columns without losing either track", () => {
+    const project = createBlankProject("en-US");
+    const song = createEmptySong("Uneven independent bilingual");
+    const version = requireValue(song.lyricVersions[0]);
+    const originalLines = Array.from(
+      { length: 170 },
+      (_, index) => `ORIGINAL-${String(index + 1).padStart(3, "0")} invented line`,
+    );
+    const translationLines = Array.from(
+      { length: 113 },
+      (_, index) => `TRANSLATION-${String(index + 1).padStart(3, "0")} 合成译文`,
+    );
+    version.tracks = [
+      {
+        id: "original",
+        language: "en",
+        role: "original",
+        text: originalLines.join("\n"),
+      },
+      {
+        id: "translation",
+        language: "zh-Hans",
+        role: "translation",
+        text: translationLines.join("\n"),
+      },
+    ];
+    project.songs = [song];
+    requireValue(project.setlists[0]).items = [{ type: "song", songId: song.id }];
+
+    const plan = createPrintPlan({
+      project,
+      options: { ...options, format: "a5", lineFlow: "preserve" },
+      locale: "en-US",
+    });
+    const pages = plan.pages.filter((page) => page.kind === "song");
+
+    expect(pages.length).toBeGreaterThan(1);
+    expect(pages.every((page) => page.layoutMode === "parallel-tracks")).toBe(true);
+    expect(pages.every((page) => page.trackColumns === 2)).toBe(true);
+    expect(pages.flatMap((page) => page.tracks[0]?.text.split("\n") ?? [])).toEqual(originalLines);
+    expect(pages.flatMap((page) => page.tracks[1]?.text.split("\n") ?? [])).toEqual(
+      translationLines,
+    );
   });
 
   it("offers the largest readable font candidate for a short song", () => {
@@ -603,6 +685,100 @@ describe("print plan", () => {
     expect(songPages[0]?.pageInSong).toBe(1);
   });
 
+  it("preserves optional songs and optional sections in localized contents metadata", () => {
+    const project = projectWithSongs(4);
+    const [required, optionalSong, optionalSectionSong, repeatedRequired] = project.songs;
+    if (!required || !optionalSong || !optionalSectionSong || !repeatedRequired) {
+      throw new Error("Expected four songs");
+    }
+    const setlist = requireValue(project.setlists[0]);
+    setlist.items = [
+      {
+        type: "section",
+        id: "main",
+        label: { en: "Main set", "zh-Hans": "固定曲目" },
+      },
+      { type: "song", songId: required.id },
+      { type: "song", songId: optionalSong.id, optional: true },
+      { type: "song", songId: repeatedRequired.id, optional: true },
+      {
+        type: "section",
+        id: "rotation",
+        label: { en: "Rotation", "zh-Hans": "轮换曲目" },
+        optional: true,
+      },
+      { type: "song", songId: optionalSectionSong.id },
+      {
+        type: "section",
+        id: "main-return",
+        label: { en: "Main set", "zh-Hans": "固定曲目" },
+      },
+      { type: "song", songId: repeatedRequired.id },
+    ];
+
+    const plan = createPrintPlan({ project, options, locale: "zh-CN" });
+    const tocPages = plan.pages.filter((page) => page.kind === "toc");
+    const sections = tocPages.flatMap((page) => page.sections);
+    const entries = sections.flatMap((section) => section.entries);
+
+    expect(sections.map((section) => [section.label, section.optional])).toEqual([
+      ["固定曲目", false],
+      ["轮换曲目", true],
+    ]);
+    expect(entries.map((entry) => [entry.songId, entry.optional, entry.optionalLabel])).toEqual([
+      [required.id, false, undefined],
+      [optionalSong.id, true, "可选"],
+      [repeatedRequired.id, false, undefined],
+      [optionalSectionSong.id, true, "可选"],
+    ]);
+
+    const requiredOnly = createPrintPlan({
+      project,
+      options: { ...options, includeOptional: false },
+      locale: "zh-CN",
+    });
+    expect(requiredOnly.songCount).toBe(2);
+    expect(
+      requiredOnly.pages
+        .filter((page) => page.kind === "toc")
+        .flatMap((page) => page.sections)
+        .flatMap((section) => section.entries)
+        .map((entry) => entry.songId),
+    ).toEqual([required.id, repeatedRequired.id]);
+  });
+
+  it("excludes optional-section slots from the booklet cover count", () => {
+    const project = projectWithSongs(2);
+    const [required, optionalSectionSong] = project.songs;
+    if (!required || !optionalSectionSong) throw new Error("Expected two songs");
+    const setlist = requireValue(project.setlists[0]);
+    setlist.items = [
+      { type: "song", songId: required.id },
+      {
+        type: "section",
+        id: "rotation",
+        label: { en: "Rotation", "zh-Hans": "轮换" },
+        optional: true,
+      },
+      { type: "song", songId: optionalSectionSong.id },
+    ];
+
+    const plan = createPrintPlan({
+      project,
+      options: {
+        ...options,
+        format: "booklet",
+        includeCover: true,
+        includeOptional: false,
+      },
+      locale: "en-US",
+    });
+    const cover = plan.pages.find((page) => page.kind === "cover");
+
+    expect(plan.songCount).toBe(1);
+    expect(cover?.kind === "cover" ? cover.songCountLabel : undefined).toBe("1 song");
+  });
+
   it("supports no contents page, Chinese fallback section labels, and safe theme fallback", () => {
     const project = projectWithSongs(1);
     project.activeThemeId = "missing";
@@ -612,7 +788,7 @@ describe("print plan", () => {
       locale: "zh-CN",
     });
     expect(plan.pages[0]?.kind).toBe("song");
-    expect(plan.theme?.id).toBe("default");
+    expect(plan.theme?.id).toBe("builtin-studio-slate");
 
     const withContents = createPrintPlan({ project, options, locale: "zh-CN" });
     const toc = withContents.pages[0];

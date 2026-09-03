@@ -104,20 +104,26 @@ export async function saveStoredProject(project: LyricBookProject): Promise<void
 export async function backupProject(project: LyricBookProject, reason: string): Promise<string> {
   const createdAt = new Date().toISOString();
   const id = `${createdAt}_${crypto.randomUUID()}`;
+  const db = await database();
   try {
-    await (await database()).put("backups", {
+    await db.put("backups", {
       id,
       createdAt,
       reason,
       project: structuredClone(project),
     });
-    const db = await database();
+  } catch (error) {
+    console.error("Could not create IndexedDB backup", error);
+    throw error;
+  }
+
+  try {
     const keys = await db.getAllKeysFromIndex("backups", "by-createdAt");
     if (keys.length > 20) {
       await Promise.all(keys.slice(0, keys.length - 20).map((key) => db.delete("backups", key)));
     }
   } catch (error) {
-    console.error("Could not create IndexedDB backup", error);
+    console.error("Could not prune old IndexedDB backups", error);
   }
   return id;
 }

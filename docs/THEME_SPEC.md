@@ -8,6 +8,14 @@ Allowed values are normalized to inert colors, fixed local/system font stacks, b
 
 The application exposes five frozen offline catalog entries: Studio Slate, Ink Jade, Porcelain Blue, Cinnabar Silk, and Moonlit Paper. The catalog is virtual for imported and existing projects: viewing it never mutates project data. Selecting an unused catalog entry explicitly copies a sanitized snapshot into the project and activates it; selecting it again does not create duplicates. If an imported project already owns the same id, its stable id and project data win. Direct catalog activation is disabled for that card, the project version remains selectable under Project themes, and the catalog original remains available as the source for “Copy and customize.”
 
+Studio Slate is the canonical default for newly created projects. Projects saved by earlier releases are normalized only when a legacy built-in theme exactly matches a published frozen signature: the former Default and Gloria themes map to Studio Slate, while Kampung Girl maps to Ink Jade. A locally edited legacy theme, an unrelated theme that reuses one of those ids, or a project-owned copy of a current catalog id is preserved. When normalization changes stored project data, the browser creates a local backup before replacing the IndexedDB record.
+
 Catalog originals are read-only. “Copy and customize” creates a new stable project theme id, after which its safe tokens may be edited. Project copies remain self-contained in `.lyricbook` and JSON exports so print output and offline restoration do not depend on the application catalog.
 
 Content and theme packages remain independent so one concert library can be rendered with multiple designs. Theme selection never changes lyrics, versions, tracks, setlists, or sources.
+
+## Interface composition
+
+The Studio and Garden Editorial interface styles are browser-local workspace compositions, not project themes. The selected style is stored under `lyricbook-interface-style`, applied through the fixed `data-interface-style` value on the document root, and deliberately omitted from IndexedDB project records and every export format. Replacing or importing a project therefore leaves this browser preference unchanged.
+
+Interface styles may arrange and decorate existing application components, but they consume rather than replace safe theme tokens. They must not select, copy, mutate, or serialize a project theme. Their stylesheets may not target printable content, the print portal, or the `--print-*` namespace; a given theme and print configuration must produce the same measured document under every interface style.

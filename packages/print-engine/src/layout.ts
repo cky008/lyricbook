@@ -11,7 +11,7 @@ import type {
   Theme,
   UiLocale,
 } from "@domain/index";
-import { getLocalized, resolveActiveTheme, setlistSongIds } from "@domain/index";
+import { getLocalized, resolveActiveTheme } from "@domain/index";
 import { type BookletSheet, imposeBooklet, paddedBookletPageCount } from "./booklet";
 
 export interface PrintTrackBlock {
@@ -29,10 +29,14 @@ export interface TocEntry {
   sequence: number;
   pageNumber: number;
   section?: string;
+  optional: boolean;
+  optionalLabel?: string;
 }
 
 export interface TocSection {
   label: string;
+  optional: boolean;
+  optionalLabel?: string;
   entries: TocEntry[];
 }
 
@@ -89,6 +93,7 @@ export interface SongPage {
   textColumns: number;
   lineFlow: Exclude<PrintLineFlow, "auto">;
   layoutSafety: PrintLayoutSafety;
+  paginateOnOverflow: boolean;
   compact: boolean;
 }
 
@@ -265,15 +270,62 @@ function versionsForMode(
   return [song.lyricVersions.find((version) => version.isDefault) ?? firstVersion];
 }
 
-function sectionMap(setlist: Setlist | undefined): Map<string, string> {
-  const map = new Map<string, string>();
-  if (!setlist) return map;
+interface SetlistSongPlacement {
+  songId: string;
+  section: string;
+  sectionOptional: boolean;
+  optional: boolean;
+}
+
+function setlistSongPlacements(
+  setlist: Setlist | undefined,
+  locale: UiLocale,
+): SetlistSongPlacement[] {
+  if (!setlist) return [];
+  const ordered: SetlistSongPlacement[] = [];
+  const bySong = new Map<string, SetlistSongPlacement>();
   let section = "";
+  let sectionOptional = false;
   for (const item of setlist.items) {
-    if (item.type === "section") section = Object.values(item.label).find(Boolean) ?? section;
-    if (item.type === "song" && !map.has(item.songId)) map.set(item.songId, section);
+    if (item.type === "section") {
+      section = getLocalized(item.label, locale) || section;
+      sectionOptional = Boolean(item.optional);
+      continue;
+    }
+    if (item.type !== "song") continue;
+    const optional = sectionOptional || Boolean(item.optional);
+    const existing = bySong.get(item.songId);
+    if (!existing) {
+      const placement = { songId: item.songId, section, sectionOptional, optional };
+      bySong.set(item.songId, placement);
+      ordered.push(placement);
+      continue;
+    }
+    // A song that has any required appearance is itself required. Prefer the
+    // required appearance's section without changing the song's first-seen order.
+    if (existing.optional && !optional) {
+      existing.optional = false;
+      existing.section = section;
+      existing.sectionOptional = sectionOptional;
+    }
   }
-  return map;
+  return ordered;
+}
+
+function includedSetlistSlotCount(setlist: Setlist | undefined, includeOptional: boolean): number {
+  if (!setlist) return 0;
+  let sectionOptional = false;
+  let count = 0;
+  for (const item of setlist.items) {
+    if (item.type === "section") {
+      sectionOptional = Boolean(item.optional);
+      continue;
+    }
+    if (item.type === "song" && (includeOptional || !(sectionOptional || item.optional))) {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 function songIdsForScope(context: BuildContext): string[] {
@@ -283,21 +335,32 @@ function songIdsForScope(context: BuildContext): string[] {
     return context.filteredSongIds ?? project.songs.map((song) => song.id);
   if (options.scope === "active-setlist") {
     const setlist = project.setlists.find((item) => item.id === project.activeSetlistId);
-    return setlistSongIds(setlist, options.includeOptional);
+    return setlistSongPlacements(setlist, context.locale)
+      .filter((placement) => options.includeOptional || !placement.optional)
+      .map((placement) => placement.songId);
   }
   return project.songs.map((song) => song.id);
 }
 
-function splitTrackText(text: string, lineLimit: number, charsPerLine: number): string[] {
-  const rawLines = text.replace(/\r\n/g, "\n").split("\n");
+function splitTrackText(
+  text: string,
+  lineLimit: number,
+  charsPerLine: number,
+  minimumPageCount = 1,
+): string[] {
+  const rawLines = text.replace(/\r\n?/g, "\n").split("\n");
   if (!rawLines.length) return [""];
   const weightedLines = rawLines.map((line) => ({
     line,
     weight: Math.max(1, Math.ceil(lineWeight(line) / charsPerLine)),
   }));
   const totalWeight = weightedLines.reduce((sum, line) => sum + line.weight, 0);
-  const pageCount = Math.max(1, Math.ceil(totalWeight / lineLimit));
+  const naturalPageCount = Math.max(1, Math.ceil(totalWeight / lineLimit));
+  const pageCount = Math.max(minimumPageCount, naturalPageCount);
   if (pageCount === 1) return [rawLines.join("\n")];
+  if (rawLines.length === 1 && naturalPageCount > 1) {
+    return splitContinuousText(rawLines[0] ?? "", naturalPageCount);
+  }
   const chunks: string[] = [];
   let current: string[] = [];
   let currentWeight = 0;
@@ -321,6 +384,27 @@ function splitTrackText(text: string, lineLimit: number, charsPerLine: number): 
   }
   if (current.length) chunks.push(current.join("\n"));
   return chunks.length ? chunks : [""];
+}
+
+/** Split a continuous line at Unicode code-point boundaries without dropping content. */
+export function splitContinuousText(text: string, requestedParts: number): string[] {
+  const units = Array.from(text);
+  const partCount = Math.min(
+    units.length,
+    Math.max(1, Number.isFinite(requestedParts) ? Math.floor(requestedParts) : 1),
+  );
+  if (partCount <= 1) return [text];
+
+  const chunks: string[] = [];
+  let offset = 0;
+  for (let index = 0; index < partCount; index += 1) {
+    const remainingUnits = units.length - offset;
+    const remainingParts = partCount - index;
+    const take = Math.ceil(remainingUnits / remainingParts);
+    chunks.push(units.slice(offset, offset + take).join(""));
+    offset += take;
+  }
+  return chunks;
 }
 
 interface SongLayoutCandidate {
@@ -365,15 +449,19 @@ function lineLimitFor(
   fontSize: number,
 ): number {
   const referenceFontSize = format === "a4" ? 12 : 10.5;
+  const capacityColumns = candidate.layoutMode === "balanced-text" ? candidate.textColumns : 1;
   return Math.max(
     1,
-    Math.floor(capacityFor(format, candidateColumns(candidate)) * (referenceFontSize / fontSize)),
+    Math.floor(capacityFor(format, capacityColumns) * (referenceFontSize / fontSize)),
   );
 }
 
 function visualLinesFor(trackTexts: string[], candidate: SongLayoutCandidate): number {
   const charsPerLine = charsPerLineFor(candidate);
-  return trackTexts.reduce((total, text) => total + estimateVisualLines(text, charsPerLine), 0);
+  const visualLines = trackTexts.map((text) => estimateVisualLines(text, charsPerLine));
+  return candidate.layoutMode === "parallel-tracks"
+    ? Math.max(0, ...visualLines)
+    : visualLines.reduce((total, lines) => total + lines, 0);
 }
 
 function layoutCandidates(
@@ -406,7 +494,11 @@ function layoutCandidates(
     textColumns: 1,
   };
   const aligned = tracks.slice(1).every((track) => Boolean(track.alignedTo));
-  return aligned ? [parallel, stacked] : [stacked];
+  const originalAndTranslation =
+    trackCount === 2 &&
+    tracks.some((track) => track.role === "original") &&
+    tracks.some((track) => track.role === "translation");
+  return aligned || originalAndTranslation ? [parallel, stacked] : [stacked];
 }
 
 function chooseLayout(
@@ -439,10 +531,16 @@ function chooseLayout(
   }
 
   const fallback = candidates.reduce<SongLayoutCandidate>(
-    (best, candidate) =>
-      lineLimitFor(format, candidate, bounds.minimum) > lineLimitFor(format, best, bounds.minimum)
-        ? candidate
-        : best,
+    (best, candidate) => {
+      const candidatePages = Math.ceil(
+        visualLinesFor(trackTexts, candidate) /
+          Math.max(1, lineLimitFor(format, candidate, bounds.minimum)),
+      );
+      const bestPages = Math.ceil(
+        visualLinesFor(trackTexts, best) / Math.max(1, lineLimitFor(format, best, bounds.minimum)),
+      );
+      return candidatePages < bestPages ? candidate : best;
+    },
     candidates[0] ?? {
       layoutMode: "single-track",
       trackColumns: 1,
@@ -557,6 +655,7 @@ function buildSongPages(
         textColumns: 1,
         lineFlow: "preserve",
         layoutSafety: "pending",
+        paginateOnOverflow: true,
         compact: false,
       },
     ];
@@ -603,21 +702,27 @@ function buildSongPages(
         textColumns: layout.textColumns,
         lineFlow: flow.lineFlow,
         layoutSafety: layout.layoutSafety,
+        paginateOnOverflow: context.options.strategy !== "strict-page-limit",
         compact: layout.compact,
       });
       continue;
     }
 
+    const capacityDivisor = layout.layoutMode === "parallel-tracks" ? 1 : preparedTracks.length;
     const perTrackLineLimit = Math.max(
       1,
-      Math.floor(
-        (layout.lineLimit * PAGINATION_SAFETY_FACTOR) / Math.max(1, preparedTracks.length),
-      ),
+      Math.floor((layout.lineLimit * PAGINATION_SAFETY_FACTOR) / Math.max(1, capacityDivisor)),
     );
-    const chunksByTrack = preparedTracks.map((track) =>
+    const initialChunksByTrack = preparedTracks.map((track) =>
       splitTrackText(track.text, perTrackLineLimit, layout.charsPerLine),
     );
-    const pageCount = Math.max(...chunksByTrack.map((chunks) => chunks.length));
+    const pageCount = Math.max(...initialChunksByTrack.map((chunks) => chunks.length));
+    const chunksByTrack = preparedTracks.map((track, trackIndex) => {
+      const chunks = initialChunksByTrack[trackIndex] ?? [""];
+      return chunks.length < pageCount
+        ? splitTrackText(track.text, perTrackLineLimit, layout.charsPerLine, pageCount)
+        : chunks;
+    });
     for (let index = 0; index < pageCount; index += 1) {
       allPages.push({
         kind: "song",
@@ -644,6 +749,7 @@ function buildSongPages(
         textColumns: layout.textColumns,
         lineFlow: flow.lineFlow,
         layoutSafety: layout.layoutSafety,
+        paginateOnOverflow: true,
         compact: true,
       });
     }
@@ -665,6 +771,8 @@ function coverSummary(value: string | undefined): string | undefined {
 
 interface TocRow {
   sectionLabel: string;
+  sectionOptional: boolean;
+  sectionOptionalLabel?: string;
   entry: TocEntry;
 }
 
@@ -692,25 +800,32 @@ function tocEntryWeight(
         tocCharactersPerLine(format, columns),
     ),
   );
-  return 1 + (lines - 1) * 0.85;
+  const badgeWeight = entry.optionalLabel ? 0.35 : 0;
+  return 1 + (lines - 1) * 0.85 + badgeWeight;
 }
 
 function tocSectionWeight(
-  label: string,
+  section: Pick<TocSection, "label" | "optionalLabel">,
   format: Exclude<PrintFormat, "booklet">,
   columns: number,
 ): number {
-  const lines = Math.max(1, Math.ceil(lineWeight(label) / tocCharactersPerLine(format, columns)));
+  const text = `${section.label}${section.optionalLabel ? ` ${section.optionalLabel}` : ""}`;
+  const lines = Math.max(1, Math.ceil(lineWeight(text) / tocCharactersPerLine(format, columns)));
   return 1.5 + (lines - 1) * 0.9;
 }
 
 function appendTocEntry(sections: TocSection[], row: TocRow): void {
   const current = sections.at(-1);
-  if (current?.label === row.sectionLabel) {
+  if (current?.label === row.sectionLabel && current.optional === row.sectionOptional) {
     current.entries.push(row.entry);
     return;
   }
-  sections.push({ label: row.sectionLabel, entries: [row.entry] });
+  sections.push({
+    label: row.sectionLabel,
+    optional: row.sectionOptional,
+    optionalLabel: row.sectionOptionalLabel,
+    entries: [row.entry],
+  });
 }
 
 function allocateTocColumns(
@@ -729,10 +844,18 @@ function allocateTocColumns(
     while (rowIndex < rows.length) {
       const row = rows[rowIndex];
       if (!row) break;
-      const startsSection = sections.at(-1)?.label !== row.sectionLabel;
+      const lastSection = sections.at(-1);
+      const startsSection =
+        lastSection?.label !== row.sectionLabel || lastSection.optional !== row.sectionOptional;
       const weight =
         tocEntryWeight(row.entry, format, columns) +
-        (startsSection ? tocSectionWeight(row.sectionLabel, format, columns) : 0);
+        (startsSection
+          ? tocSectionWeight(
+              { label: row.sectionLabel, optionalLabel: row.sectionOptionalLabel },
+              format,
+              columns,
+            )
+          : 0);
       if (sections.length && used + weight > capacity) break;
       appendTocEntry(sections, row);
       used += weight;
@@ -746,7 +869,12 @@ function allocateTocColumns(
 
 function tocRows(sections: TocSection[]): TocRow[] {
   return sections.flatMap((section) =>
-    section.entries.map((entry) => ({ sectionLabel: section.label, entry })),
+    section.entries.map((entry) => ({
+      sectionLabel: section.label,
+      sectionOptional: section.optional,
+      sectionOptionalLabel: section.optionalLabel,
+      entry,
+    })),
   );
 }
 
@@ -786,7 +914,8 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
   const setlist = context.project.setlists.find(
     (item) => item.id === context.project.activeSetlistId,
   );
-  const sections = sectionMap(setlist);
+  const placements = setlistSongPlacements(setlist, context.locale);
+  const placementBySong = new Map(placements.map((placement) => [placement.songId, placement]));
   const songPages = songs.flatMap((song) => buildSongPages(song, context, baseFormat));
   const pages: LogicalPrintPage[] = [];
   const includeCover = context.options.format === "booklet" && context.options.includeCover;
@@ -804,9 +933,7 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
         : undefined;
     const setlistSlots =
       context.options.scope === "active-setlist"
-        ? setlist?.items.filter(
-            (item) => item.type === "song" && (context.options.includeOptional || !item.optional),
-          ).length
+        ? includedSetlistSlotCount(setlist, context.options.includeOptional)
         : undefined;
     const hasRepeatedSlots = Boolean(setlistSlots && setlistSlots > songs.length);
     const requestedCoverMode = context.options.coverMode ?? "generated";
@@ -836,26 +963,41 @@ export function createPrintPlan(context: BuildContext): PrintPlan {
   }
 
   if (context.options.includeTableOfContents) {
-    const tocSections = new Map<string, TocEntry[]>();
+    const tocSections = new Map<string, TocSection>();
+    const optionalLabel = context.locale === "zh-CN" ? "可选" : "Optional";
     let sequence = 1;
     for (const song of songs) {
       const count = songPages.filter((page) => page.songId === song.id).length;
       if (!count) continue;
+      const placement = placementBySong.get(song.id);
       const section =
-        sections.get(song.id) || (context.locale === "zh-CN" ? "演出曲目" : "Concert songs");
+        placement?.section || (context.locale === "zh-CN" ? "演出曲目" : "Concert songs");
+      const sectionOptional = Boolean(placement?.sectionOptional);
+      const entryOptional = Boolean(placement?.optional);
       const entry: TocEntry = {
         songId: song.id,
         title: getLocalized(song.titles, context.locale),
         sequence,
         pageNumber: 0,
         section,
+        optional: entryOptional,
+        optionalLabel: entryOptional ? optionalLabel : undefined,
       };
-      const existing = tocSections.get(section) ?? [];
-      existing.push(entry);
-      tocSections.set(section, existing);
+      const sectionKey = `${sectionOptional ? "optional" : "required"}\u0000${section}`;
+      const existing = tocSections.get(sectionKey);
+      if (existing) {
+        existing.entries.push(entry);
+      } else {
+        tocSections.set(sectionKey, {
+          label: section,
+          optional: sectionOptional,
+          optionalLabel: sectionOptional ? optionalLabel : undefined,
+          entries: [entry],
+        });
+      }
       sequence += 1;
     }
-    const sectionList = [...tocSections].map(([label, entries]) => ({ label, entries }));
+    const sectionList = [...tocSections.values()];
     const entries = sectionList.flatMap((tocSection) => tocSection.entries);
     const pageCountBySong = new Map<string, number>();
     for (const page of songPages) {

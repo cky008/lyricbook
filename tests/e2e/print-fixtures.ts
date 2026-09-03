@@ -184,6 +184,6 @@ export async function seedSyntheticProject(
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator(".app-shell")).toBeVisible();
   await expect(page.locator("header.app-header .brand-title")).toHaveText(
-    "Synthetic Print Regression",
+    project.title.en ?? project.title["zh-Hans"] ?? "",
   );
 }

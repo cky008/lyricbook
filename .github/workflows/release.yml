@@ -11,40 +11,60 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  quality-package:
+    name: Verify and package release
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      commit: ${{ steps.tag.outputs.commit }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ inputs.tag || github.ref }}
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: 26.8.1
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
           toolchain: 1.98.0
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
       - name: Pin npm 12.0.2
         run: npm install --global npm@12.0.2
-      - name: Install JavaScript dependencies
+      - name: Resolve and verify release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
         shell: bash
         run: |
-          if [[ -f package-lock.json ]]; then
-            npm ci
-          else
-            npm install --no-audit --no-fund
-          fi
-      - name: Generate Cargo lockfile on bootstrap commits
-        shell: bash
-        run: test -f Cargo.lock || cargo generate-lockfile
+          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          COMMIT="$(git rev-parse "$TAG^{commit}")"
+          test -n "$TAG"
+          test "$TAG" = "v$PACKAGE_VERSION"
+          test "$COMMIT" = "$(git rev-parse HEAD)"
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$COMMIT" origin/main
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
+      - name: Require committed lockfiles
+        run: test -f package-lock.json && test -f Cargo.lock
+      - name: Install JavaScript dependencies
+        run: npm ci
       - name: Install wasm-pack 0.15.0
         run: cargo install wasm-pack --version 0.15.0 --locked
+      - name: Install cargo-audit 0.22.2
+        run: cargo install cargo-audit --version 0.22.2 --locked
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Release quality gate
         run: |
           npm run format:check
@@ -54,43 +74,69 @@ jobs:
           npm run validate:content
           npm run validate:repo
           cargo fmt --all -- --check
-          cargo clippy --workspace --all-targets --all-features -- -D warnings
-          cargo test --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+          cargo test --locked --workspace --all-targets
           npm run build:wasm
           npm run build
-      - name: Resolve release tag
-        id: tag
-        env:
-          INPUT_TAG: ${{ inputs.tag }}
-        shell: bash
-        run: |
-          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
-          test -n "$TAG"
-          git rev-parse "$TAG^{commit}" >/dev/null
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          npm run test:e2e
+          npm run check:offline
+          npm audit --audit-level=high
+          cargo audit
       - name: Package release assets
         shell: bash
         env:
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          STAGE="$(mktemp -d)"
-          mkdir -p "$STAGE/lyricbook-$TAG"
-          rsync -a ./ "$STAGE/lyricbook-$TAG/" \
-            --exclude .git \
-            --exclude node_modules \
-            --exclude dist \
-            --exclude target \
-            --exclude coverage \
-            --exclude packages/wasm/pkg \
-            --exclude playwright-report \
-            --exclude test-results
-          (cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/lyricbook-$TAG-source.zip" "lyricbook-$TAG")
+          git archive --format=zip --prefix="lyricbook-$TAG/" \
+            --output="lyricbook-$TAG-source.zip" "$TAG"
           (cd dist && zip -qr "../lyricbook-$TAG-dist.zip" .)
           sha256sum "lyricbook-$TAG-source.zip" "lyricbook-$TAG-dist.zip" > SHA256SUMS.txt
+      - name: Upload verified release assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-assets-${{ steps.tag.outputs.tag }}
+          path: |
+            lyricbook-${{ steps.tag.outputs.tag }}-source.zip
+            lyricbook-${{ steps.tag.outputs.tag }}-dist.zip
+            SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish verified release
+    needs: quality-package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified release assets
+        uses: actions/download-artifact@v8
+        with:
+          name: release-assets-${{ needs.quality-package.outputs.tag }}
+      - name: Verify release asset checksums
+        run: sha256sum --check SHA256SUMS.txt
+      - name: Revalidate release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.quality-package.outputs.tag }}
+          VERIFIED_COMMIT: ${{ needs.quality-package.outputs.commit }}
+        shell: bash
+        run: |
+          REMOTE_OBJECT="$(gh api "repos/$GH_REPO/git/ref/tags/$TAG" --jq '.object.type + " " + .object.sha')"
+          read -r REMOTE_TYPE REMOTE_SHA <<< "$REMOTE_OBJECT"
+          while [[ "$REMOTE_TYPE" == "tag" ]]; do
+            REMOTE_OBJECT="$(gh api "repos/$GH_REPO/git/tags/$REMOTE_SHA" --jq '.object.type + " " + .object.sha')"
+            read -r REMOTE_TYPE REMOTE_SHA <<< "$REMOTE_OBJECT"
+          done
+          test "$REMOTE_TYPE" = "commit"
+          test "$REMOTE_SHA" = "$VERIFIED_COMMIT"
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.tag.outputs.tag }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.quality-package.outputs.tag }}
         run: |
           gh release create "$TAG" \
             "lyricbook-$TAG-source.zip" \

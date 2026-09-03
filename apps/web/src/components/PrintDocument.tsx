@@ -58,7 +58,14 @@ function TocSectionContent({
 }) {
   return (
     <section className="print-toc-section" data-toc-section={section.label}>
-      <h3>{section.label}</h3>
+      <h3>
+        <span>{section.label}</span>
+        {section.optionalLabel ? (
+          <span className="print-toc-optional" data-toc-optional="section">
+            {section.optionalLabel}
+          </span>
+        ) : null}
+      </h3>
       {section.entries.map((entry) => (
         <a
           className="print-toc-entry"
@@ -67,7 +74,14 @@ function TocSectionContent({
           key={entry.songId}
         >
           <span>{String(entry.sequence).padStart(2, "0")}</span>
-          <span>{entry.title}</span>
+          <span className="print-toc-entry-title">
+            <span>{entry.title}</span>
+            {entry.optionalLabel ? (
+              <span className="print-toc-optional" data-toc-optional="entry">
+                {entry.optionalLabel}
+              </span>
+            ) : null}
+          </span>
           <span>{entry.pageNumber}</span>
         </a>
       ))}
@@ -120,15 +134,24 @@ function CoverContent({ page }: { page: CoverPage }) {
       data-print-content="cover"
     >
       {page.image ? (
-        <img className="print-cover-image" data-print-cover-image src={page.image.dataUrl} alt="" />
-      ) : null}
-      {page.mode === "image-with-text" ? (
-        <div className="print-cover-image-shade" aria-hidden="true" />
+        <div className="print-cover-media">
+          <img
+            className="print-cover-image"
+            data-print-cover-image
+            src={page.image.dataUrl}
+            alt=""
+          />
+          {page.mode === "image-with-text" ? (
+            <div className="print-cover-image-shade" aria-hidden="true" />
+          ) : null}
+        </div>
       ) : null}
       {showText ? (
-        <>
-          <div className="print-cover-rule" aria-hidden="true" />
-          <div className="print-cover-kicker">{page.kicker}</div>
+        <div className="print-cover-frame" data-print-cover-frame>
+          <div className="print-cover-header">
+            <div className="print-cover-rule" aria-hidden="true" />
+            <div className="print-cover-kicker">{page.kicker}</div>
+          </div>
           <div className="print-cover-copy">
             <h1>{page.title}</h1>
             {page.subtitle ? <p className="print-cover-subtitle">{page.subtitle}</p> : null}
@@ -137,10 +160,7 @@ function CoverContent({ page }: { page: CoverPage }) {
             {page.setlistTitle ? <span>{page.setlistTitle}</span> : null}
             <span>{page.songCountLabel}</span>
           </div>
-          <div className="print-cover-mark" aria-hidden="true">
-            LB
-          </div>
-        </>
+        </div>
       ) : (
         <h1 className="visually-hidden">{page.title}</h1>
       )}
