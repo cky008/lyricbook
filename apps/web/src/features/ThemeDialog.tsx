@@ -1,5 +1,5 @@
 import { DialogShell } from "@app/components/DialogShell";
-import { themeColorPreview } from "@app/lib/appearance";
+import { type InterfaceStyle, themeColorPreview } from "@app/lib/appearance";
 import { useI18n } from "@app/lib/i18n";
 import {
   activateBuiltInTheme,
@@ -16,7 +16,16 @@ import {
   themesEqual,
   type UiLocale,
 } from "@domain/index";
-import { Check, Copy, Palette, Plus, Sparkles, Trash2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Flower2,
+  LayoutPanelTop,
+  Palette,
+  Plus,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 interface ThemeDialogProps {
@@ -25,6 +34,8 @@ interface ThemeDialogProps {
   project: LyricBookProject;
   locale: UiLocale;
   onChange: (project: LyricBookProject) => void;
+  interfaceStyle: InterfaceStyle;
+  onInterfaceStyleChange: (style: InterfaceStyle) => void;
 }
 
 interface ColorFieldProps {
@@ -184,7 +195,15 @@ function densityPreset(value: number | undefined): "0.88" | "1" | "1.18" {
   return "1";
 }
 
-export function ThemeDialog({ open, onOpenChange, project, locale, onChange }: ThemeDialogProps) {
+export function ThemeDialog({
+  open,
+  onOpenChange,
+  project,
+  locale,
+  onChange,
+  interfaceStyle,
+  onInterfaceStyleChange,
+}: ThemeDialogProps) {
   const { t } = useI18n();
   const languageKey = locale === "zh-CN" ? "zh-Hans" : "en";
   const theme =
@@ -235,6 +254,80 @@ export function ThemeDialog({ open, onOpenChange, project, locale, onChange }: T
         </button>
       }
     >
+      <section
+        className="modal-section interface-style-section"
+        aria-labelledby="interface-style-heading"
+      >
+        <div className="theme-section-heading">
+          <div>
+            <h3 id="interface-style-heading">{t("interface-style")}</h3>
+            <p id="interface-style-help">{t("interface-style-help")}</p>
+          </div>
+          <LayoutPanelTop size={18} aria-hidden="true" />
+        </div>
+        <div
+          className="interface-style-options"
+          role="radiogroup"
+          aria-labelledby="interface-style-heading"
+          aria-describedby="interface-style-help"
+        >
+          {(
+            [
+              {
+                value: "studio",
+                label: t("interface-style-studio"),
+                help: t("interface-style-studio-help"),
+                Icon: LayoutPanelTop,
+              },
+              {
+                value: "garden",
+                label: t("interface-style-garden"),
+                help: t("interface-style-garden-help"),
+                Icon: Flower2,
+              },
+            ] satisfies Array<{
+              value: InterfaceStyle;
+              label: string;
+              help: string;
+              Icon: typeof LayoutPanelTop;
+            }>
+          ).map(({ value, label, help, Icon }) => {
+            const helpId = `interface-style-${value}-help`;
+            const active = interfaceStyle === value;
+            return (
+              <label
+                className="interface-style-card"
+                data-active={active ? "true" : "false"}
+                key={value}
+              >
+                <input
+                  type="radio"
+                  name="interface-style"
+                  value={value}
+                  checked={active}
+                  aria-describedby={helpId}
+                  onChange={() => onInterfaceStyleChange(value)}
+                />
+                <span
+                  className={`interface-style-preview interface-style-preview-${value}`}
+                  aria-hidden="true"
+                >
+                  <span className="interface-style-preview-copy" />
+                </span>
+                <span className="interface-style-card-copy">
+                  <strong className="interface-style-card-title">
+                    <Icon size={16} aria-hidden="true" /> {label}
+                  </strong>
+                  <span className="interface-style-card-description" id={helpId}>
+                    {help}
+                  </span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="modal-section theme-catalog-section" aria-labelledby="built-in-themes">
         <div className="theme-section-heading">
           <div>

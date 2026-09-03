@@ -16,9 +16,10 @@ const SCOPED_CACHE_ROOT = CACHE_FAMILY_PREFIX + "scope-";
 const SCOPE_TOKEN = encodeURIComponent(new URL(self.registration.scope).pathname);
 const CACHE_PREFIX = SCOPED_CACHE_ROOT + SCOPE_TOKEN + "-";
 const CACHE_NAME = CACHE_PREFIX + CACHE_ID;
-const LEGACY_VERSION_PREFIX = "lyricbook-v";
-const SCOPE_INDEX_URL = new URL("index.html", self.registration.scope).href;
-const COMPLETION_MARKER_URL = new URL("__lyricbook-cache-complete__", self.registration.scope).href;
+	const LEGACY_VERSION_PREFIX = "lyricbook-v";
+	const SCOPE_INDEX_URL = new URL("index.html", self.registration.scope).href;
+	const LOCALE_ROOT_URL = new URL("locales/", self.registration.scope).href;
+	const COMPLETION_MARKER_URL = new URL("__lyricbook-cache-complete__", self.registration.scope).href;
 const PRECACHE = ${JSON.stringify(precache, null, 2)};
 
 function isLegacyCacheName(name) {
@@ -69,14 +70,14 @@ async function fallbackCandidates() {
   return candidates;
 }
 
-async function matchAcrossCaches(request) {
-  const fallbacks = await fallbackCandidates();
-  const ordered = [CACHE_NAME, ...fallbacks.map(({ key }) => key)];
-  for (const key of ordered) {
-    const cached = await (await caches.open(key)).match(request, { ignoreVary: true });
-    if (cached) return cached;
-  }
-  return undefined;
+async function matchAcrossCaches(request, ignoreSearch = false) {
+	const fallbacks = await fallbackCandidates();
+	const ordered = [CACHE_NAME, ...fallbacks.map(({ key }) => key)];
+	for (const key of ordered) {
+		const cached = await (await caches.open(key)).match(request, { ignoreVary: true, ignoreSearch });
+		if (cached) return cached;
+	}
+	return undefined;
 }
 
 async function networkFirstNavigation(request) {
@@ -90,9 +91,19 @@ async function networkFirstNavigation(request) {
 }
 
 async function cacheFirst(request) {
-  const cached = await matchAcrossCaches(request);
-  if (cached) return cached;
-  return fetch(request);
+	const cached = await matchAcrossCaches(request);
+	if (cached) return cached;
+	return fetch(request);
+}
+
+async function networkFirstLocale(request) {
+	try {
+		const response = await fetch(request, { cache: "no-store" });
+		if (response.ok) return response;
+	} catch {
+		// A precached catalog without the build query remains available offline.
+	}
+	return (await matchAcrossCaches(request, true)) || Response.error();
 }
 
 self.addEventListener("install", (event) => {
@@ -137,11 +148,15 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fetch(event.request, { cache: "no-store" }).catch(() => matchAcrossCaches(event.request)));
     return;
   }
-  if (event.request.mode === "navigate") {
-    event.respondWith(networkFirstNavigation(event.request));
-    return;
-  }
-  event.respondWith(cacheFirst(event.request));
+	if (event.request.mode === "navigate") {
+		event.respondWith(networkFirstNavigation(event.request));
+		return;
+	}
+	if (url.href.startsWith(LOCALE_ROOT_URL)) {
+		event.respondWith(networkFirstLocale(event.request));
+		return;
+	}
+	event.respondWith(cacheFirst(event.request));
 });
 `;
 }

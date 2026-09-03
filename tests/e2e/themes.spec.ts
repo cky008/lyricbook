@@ -1,6 +1,6 @@
+import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page, test } from "@playwright/test";
-import { readFile } from "node:fs/promises";
 import { seedSyntheticProject, syntheticProject, syntheticSong } from "./print-fixtures";
 
 const MOBILE_THEME_WIDTHS = [320, 393, 430] as const;
@@ -149,6 +149,38 @@ async function inspectThemeDialogLayout(dialog: Locator) {
   });
 }
 
+async function storedInterfaceStyle(page: Page): Promise<string | null> {
+  return await page.evaluate(() => localStorage.getItem("lyricbook-interface-style"));
+}
+
+async function printableStyleSnapshot(page: Page) {
+  return await page
+    .locator("body > #print-portal [data-print-document]")
+    .evaluate((documentElement) => {
+      const printablePage = documentElement.querySelector<HTMLElement>(".print-page");
+      const title = documentElement.querySelector<HTMLElement>(".print-song-title");
+      const lyrics = documentElement.querySelector<HTMLElement>(".print-lyrics");
+      if (!printablePage || !title || !lyrics) {
+        throw new Error("Expected a complete printable song page");
+      }
+      const pageRect = printablePage.getBoundingClientRect();
+      const pageStyle = getComputedStyle(printablePage);
+      const titleStyle = getComputedStyle(title);
+      const lyricsStyle = getComputedStyle(lyrics);
+      return {
+        backgroundColor: pageStyle.backgroundColor,
+        color: pageStyle.color,
+        height: pageRect.height,
+        lyricFontFamily: lyricsStyle.fontFamily,
+        lyricFontSize: lyricsStyle.fontSize,
+        printPaper: getComputedStyle(documentElement).getPropertyValue("--print-paper").trim(),
+        titleFontFamily: titleStyle.fontFamily,
+        titleFontSize: titleStyle.fontSize,
+        width: pageRect.width,
+      };
+    });
+}
+
 test("crafted themes remain accessible, responsive, and persist only after selection", async ({
   page,
   isMobile,
@@ -232,6 +264,228 @@ test("crafted themes remain accessible, responsive, and persist only after selec
   expect((await storedThemeState(page)).ids).toEqual(["synthetic-print-theme", "builtin-ink-jade"]);
 });
 
+test("Garden Editorial remains a browser preference across project replacement and cannot restyle print", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== "chromium",
+    "Browser preference integration is covered once in Chromium",
+  );
+
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [
+        syntheticSong(
+          "interface-style-song",
+          "A Garden Workspace",
+          "GARDEN-001 invented line\nGARDEN-002 invented line",
+        ),
+      ],
+    }),
+  );
+
+  const themeDialog = await openThemeDialog(page, false);
+  const styleGroup = themeDialog.getByRole("radiogroup", { name: /Interface style|界面风格/i });
+  await expect(styleGroup.getByRole("radio")).toHaveCount(2);
+  await styleGroup.getByRole("radio", { name: /^Garden Editorial\b|^雅集\b/i }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
+  await expect.poll(() => storedInterfaceStyle(page)).toBe("garden");
+  const accessibility = await new AxeBuilder({ page }).include(".dialog-content").analyze();
+  expect(accessibility.violations).toEqual([]);
+  await themeDialog
+    .getByRole("button", { name: /^(Close|关闭)$/i })
+    .last()
+    .click();
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".app-shell")).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
+  expect(await storedInterfaceStyle(page)).toBe("garden");
+
+  const imported = syntheticProject({
+    songs: [
+      syntheticSong(
+        "interface-style-import",
+        "Imported Garden Proof",
+        "IMPORT-001 invented line\nIMPORT-002 invented line",
+      ),
+    ],
+  });
+  imported.id = "synthetic-interface-style-import";
+  imported.title = { en: "Imported Garden Project", "zh-Hans": "导入雅集项目" };
+  const transferDialog = await openTransferDialog(page, false);
+  await transferDialog.locator('input[type="file"]').setInputFiles({
+    name: "synthetic-interface-style.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(`${JSON.stringify(imported)}\n`),
+  });
+  await expect(transferDialog.locator(".notice").first()).toContainText(
+    /Project imported successfully|项目导入成功/i,
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
+  expect(await storedInterfaceStyle(page)).toBe("garden");
+  await transferDialog
+    .getByRole("button", { name: /^(Close|关闭)$/i })
+    .last()
+    .click();
+
+  await page
+    .getByRole("button", { name: /^(Print|打印)$/i })
+    .first()
+    .click();
+  const printDialog = page.getByRole("dialog", { name: /^(Print|打印)$/i });
+  await printDialog.getByLabel(/Print scope|打印范围/i).selectOption("current-song");
+  await printDialog.getByLabel(/Include linked contents|包含可点击目录/i).uncheck();
+  await printDialog.getByRole("button", { name: /Build preview|生成预览/i }).click();
+  await expect(
+    printDialog.getByRole("button", { name: /Print \/ Save PDF|打印／保存 PDF/i }),
+  ).toBeEnabled({ timeout: 20_000 });
+
+  const printPortal = page.locator("body > #print-portal");
+  const printDocument = printPortal.locator("[data-print-document]");
+  await expect(printDocument).toBeAttached();
+  await expect(printPortal).not.toHaveAttribute("data-interface-style");
+  await expect(printDocument).not.toHaveAttribute("data-interface-style");
+  expect(await printDocument.evaluate((element) => element.closest("#root"))).toBeNull();
+
+  const gardenPrint = await printableStyleSnapshot(page);
+  await page.locator("html").evaluate((element) => {
+    element.setAttribute("data-interface-style", "studio");
+    return new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+  });
+  expect(await printableStyleSnapshot(page)).toEqual(gardenPrint);
+  await page.locator("html").evaluate((element) => {
+    element.setAttribute("data-interface-style", "garden");
+  });
+  await printDialog
+    .getByRole("button", { name: /^(Close|关闭)$/i })
+    .last()
+    .click();
+
+  const blankDialog = await openTransferDialog(page, false);
+  page.once("dialog", async (dialog) => {
+    expect(dialog.type()).toBe("confirm");
+    await dialog.accept();
+  });
+  await blankDialog.getByRole("button", { name: /Blank project|空白项目/i }).click();
+  await expect(blankDialog.locator(".notice").first()).toContainText(/Preset loaded|预设已载入/i);
+  await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
+  expect(await storedInterfaceStyle(page)).toBe("garden");
+});
+
+test("both interface styles preserve every crafted and project theme", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== "chromium", "Theme and interface permutations are covered once");
+
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [syntheticSong("style-theme-matrix", "Style Theme Matrix", "Invented line")],
+    }),
+  );
+  const dialog = await openThemeDialog(page, false);
+  const builtInIds = [
+    "builtin-studio-slate",
+    "builtin-ink-jade",
+    "builtin-porcelain-blue",
+    "builtin-cinnabar-silk",
+    "builtin-moonlit-paper",
+  ];
+  const accentRuns: string[][] = [];
+  const customAccents: string[] = [];
+
+  for (const style of ["studio", "garden"] as const) {
+    await dialog
+      .getByRole("radio", {
+        name: style === "studio" ? /^Studio\b|^现代工作室\b/i : /^Garden Editorial\b|^雅集\b/i,
+      })
+      .click();
+    await expect(page.locator("html")).toHaveAttribute("data-interface-style", style);
+
+    await dialog
+      .getByRole("combobox", { name: /^(Theme|主题)$/i })
+      .selectOption("synthetic-print-theme");
+    customAccents.push(
+      await page
+        .locator("html")
+        .evaluate((element) => getComputedStyle(element).getPropertyValue("--lb-accent").trim()),
+    );
+
+    const accents: string[] = [];
+    for (const themeId of builtInIds) {
+      await dialog.locator(`.theme-card[data-theme-id="${themeId}"] .theme-card-select`).click();
+      await expect(page.locator("html")).toHaveAttribute("data-interface-style", style);
+      accents.push(
+        await page
+          .locator("html")
+          .evaluate((element) => getComputedStyle(element).getPropertyValue("--lb-accent").trim()),
+      );
+    }
+    expect(new Set(accents).size).toBe(builtInIds.length);
+    accentRuns.push(accents);
+  }
+
+  expect(customAccents[0]).toBe(customAccents[1]);
+  expect(accentRuns[0]).toEqual(accentRuns[1]);
+  await expect(dialog.locator(".theme-card")).toHaveCount(5);
+});
+
+test("Garden Editorial wraps an unbroken next-song title at 320px", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "The narrow next-song regression runs in the mobile project");
+
+  await page.setViewportSize({ width: 320, height: 844 });
+  await seedSyntheticProject(
+    page,
+    syntheticProject({
+      songs: [
+        syntheticSong("garden-current", "Garden Current Song", "One invented line"),
+        syntheticSong(
+          "garden-next",
+          "NextSongTitleWithoutAnyNaturalBreakThatMustRemainCompletelyVisibleAtTheNarrowestSupportedWidth",
+          "Another invented line",
+        ),
+      ],
+    }),
+  );
+  await page.evaluate(() => localStorage.setItem("lyricbook-interface-style", "garden"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
+
+  const layout = await page.locator(".reader-card > .next-song-card").evaluate((element) => {
+    const card = element as HTMLElement;
+    const copy = card.querySelector<HTMLElement>(".next-song-copy");
+    const title = card.querySelector<HTMLElement>("strong");
+    if (!copy || !title) throw new Error("Expected next-song copy and title");
+    const cardRect = card.getBoundingClientRect();
+    const titleRect = title.getBoundingClientRect();
+    return {
+      cardClientWidth: card.clientWidth,
+      cardLeft: cardRect.left,
+      cardRight: cardRect.right,
+      cardScrollWidth: card.scrollWidth,
+      copyClientWidth: copy.clientWidth,
+      copyMinWidth: getComputedStyle(copy).minWidth,
+      copyScrollWidth: copy.scrollWidth,
+      titleLeft: titleRect.left,
+      titleOverflowWrap: getComputedStyle(title).overflowWrap,
+      titleRight: titleRect.right,
+    };
+  });
+
+  expect(layout.cardScrollWidth).toBeLessThanOrEqual(layout.cardClientWidth + 1);
+  expect(layout.copyScrollWidth).toBeLessThanOrEqual(layout.copyClientWidth + 1);
+  expect(layout.titleLeft).toBeGreaterThanOrEqual(layout.cardLeft - 1);
+  expect(layout.titleRight).toBeLessThanOrEqual(layout.cardRight + 1);
+  expect(layout.copyMinWidth).toBe("0px");
+  expect(layout.titleOverflowWrap).toBe("anywhere");
+});
+
 test("theme editor stays usable at supported narrow mobile widths", async ({ page, isMobile }) => {
   test.skip(!isMobile, "Narrow viewport coverage runs in the mobile project");
 
@@ -243,37 +497,46 @@ test("theme editor stays usable at supported narrow mobile widths", async ({ pag
     }),
   );
 
-  for (const width of MOBILE_THEME_WIDTHS) {
-    await page.setViewportSize({ width, height: 844 });
-    const dialog = await openThemeDialog(page, true);
-    await expect(dialog.locator(".theme-card")).toHaveCount(5);
+  for (const style of ["studio", "garden"] as const) {
+    await page.evaluate((value) => localStorage.setItem("lyricbook-interface-style", value), style);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.locator(".app-shell")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-interface-style", style);
 
-    const layout = await inspectThemeDialogLayout(dialog);
-    expect(layout.documentScrollWidth, `document overflow at ${width}px`).toBeLessThanOrEqual(
-      layout.documentClientWidth + 1,
-    );
-    expect(layout.bodyScrollWidth, `body overflow at ${width}px`).toBeLessThanOrEqual(
-      layout.bodyClientWidth + 1,
-    );
-    expect(layout.dialogScrollWidth, `dialog overflow at ${width}px`).toBeLessThanOrEqual(
-      layout.dialogClientWidth + 1,
-    );
-    expect(layout.controlHorizontalIssues, `control bounds at ${width}px`).toEqual([]);
-    expect(layout.cardTextIssues, `card text clipping at ${width}px`).toEqual([]);
+    for (const width of MOBILE_THEME_WIDTHS) {
+      await page.setViewportSize({ width, height: 844 });
+      const dialog = await openThemeDialog(page, true);
+      await expect(dialog.locator(".theme-card")).toHaveCount(5);
 
-    await page.keyboard.press("Tab");
-    await expect(
-      dialog.locator(
-        "button:focus:not([disabled]), input:focus:not([disabled]), select:focus:not([disabled])",
-      ),
-      `keyboard focus at ${width}px`,
-    ).toHaveCount(1);
+      const layout = await inspectThemeDialogLayout(dialog);
+      expect(
+        layout.documentScrollWidth,
+        `${style} document overflow at ${width}px`,
+      ).toBeLessThanOrEqual(layout.documentClientWidth + 1);
+      expect(layout.bodyScrollWidth, `${style} body overflow at ${width}px`).toBeLessThanOrEqual(
+        layout.bodyClientWidth + 1,
+      );
+      expect(
+        layout.dialogScrollWidth,
+        `${style} dialog overflow at ${width}px`,
+      ).toBeLessThanOrEqual(layout.dialogClientWidth + 1);
+      expect(layout.controlHorizontalIssues, `${style} control bounds at ${width}px`).toEqual([]);
+      expect(layout.cardTextIssues, `${style} card text clipping at ${width}px`).toEqual([]);
 
-    await dialog
-      .getByRole("button", { name: /^(Close|关闭)$/i })
-      .last()
-      .click();
-    await expect(dialog).toBeHidden();
+      await page.keyboard.press("Tab");
+      await expect(
+        dialog.locator(
+          "button:focus:not([disabled]), input:focus:not([disabled]), select:focus:not([disabled])",
+        ),
+        `${style} keyboard focus at ${width}px`,
+      ).toHaveCount(1);
+
+      await dialog
+        .getByRole("button", { name: /^(Close|关闭)$/i })
+        .last()
+        .click();
+      await expect(dialog).toBeHidden();
+    }
   }
 });
 

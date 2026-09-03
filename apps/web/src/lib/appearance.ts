@@ -3,6 +3,7 @@ import { sanitizeTheme, type Theme, type ThemeStyleTokens, type ThemeTokens } fr
 export type AppearanceMode = "system" | "light" | "dark";
 export type ResolvedAppearance = "light" | "dark";
 export type AppearanceDensity = "compact" | "comfortable" | "spacious";
+export type InterfaceStyle = "studio" | "garden";
 
 interface RgbColor {
   red: number;
@@ -61,6 +62,8 @@ export interface PrintPalette {
 }
 
 export const APPEARANCE_STORAGE_KEY = "lyricbook-appearance";
+export const DEFAULT_INTERFACE_STYLE: InterfaceStyle = "studio";
+export const INTERFACE_STYLE_STORAGE_KEY = "lyricbook-interface-style";
 
 export const THEME_FONT_STACKS = {
   serif:
@@ -603,6 +606,56 @@ export function themeFontStack(
 export function storedAppearance(storage: Pick<Storage, "getItem"> = localStorage): AppearanceMode {
   const value = storage.getItem(APPEARANCE_STORAGE_KEY);
   return value === "light" || value === "dark" || value === "system" ? value : "system";
+}
+
+function normalizedInterfaceStyle(value: unknown): InterfaceStyle {
+  return value === "garden" || value === "studio" ? value : DEFAULT_INTERFACE_STYLE;
+}
+
+function browserStorage(): Storage | undefined {
+  try {
+    return typeof window === "undefined" ? undefined : window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+export function storedInterfaceStyle(storage?: Pick<Storage, "getItem">): InterfaceStyle {
+  try {
+    return normalizedInterfaceStyle(
+      (storage ?? browserStorage())?.getItem(INTERFACE_STYLE_STORAGE_KEY),
+    );
+  } catch {
+    return DEFAULT_INTERFACE_STYLE;
+  }
+}
+
+export function persistInterfaceStyle(
+  value: InterfaceStyle,
+  storage?: Pick<Storage, "setItem">,
+): boolean {
+  try {
+    const target = storage ?? browserStorage();
+    if (!target) return false;
+    target.setItem(INTERFACE_STYLE_STORAGE_KEY, normalizedInterfaceStyle(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function applyInterfaceStyle(value: InterfaceStyle, target?: HTMLElement): InterfaceStyle {
+  const next = normalizedInterfaceStyle(value);
+  const root = target ?? (typeof document === "undefined" ? undefined : document.documentElement);
+  if (root) root.dataset.interfaceStyle = next;
+  return next;
+}
+
+export function initializeInterfaceStyle(
+  storage?: Pick<Storage, "getItem">,
+  target?: HTMLElement,
+): InterfaceStyle {
+  return applyInterfaceStyle(storedInterfaceStyle(storage), target);
 }
 
 export function resolveAppearance(mode: AppearanceMode, systemDark: boolean): ResolvedAppearance {
