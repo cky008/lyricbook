@@ -20,7 +20,7 @@ LyricBook is a privacy-first, local-first concert lyric-book editor and printabl
 
 ## 3. Current pinned toolchain
 
-Version 0.0.7 uses the pinned toolchain below:
+Version 0.0.8 uses the pinned toolchain below:
 
 - Node.js 26.8.1 and npm 12.0.2
 - React and React DOM 19.2.8
@@ -34,7 +34,7 @@ Version 0.0.7 uses the pinned toolchain below:
 - Vitest 4.1.11
 - Playwright 1.62.1
 - Rust 1.98.0, edition 2024
-- wasm-pack 0.15.0 and wasm-bindgen 0.2.127
+- wasm-pack 0.15.0, wasm-bindgen 0.2.127, and cargo-audit 0.22.2
 
 Do not silently downgrade dependencies or restore vendored React. Upgrades require official-source verification, a dedicated commit, regenerated lockfiles, and the complete test matrix.
 

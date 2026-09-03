@@ -10,7 +10,7 @@
 
 LyricBook is a privacy-first, local-first concert lyric-book editor, immersive setlist reader, and printable PDF/booklet generator. It stores user lyrics in the browser, separates reusable content from themes, supports multilingual and multi-version songs, and deploys as a static GitHub Pages application without a backend.
 
-> **Version 0.0.7 improves printable lyric books.** Pages now use browser-measured font sizing, complete-text pagination, linked multi-page contents when needed, and a safety check before PDF export.
+> **Version 0.0.8 brings a new workspace choice to the reliable print foundation.** Switch between Studio and Garden Editorial while project themes, measured pagination, and PDF output remain consistent.
 
 ## What it does
 

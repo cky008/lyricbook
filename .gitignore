@@ -40,5 +40,8 @@ package-lock.local.json
 .tmp/
 tmp/
 output/pdf/
+/lyricbook-v*-source.zip
+/lyricbook-v*-dist.zip
+/SHA256SUMS.txt
 
 offline-check-report.json
