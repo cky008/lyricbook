@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { confirmProjectReplacement } from "./import-fixtures";
 import { seedSyntheticProject, syntheticProject, syntheticSong } from "./print-fixtures";
 
 const MOBILE_THEME_WIDTHS = [320, 393, 430] as const;
@@ -324,6 +325,7 @@ test("Garden Editorial remains a browser preference across project replacement a
     mimeType: "application/json",
     buffer: Buffer.from(`${JSON.stringify(imported)}\n`),
   });
+  await confirmProjectReplacement(page, transferDialog);
   await expect(transferDialog.locator(".notice").first()).toContainText(
     /Project imported successfully|项目导入成功/i,
   );
@@ -375,7 +377,9 @@ test("Garden Editorial remains a browser preference across project replacement a
     await dialog.accept();
   });
   await blankDialog.getByRole("button", { name: /Blank project|空白项目/i }).click();
-  await expect(blankDialog.locator(".notice").first()).toContainText(/Preset loaded|预设已载入/i);
+  await expect(
+    blankDialog.getByRole("status").filter({ hasText: /Blank project created|已创建空白项目/i }),
+  ).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-interface-style", "garden");
   expect(await storedInterfaceStyle(page)).toBe("garden");
 });

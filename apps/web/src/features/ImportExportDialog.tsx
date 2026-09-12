@@ -11,6 +11,7 @@ import {
   getBuiltInTheme,
   getLocalized,
   type LyricBookProject,
+  mergeProjectLyrics,
   migrateLegacyGemV4Backup,
   type PresetIndexEntry,
   parseProject,
@@ -18,10 +19,11 @@ import {
   parseTheme,
   sanitizeStandaloneTheme,
   themesEqual,
+  touchProject,
   type UiLocale,
 } from "@domain/index";
 import { Download, FileJson, Link, PackageOpen, RotateCcw, Upload } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface ImportExportDialogProps {
   open: boolean;
@@ -35,6 +37,7 @@ interface ImportExportDialogProps {
 }
 
 type ImportMessage = { kind: "success" | "error" | "info"; text: string } | null;
+type PendingImport = { source: LyricBookProject; sourceName: string };
 
 function looksLikeTheme(value: unknown): boolean {
   return Boolean(
@@ -57,8 +60,44 @@ export function ImportExportDialog({
   const [url, setUrl] = useState("");
   const [message, setMessage] = useState<ImportMessage>(null);
   const [busy, setBusy] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const [pending, setPending] = useState<PendingImport | null>(null);
+  const request = useRef(0);
+  const latestProject = useRef(project);
 
-  const importUnknown = async (value: unknown, sourceName: string) => {
+  useEffect(() => {
+    latestProject.current = project;
+  }, [project]);
+
+  useEffect(() => {
+    if (!open) {
+      request.current += 1;
+      setPending(null);
+      setBusy(false);
+      setMessage(null);
+    }
+    return () => {
+      request.current += 1;
+    };
+  }, [open]);
+
+  const preview = useMemo(() => {
+    if (!pending) return null;
+    try {
+      return mergeProjectLyrics(project, pending.source);
+    } catch {
+      return null;
+    }
+  }, [project, pending]);
+
+  const close = (value: boolean) => {
+    if (!value && applying) return;
+    if (!value) request.current += 1;
+    onOpenChange(value);
+  };
+
+  const importUnknown = async (value: unknown, sourceName: string, token: number) => {
+    if (request.current !== token) return;
     if (typeof value === "string") {
       const parsed = parseSetlistText(value, project, locale, sourceName.replace(/\.[^.]+$/, ""));
       const next: LyricBookProject = {
@@ -82,11 +121,8 @@ export function ImportExportDialog({
       if (!gemEntry) throw new Error("G.E.M. metadata preset is unavailable");
       const migrated = migrateLegacyGemV4Backup(value, await loadPreset(gemEntry));
       if (!migrated) throw new Error("Unable to migrate the G.E.M. backup");
-      await onReplace(migrated, `Legacy G.E.M. import: ${sourceName}`);
-      setMessage({
-        kind: "success",
-        text: `${t("import-success")} ${t("song-count", { count: migrated.songs.length })}`,
-      });
+      if (request.current !== token) return;
+      setPending({ source: parseProject(migrated), sourceName });
       return;
     }
 
@@ -121,42 +157,77 @@ export function ImportExportDialog({
     }
 
     const next = parseProject(value);
-    await onReplace(next, `Project import: ${sourceName}`);
-    setMessage({ kind: "success", text: t("import-success") });
+    setPending({ source: next, sourceName });
+  };
+
+  const applyImport = async (mode: "lyrics" | "replace") => {
+    if (!pending || busy) return;
+    if (mode === "replace" && !window.confirm(t("import-replace-confirm"))) return;
+    const token = ++request.current;
+    setBusy(true);
+    setApplying(true);
+    setMessage(null);
+    try {
+      const merged =
+        mode === "lyrics" ? mergeProjectLyrics(latestProject.current, pending.source) : null;
+      const next = merged ? touchProject(merged.project) : pending.source;
+      await onReplace(
+        next,
+        `${mode === "lyrics" ? "Lyric merge" : "Project import"}: ${pending.sourceName}`,
+      );
+      if (request.current !== token) return;
+      setPending(null);
+      setMessage({
+        kind: "success",
+        text: merged
+          ? t("import-merge-success", {
+              updated: merged.report.updatedSongs,
+              added: merged.report.addedSongs,
+              skipped: merged.report.ambiguousSongs.length,
+            })
+          : t("import-success"),
+      });
+    } catch {
+      if (request.current === token) setMessage({ kind: "error", text: t("import-failed") });
+    } finally {
+      setApplying(false);
+      if (request.current === token) setBusy(false);
+    }
   };
 
   const handleFile = async (file: File) => {
+    const token = ++request.current;
     setBusy(true);
     setMessage(null);
+    setPending(null);
     try {
-      await importUnknown(await importProjectFile(file), file.name);
-    } catch (error) {
-      setMessage({
-        kind: "error",
-        text: `${t("import-failed")} ${error instanceof Error ? error.message : String(error)}`,
-      });
+      await importUnknown(await importProjectFile(file), file.name, token);
+    } catch {
+      if (request.current === token) setMessage({ kind: "error", text: t("import-failed") });
     } finally {
-      setBusy(false);
-      if (fileInput.current) fileInput.current.value = "";
+      if (request.current === token) {
+        setBusy(false);
+        if (fileInput.current) fileInput.current.value = "";
+      }
     }
   };
 
   const handleUrl = async () => {
     if (!url.trim()) return;
+    const token = ++request.current;
     setBusy(true);
     setMessage(null);
+    setPending(null);
     try {
       await importUnknown(
         await importHttpsUrl(url.trim()),
         new URL(url.trim()).pathname.split("/").pop() || "remote",
+        token,
       );
-    } catch (error) {
-      setMessage({
-        kind: "error",
-        text: `${t("import-failed")} ${error instanceof Error ? error.message : String(error)}`,
-      });
+    } catch {
+      if (request.current === token) setMessage({ kind: "error", text: t("import-failed") });
     } finally {
-      setBusy(false);
+      if (request.current === token) setBusy(false);
     }
   };
 
@@ -189,23 +260,105 @@ export function ImportExportDialog({
   return (
     <DialogShell
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={close}
       title={`${t("import")} / ${t("export")}`}
       description={t("privacy")}
       wide
+      dismissible={!applying}
       footer={
-        <button type="button" className="button primary" onClick={() => onOpenChange(false)}>
+        <button
+          type="button"
+          className="button primary"
+          disabled={applying}
+          onClick={() => close(false)}
+        >
           {t("close")}
         </button>
       }
     >
+      {applying ? (
+        <p role="status" className="notice">
+          {t("import-saving")}
+        </p>
+      ) : null}
       {message ? (
         <div
+          role={message.kind === "error" ? "alert" : "status"}
           className={`notice${message.kind === "error" ? " error" : ""}`}
           style={{ marginBottom: 16 }}
         >
           {message.text}
         </div>
+      ) : null}
+      {pending ? (
+        <section
+          className="panel stack"
+          aria-label={t("import-summary")}
+          style={{ marginBottom: 16, overflowWrap: "anywhere" }}
+        >
+          <h3>{t("import-summary")}</h3>
+          <p className="panel-copy">
+            {getLocalized(pending.source.title, locale)} · {pending.sourceName}
+          </p>
+          <p className="panel-copy">{t("import-merge-help")}</p>
+          {preview ? (
+            <p role="status" className="notice">
+              {t("import-merge-summary", {
+                matched: preview.report.matchedSongs,
+                updated: preview.report.updatedSongs,
+                added: preview.report.addedSongs,
+                skipped: preview.report.ambiguousSongs.length,
+              })}
+            </p>
+          ) : (
+            <p role="alert" className="notice error">
+              {t("import-merge-unavailable")}
+            </p>
+          )}
+          {preview?.report.ambiguousSongs.length ? (
+            <details>
+              <summary>{t("import-ambiguous-songs")}</summary>
+              <ul>
+                {preview.report.ambiguousSongs.map((id) => (
+                  <li key={id}>
+                    {getLocalized(
+                      pending.source.songs.find((song) => song.id === id)?.titles,
+                      locale,
+                    ) || id}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : null}
+          <button
+            type="button"
+            className="button primary"
+            disabled={busy || !preview}
+            onClick={() => void applyImport("lyrics")}
+          >
+            {t("import-merge-lyrics")}
+          </button>
+          <p className="panel-copy">{t("import-replace-help")}</p>
+          <button
+            type="button"
+            className="button"
+            disabled={busy}
+            onClick={() => void applyImport("replace")}
+          >
+            {t("import-replace-project")}
+          </button>
+          <button
+            type="button"
+            className="button"
+            disabled={busy}
+            onClick={() => {
+              setPending(null);
+              setMessage(null);
+            }}
+          >
+            {t("cancel")}
+          </button>
+        </section>
       ) : null}
       <div className="two-columns">
         <section className="panel stack">
@@ -221,18 +374,45 @@ export function ImportExportDialog({
               key={entry.id}
               disabled={busy}
               onClick={async () => {
+                const token = ++request.current;
                 setBusy(true);
                 setMessage(null);
+                setPending(null);
                 try {
-                  await onReplace(await loadPreset(entry), `Preset: ${entry.id}`);
-                  setMessage({ kind: "success", text: t("load-preset-success") });
-                } catch (error) {
-                  setMessage({
-                    kind: "error",
-                    text: error instanceof Error ? error.message : String(error),
-                  });
+                  const preset = await loadPreset(entry);
+                  if (request.current !== token) return;
+                  const merged = mergeProjectLyrics(preset, latestProject.current);
+                  if (merged.report.ambiguousSongs.length) {
+                    setMessage({
+                      kind: "error",
+                      text: t("load-preset-ambiguous", {
+                        count: merged.report.ambiguousSongs.length,
+                        songs: merged.report.ambiguousSongs
+                          .map(
+                            (id) =>
+                              getLocalized(
+                                latestProject.current.songs.find((song) => song.id === id)?.titles,
+                                locale,
+                              ) || id,
+                          )
+                          .join(" · "),
+                      }),
+                    });
+                    return;
+                  }
+                  setApplying(true);
+                  await onReplace(
+                    touchProject(merged.project),
+                    `Preset with retained lyrics: ${entry.id}`,
+                  );
+                  if (request.current === token)
+                    setMessage({ kind: "success", text: t("load-preset-success") });
+                } catch {
+                  if (request.current === token)
+                    setMessage({ kind: "error", text: t("import-failed") });
                 } finally {
-                  setBusy(false);
+                  setApplying(false);
+                  if (request.current === token) setBusy(false);
                 }
               }}
             >
@@ -248,16 +428,19 @@ export function ImportExportDialog({
             onClick={async () => {
               if (!window.confirm(t("confirm-clear"))) return;
               setBusy(true);
+              setApplying(true);
               setMessage(null);
+              setPending(null);
               try {
                 await onReplace(createBlankProject(locale), "Blank project");
-                setMessage({ kind: "success", text: t("load-preset-success") });
+                setMessage({ kind: "success", text: t("blank-project-success") });
               } catch (error) {
                 setMessage({
                   kind: "error",
                   text: error instanceof Error ? error.message : String(error),
                 });
               } finally {
+                setApplying(false);
                 setBusy(false);
               }
             }}

@@ -1,9 +1,9 @@
-import { createId, normalizeSongLookup } from "./ids";
+import { createId } from "./ids";
 import { DEFAULT_THEME, touchProject } from "./project";
 import {
-  SCHEMA_VERSION,
   type LyricBookProject,
   type LyricVersion,
+  SCHEMA_VERSION,
   type Setlist,
   type SetlistItem,
   type SetlistStatus,
@@ -176,31 +176,44 @@ function legacyTitle(backup: LegacyGemBackup, id: string): string {
   return backup.titles?.[id]?.trim() || id;
 }
 
-function matchLegacyId(
-  song: Song,
+function normalizedLegacyTitle(title: string): string {
+  return title.normalize("NFKC").trim().replace(/\s+/gu, " ").toLowerCase();
+}
+
+function matchLegacyIds(
+  songs: Song[],
   ids: string[],
   backup: LegacyGemBackup,
-  used: Set<string>,
-): string | undefined {
-  if (ids.includes(song.id) && !used.has(song.id)) return song.id;
-  const candidates = [...Object.values(song.titles), ...song.aliases]
-    .map(normalizeSongLookup)
-    .filter(Boolean);
-  const exact = ids.find(
-    (id) => !used.has(id) && candidates.includes(normalizeSongLookup(legacyTitle(backup, id))),
-  );
-  if (exact) return exact;
-  const partialMatches = ids.filter((id) => {
-    if (used.has(id)) return false;
-    const oldTitle = normalizeSongLookup(legacyTitle(backup, id));
-    return candidates.some(
-      (candidate) =>
-        candidate.length >= 3 &&
-        oldTitle.length >= 3 &&
-        (candidate.startsWith(oldTitle) || oldTitle.startsWith(candidate)),
-    );
-  });
-  return partialMatches.length === 1 ? partialMatches[0] : undefined;
+): Map<string, string> {
+  const sourceIds = new Set(ids);
+  const matches = new Map<string, string>();
+  const names = new Map<string, Set<string>>();
+  for (const song of songs) {
+    if (sourceIds.has(song.id)) matches.set(song.id, song.id);
+    for (const title of [...Object.values(song.titles), ...song.aliases]) {
+      const name = normalizedLegacyTitle(title);
+      if (!name) continue;
+      const candidates = names.get(name) ?? new Set<string>();
+      candidates.add(song.id);
+      names.set(name, candidates);
+    }
+  }
+
+  const candidatesByLegacyId = new Map<string, string>();
+  const candidateCounts = new Map<string, number>();
+  for (const id of ids) {
+    if (matches.has(id)) continue;
+    const candidates = names.get(normalizedLegacyTitle(legacyTitle(backup, id)));
+    if (candidates?.size !== 1) continue;
+    const [songId] = candidates;
+    if (songId === undefined || matches.has(songId)) continue;
+    candidatesByLegacyId.set(id, songId);
+    candidateCounts.set(songId, (candidateCounts.get(songId) ?? 0) + 1);
+  }
+  for (const [legacyId, songId] of candidatesByLegacyId) {
+    if (candidateCounts.get(songId) === 1) matches.set(songId, legacyId);
+  }
+  return matches;
 }
 
 function confidence(value: string | number | undefined): number | undefined {
@@ -282,12 +295,14 @@ export function migrateLegacyGemV4Backup(
 
   const project = structuredClone(metadataProject);
   const ids = legacyIds(backup);
+  const matches = matchLegacyIds(project.songs, ids, backup);
   const used = new Set<string>();
+  const songIds = new Set(project.songs.map((song) => song.id));
   const idMap = new Map<string, string>();
   const selectedVersions: Record<string, string> = {};
 
   project.songs = project.songs.map((song): Song => {
-    const legacyId = matchLegacyId(song, ids, backup, used);
+    const legacyId = matches.get(song.id);
     if (!legacyId) return song;
     used.add(legacyId);
     idMap.set(legacyId, song.id);
@@ -299,6 +314,11 @@ export function migrateLegacyGemV4Backup(
   for (const id of ids) {
     if (used.has(id)) continue;
     const song = legacySong(id, backup);
+    const preferredId = song.id;
+    for (let suffix = 1; songIds.has(song.id); suffix += 1) {
+      song.id = `${preferredId}-imported${suffix === 1 ? "" : `-${suffix}`}`;
+    }
+    songIds.add(song.id);
     const imported = versionsForLegacySong(id, backup);
     project.songs.push(song);
     used.add(id);

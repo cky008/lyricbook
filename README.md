@@ -17,6 +17,8 @@ LyricBook is a privacy-first, local-first concert lyric-book editor, immersive s
 - Uses browser language detection with a permanent English/Chinese switch.
 - Stores projects in IndexedDB and backs up a project before replacement.
 - Imports `.lyricbook`, JSON, Markdown, TXT, safe theme JSON, and user-supplied HTTPS URLs.
+- Previews project imports and adds existing lyrics to the current setlists by default; full-project restoration remains an explicit choice.
+- Carries the private lyric library into newly selected presets, so updated concert orders can reuse existing versions and translations.
 - Uses unique export names, making consecutive saves easy to identify.
 - Supports original, translation, transliteration, and adaptation tracks inside each lyric version.
 - Supports studio, live, language, acoustic, or custom versions under one song.
@@ -114,7 +116,7 @@ The repository does **not** distribute copyrighted song lyrics. Built-in presets
 - `feature/*` and `fix/*`: only for substantial or isolated work.
 - `hotfix/*`: production incidents, merged back to both `main` and `develop`.
 
-Every merge to `main` must pass web, Rust, content, browser, accessibility, and print checks. Read [AGENTS.md](AGENTS.md) before using an automated coding agent.
+Every merge to `main` must pass web, Rust, content, browser, accessibility, and print checks. Automated coding agents start with [AGENTS.md](AGENTS.md) and the task-specific routes in [docs/AI_WORKFLOW.md](docs/AI_WORKFLOW.md). For existing lyrics and new preset setlists, see [the import and migration guide](docs/MIGRATING_FROM_GEM.md).
 
 ## License
 

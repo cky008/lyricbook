@@ -38,9 +38,46 @@ export function useLyricBookProject(locale: UiLocale) {
     error: null,
   });
   const saveTimer = useRef<number | undefined>(undefined);
+  const saveQueue = useRef<Promise<void>>(Promise.resolve());
+  const saveRevision = useRef(0);
+  const replacementInProgress = useRef(false);
+  const mounted = useRef(true);
   const initialized = useRef(false);
 
+  const enqueueWrite = useCallback((write: () => Promise<void>) => {
+    const pending = saveQueue.current.then(write);
+    // A failed write must not prevent the next edit or import from being persisted.
+    saveQueue.current = pending.catch(() => undefined);
+    return pending;
+  }, []);
+
+  const scheduleSave = useCallback(
+    (next: LyricBookProject, revision: number) => {
+      if (saveTimer.current !== undefined) window.clearTimeout(saveTimer.current);
+      saveTimer.current = window.setTimeout(async () => {
+        saveTimer.current = undefined;
+        try {
+          await enqueueWrite(async () => {
+            if (revision !== saveRevision.current || !mounted.current) return;
+            await saveStoredProject(next);
+          });
+          if (revision !== saveRevision.current || !mounted.current) return;
+          setState((value) => ({ ...value, saving: false, error: null }));
+        } catch (error) {
+          if (revision !== saveRevision.current || !mounted.current) return;
+          setState((value) => ({
+            ...value,
+            saving: false,
+            error: error instanceof Error ? error.message : String(error),
+          }));
+        }
+      }, 300);
+    },
+    [enqueueWrite],
+  );
+
   useEffect(() => {
+    mounted.current = true;
     let cancelled = false;
     async function initialize() {
       try {
@@ -95,40 +132,62 @@ export function useLyricBookProject(locale: UiLocale) {
     void initialize();
     return () => {
       cancelled = true;
-      if (saveTimer.current) window.clearTimeout(saveTimer.current);
+      mounted.current = false;
+      saveRevision.current += 1;
+      if (saveTimer.current !== undefined) window.clearTimeout(saveTimer.current);
     };
   }, [locale]);
 
-  const updateProject = useCallback((updater: (current: LyricBookProject) => LyricBookProject) => {
-    setState((currentState) => {
-      if (!currentState.project) return currentState;
-      const next = touchProject(updater(structuredClone(currentState.project)));
-      if (saveTimer.current) window.clearTimeout(saveTimer.current);
-      saveTimer.current = window.setTimeout(async () => {
-        setState((value) => ({ ...value, saving: true }));
-        try {
-          await saveStoredProject(next);
-          setState((value) => ({ ...value, saving: false, error: null }));
-        } catch (error) {
-          setState((value) => ({
-            ...value,
-            saving: false,
-            error: error instanceof Error ? error.message : String(error),
-          }));
-        }
-      }, 300);
-      return { ...currentState, project: next, saving: true, error: null };
-    });
-  }, []);
+  const updateProject = useCallback(
+    (updater: (current: LyricBookProject) => LyricBookProject) => {
+      // The import dialog stays modal while replacement is in progress. Ignore stale
+      // callbacks from the previous project until its successor has been published.
+      if (replacementInProgress.current) return;
+      setState((currentState) => {
+        if (!currentState.project) return currentState;
+        const next = touchProject(updater(structuredClone(currentState.project)));
+        saveRevision.current += 1;
+        scheduleSave(next, saveRevision.current);
+        return { ...currentState, project: next, saving: true, error: null };
+      });
+    },
+    [scheduleSave],
+  );
 
   const replaceProject = useCallback(
     async (next: LyricBookProject, reason: string) => {
+      if (replacementInProgress.current) {
+        throw new Error("A project replacement is already in progress");
+      }
+      replacementInProgress.current = true;
       const current = state.project;
-      if (current) await replaceStoredProject(current, next, reason);
-      else await saveStoredProject(next);
-      setState({ project: next, loading: false, saving: false, error: null });
+      if (saveTimer.current !== undefined) window.clearTimeout(saveTimer.current);
+      saveTimer.current = undefined;
+      const revision = ++saveRevision.current;
+      setState((value) => ({ ...value, saving: true, error: null }));
+      try {
+        await enqueueWrite(async () => {
+          if (current) await replaceStoredProject(current, next, reason);
+          else await saveStoredProject(next);
+        });
+        if (revision !== saveRevision.current || !mounted.current) return;
+        setState({ project: next, loading: false, saving: false, error: null });
+      } catch (error) {
+        if (revision === saveRevision.current && mounted.current) {
+          // The cancelled debounce may contain edits that are not stored yet.
+          if (current) scheduleSave(current, revision);
+          setState((value) => ({
+            ...value,
+            saving: Boolean(current),
+            error: error instanceof Error ? error.message : String(error),
+          }));
+        }
+        throw error;
+      } finally {
+        replacementInProgress.current = false;
+      }
     },
-    [state.project],
+    [enqueueWrite, scheduleSave, state.project],
   );
 
   const createBackup = useCallback(

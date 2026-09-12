@@ -1,4 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
+import { confirmProjectReplacement } from "./import-fixtures";
 import { seedSyntheticProject, syntheticProject, syntheticSong } from "./print-fixtures";
 
 async function waitForApplication(page: Page): Promise<void> {
@@ -83,6 +84,7 @@ test("an imported project title and description remain editable and persist", as
     mimeType: "application/json",
     buffer: Buffer.from(`${JSON.stringify(imported)}\n`),
   });
+  await confirmProjectReplacement(page, dialog);
   await expect(dialog.getByText(/Project imported successfully|项目导入成功/i)).toBeVisible();
   await dialog
     .locator(".dialog-footer")
