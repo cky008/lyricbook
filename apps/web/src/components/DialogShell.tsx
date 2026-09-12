@@ -9,6 +9,7 @@ interface DialogShellProps {
   title: string;
   description?: string;
   wide?: boolean;
+  dismissible?: boolean;
   children: ReactNode;
   footer?: ReactNode;
 }
@@ -19,12 +20,18 @@ export function DialogShell({
   title,
   description,
   wide = false,
+  dismissible = true,
   children,
   footer,
 }: DialogShellProps) {
   const { t } = useI18n();
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (next || dismissible) onOpenChange(next);
+      }}
+    >
       <Dialog.Portal>
         <Dialog.Overlay className="overlay" />
         <Dialog.Content className={`dialog-content${wide ? " wide" : ""}`}>
@@ -37,7 +44,7 @@ export function DialogShell({
                 </Dialog.Description>
               ) : null}
             </div>
-            <Dialog.Close className="icon-button" aria-label={t("close")}>
+            <Dialog.Close className="icon-button" aria-label={t("close")} disabled={!dismissible}>
               <X size={18} />
             </Dialog.Close>
           </div>

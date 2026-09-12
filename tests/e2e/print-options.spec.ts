@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { confirmProjectReplacement } from "./import-fixtures";
 import { seedSyntheticProject, syntheticProject, syntheticSong } from "./print-fixtures";
 
 const PORTAL = "body > #print-portal";
@@ -311,6 +312,7 @@ test("a closed cover request cannot attach private image data to an imported pro
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(imported)),
   });
+  await confirmProjectReplacement(page, transfer);
   await expect(transfer.getByText(/Project imported successfully|项目导入成功/i)).toBeVisible();
 
   await page.waitForTimeout(1_300);

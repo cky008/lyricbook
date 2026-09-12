@@ -7,10 +7,20 @@ All notable changes follow Keep a Changelog principles.
 ### Added
 
 - Added a source-reconciled observed setlist for the 11 September 2026 G.E.M. Shenzhen finale opening night, preserving all 42 supplied video segments, shared medley timings, stage cues, and eight new metadata-only song records.
+- Added a project import preview with lyric merging by default and explicit full-project restoration, including a summary of matched, added, and ambiguous songs.
+- Added agent guidance for task routing, privacy-preserving archive recovery, branch preparation, authorization continuity, and evidence-backed signed delivery.
 
 ### Changed
 
 - Made the dated Shenzhen record the active G.E.M. preset setlist while retaining the earlier GLORIA prediction for comparison, with an explicit confidence note for the provisional `Kingdom Come` mapping and an unresolved `G.E.M. / Walk On Water` cue that does not add an unlisted song.
+- Carried the existing lyric library into newly selected presets, preserving alternate versions and library-only songs while adopting the preset's setlists.
+
+### Fixed
+
+- Kept current setlists, project identity, themes, and preferences when importing lyrics from an older project, with conservative song matching, conflict preservation, duplicate detection, and a backup before persistence.
+- Stopped preset selection when private lyric matches are ambiguous, showing affected songs while keeping the entire current project intact.
+- Prevented dialog dismissal, editing, and stale autosaves from interfering with pending project backups and saves, while keeping file reading cancellable.
+- Replaced legacy title-prefix matching with unique exact normalized titles and aliases to avoid assigning lyrics to a different song with a similar name.
 
 ## [0.0.8] - 2026-09-03
 
