@@ -1,5 +1,14 @@
 {
   "setlistId": "gem-gloria-shenzhen-2026-09-11-observed",
+  "preparation": {
+    "setlistId": "gem-gloria-shenzhen-2026-preparation",
+    "basedOnSetlistId": "gem-gloria-shenzhen-2026-09-11-observed",
+    "status": "confirmed",
+    "confirmationScope": "User-confirmed current fixed formal program; not an official guarantee of identical future dates.",
+    "requiredEncoreSongIds": ["gem-free-you", "gem-bubble", "gem-sky"],
+    "optionalRequestSongIds": ["gem-paint", "gem-distortion", "gem-let-you-know"],
+    "sourceRefs": ["gem-shenzhen-fixed-program-user-confirmation"]
+  },
   "event": {
     "artist": "G.E.M. 邓紫棋",
     "tour": "I AM GLORIA 2.0",
@@ -394,19 +403,28 @@
       "position": 42,
       "part": 5,
       "rawLabel": "天空没有极限",
-      "duration": null,
+      "duration": "05:01",
       "kind": "song",
       "songIds": ["gem-sky"],
-      "sourceRefs": ["gem-shenzhen-video-chapters"]
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-video-chapters-supplement"]
     }
   ],
   "durationSummary": {
-    "segmentsWithDuration": 41,
-    "knownDurationSeconds": 8901,
-    "knownDuration": "2:28:21",
-    "excludedSegments": [42]
+    "segmentsWithDuration": 42,
+    "knownDurationSeconds": 9202,
+    "knownDuration": "2:33:22",
+    "excludedSegments": []
   },
   "contextClaims": [
+    {
+      "claim": "The user confirms the current Shenzhen formal program is consistent: 自由的你, 泡沫, and 天空没有极限 are fixed, while live requests are optional. Opening-night requests are preparation examples, not required selections for every show.",
+      "sourceRefs": ["gem-shenzhen-fixed-program-user-confirmation"],
+      "status": "user-confirmed-current-arrangement"
+    },
+    {
+      "claim": "The supplementary video chapter list provides 05:01 for 天空没有极限, completing all 42 source-specific chapter durations.",
+      "sourceRefs": ["gem-shenzhen-video-chapters-supplement"]
+    },
     {
       "claim": "The event was the first of twelve Shenzhen finale shows on 11 September 2026 at Shenzhen Universiade Sports Centre Stadium.",
       "sourceRefs": [

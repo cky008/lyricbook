@@ -1,9 +1,12 @@
-import { parseProject, validateProject } from "@domain/index";
+import { type PrintOptions, parseProject, validateProject } from "@domain/index";
+import { createPrintPlan } from "@print/index";
 import { describe, expect, it } from "vitest";
 import presetJson from "../../content/presets/gem-gloria/project.json";
 import sourceMatrix from "../../content/presets/gem-gloria/source-matrix.json";
 
 const SHENZHEN_SETLIST_ID = "gem-gloria-shenzhen-2026-09-11-observed";
+const PREPARATION_SETLIST_ID = "gem-gloria-shenzhen-2026-preparation";
+const REQUEST_SONG_IDS = ["gem-paint", "gem-distortion", "gem-let-you-know"];
 
 const EXPECTED_SONG_ORDER = [
   "gem-zoo",
@@ -108,7 +111,7 @@ const EXPECTED_SOURCE_SEGMENTS = [
     ["gem-paint", "gem-distortion", "gem-let-you-know"],
   ],
   ["泡沫", "04:21", "song", ["gem-bubble"]],
-  ["天空没有极限", null, "song", ["gem-sky"]],
+  ["天空没有极限", "05:01", "song", ["gem-sky"]],
 ] as const;
 
 const EXPECTED_SETLIST_SEQUENCE = [
@@ -183,11 +186,11 @@ function durationSeconds(value: string): number {
 describe("G.E.M. GLORIA built-in preset", () => {
   const project = parseProject(presetJson);
 
-  it("keeps the prediction and activates the dated Shenzhen opening-night record", () => {
+  it("archives the prediction and activates preparation without losing the dated record", () => {
     expect(validateProject(project)).toEqual({ ok: true, issues: [] });
     expect(project.setlists).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: "gem-gloria-core", status: "prediction" }),
+        expect.objectContaining({ id: "gem-gloria-core", status: "archive" }),
         expect.objectContaining({
           id: SHENZHEN_SETLIST_ID,
           status: "observed",
@@ -196,12 +199,100 @@ describe("G.E.M. GLORIA built-in preset", () => {
         }),
       ]),
     );
-    expect(project.activeSetlistId).toBe(SHENZHEN_SETLIST_ID);
+    expect(project.activeSetlistId).toBe(PREPARATION_SETLIST_ID);
+    expect(project.setlists.find((item) => item.id === PREPARATION_SETLIST_ID)).toMatchObject({
+      status: "confirmed",
+      title: { "zh-Hans": "深圳 2026 备歌版（固定主流程＋可选点歌）" },
+    });
 
     const prediction = project.setlists.find((item) => item.id === "gem-gloria-core");
     expect(
       prediction?.items.filter((item) => item.type === "song").map((item) => item.songId),
     ).toEqual(expect.arrayContaining(["gem-kingdom", "gem-moving"]));
+    expect(prediction?.title["zh-Hans"]).toContain("归档");
+  });
+
+  it("marks only request songs optional and explicitly resumes the fixed encore", () => {
+    const setlist = project.setlists.find((item) => item.id === PREPARATION_SETLIST_ID);
+    if (!setlist) throw new Error("Expected the Shenzhen preparation setlist");
+    const songs = setlist.items.filter((item) => item.type === "song");
+    expect(songs.map((item) => item.songId)).toEqual(EXPECTED_SONG_ORDER);
+    expect(songs.filter((item) => item.optional).map((item) => item.songId)).toEqual(
+      REQUEST_SONG_IDS,
+    );
+    let sectionOptional = false;
+    const inheritedOptionalSongs: string[] = [];
+    for (const item of setlist.items) {
+      if (item.type === "section") sectionOptional = Boolean(item.optional);
+      if (item.type === "song" && (sectionOptional || item.optional)) {
+        inheritedOptionalSongs.push(item.songId);
+      }
+    }
+    expect(inheritedOptionalSongs).toEqual(REQUEST_SONG_IDS);
+    const requestSection = setlist.items.find(
+      (item) => item.type === "section" && item.id === "shenzhen-preparation-requests",
+    );
+    expect(requestSection).toMatchObject({ optional: true });
+    const bubbleIndex = setlist.items.findIndex(
+      (item) => item.type === "song" && item.songId === "gem-bubble",
+    );
+    expect(setlist.items[bubbleIndex - 1]).toMatchObject({
+      type: "section",
+      optional: false,
+    });
+    for (const songId of ["gem-free-you", "gem-bubble", "gem-sky"]) {
+      expect(songs.find((item) => item.songId === songId)).toMatchObject({
+        optional: false,
+        sourceRefs: expect.arrayContaining(["gem-shenzhen-fixed-program-user-confirmation"]),
+      });
+    }
+    expect(songs.find((item) => item.songId === "gem-kingdom")).toMatchObject({
+      confidence: 0.7,
+      note: { "zh-Hans": expect.stringContaining("待音频或官方 cue sheet 核验") },
+    });
+    expect(
+      project.sources?.find(
+        (source) => source.id === "gem-shenzhen-fixed-program-user-confirmation",
+      ),
+    ).toMatchObject({ kind: "user-confirmation", publisher: "User-provided" });
+  });
+
+  it.each(["a4", "a5", "booklet"] as const)(
+    "prints all three fixed encore songs when optional requests are excluded in %s",
+    (format) => {
+      const options: PrintOptions = {
+        format,
+        scope: "active-setlist",
+        versionMode: "default",
+        languageMode: "original-translation",
+        strategy: "balanced",
+        includeOptional: false,
+        includeEmptySongs: true,
+        includeSources: false,
+        includeTableOfContents: true,
+        includeCover: false,
+        lineFlow: "auto",
+        coverMode: "generated",
+      };
+      const plan = createPrintPlan({ project, options, locale: "zh-CN" });
+      expect(plan.songCount).toBe(39);
+      expect(plan.pages.filter((page) => page.kind === "song").map((page) => page.songId)).toEqual(
+        EXPECTED_SONG_ORDER.filter((songId) => !REQUEST_SONG_IDS.includes(songId)),
+      );
+      const entries = plan.pages.flatMap((page) =>
+        page.kind === "toc" ? page.sections.flatMap((section) => section.entries) : [],
+      );
+      expect(entries).toHaveLength(39);
+      expect(entries.every((entry) => !entry.optional)).toBe(true);
+    },
+  );
+
+  it("keeps all public lyrics empty across preparation and archival setlists", () => {
+    expect(
+      project.songs
+        .flatMap((song) => song.lyricVersions.flatMap((version) => version.tracks))
+        .every((track) => track.text === ""),
+    ).toBe(true);
   });
 
   it("preserves the reconciled song order without turning stage cues into songs", () => {
@@ -319,23 +410,34 @@ describe("G.E.M. GLORIA built-in preset", () => {
     const knownDurations = sourceMatrix.segments.flatMap((segment) =>
       segment.duration ? [segment.duration] : [],
     );
-    expect(knownDurations).toHaveLength(41);
+    expect(knownDurations).toHaveLength(42);
     expect(knownDurations.reduce((total, duration) => total + durationSeconds(duration), 0)).toBe(
-      8_901,
+      9_202,
     );
     expect(sourceMatrix.durationSummary).toEqual({
-      segmentsWithDuration: 41,
-      knownDurationSeconds: 8_901,
-      knownDuration: "2:28:21",
-      excludedSegments: [42],
+      segmentsWithDuration: 42,
+      knownDurationSeconds: 9_202,
+      knownDuration: "2:33:22",
+      excludedSegments: [],
     });
     expect(sourceMatrix.segments.at(-1)).toMatchObject({
       rawLabel: "天空没有极限",
-      duration: null,
+      duration: "05:01",
+      sourceRefs: expect.arrayContaining(["gem-shenzhen-video-chapters-supplement"]),
     });
 
     const songIds = new Set(project.songs.map((song) => song.id));
     const sourceIds = new Set((project.sources ?? []).map((source) => source.id));
+    expect(sourceMatrix.preparation).toMatchObject({
+      setlistId: PREPARATION_SETLIST_ID,
+      basedOnSetlistId: SHENZHEN_SETLIST_ID,
+      status: "confirmed",
+      requiredEncoreSongIds: ["gem-free-you", "gem-bubble", "gem-sky"],
+      optionalRequestSongIds: REQUEST_SONG_IDS,
+    });
+    expect(sourceMatrix.preparation.sourceRefs.every((sourceRef) => sourceIds.has(sourceRef))).toBe(
+      true,
+    );
     expect(sourceMatrix.event.sourceRefs.every((sourceRef) => sourceIds.has(sourceRef))).toBe(true);
     for (const claim of sourceMatrix.contextClaims) {
       expect(claim.sourceRefs.every((sourceRef) => sourceIds.has(sourceRef))).toBe(true);

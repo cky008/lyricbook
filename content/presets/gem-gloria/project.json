@@ -1217,6 +1217,773 @@
   ],
   "setlists": [
     {
+      "id": "gem-gloria-shenzhen-2026-preparation",
+      "title": {
+        "zh-Hans": "深圳 2026 备歌版（固定主流程＋可选点歌）",
+        "en": "Shenzhen 2026 Preparation (Fixed Program + Optional Requests)"
+      },
+      "status": "confirmed",
+      "venue": {
+        "zh-Hans": "深圳大运中心体育场",
+        "en": "Shenzhen Universiade Sports Centre Stadium"
+      },
+      "notes": {
+        "zh-Hans": "深圳当前备歌版：正式主流程固定，包含《自由的你》《泡沫》《天空没有极限》；《画》《失真》《让你知道》是首场点歌示例，可按需打印，不代表每场都会点到。顺序和视频时长沿用首场记录。“敲鼓”曲名待核实，暂记 Kingdom Come。",
+        "en": "Prepare for the current Shenzhen programme: the fixed main set includes 自由的你, 泡沫, and 天空没有极限. The opening-night requests 画, 失真, and 让你知道 are optional to print and may differ on other nights. Order and video timings follow the opening-night record. The drum segment title remains provisional as Kingdom Come."
+      },
+      "items": [
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-part-1",
+          "label": {
+            "zh-Hans": "Part 1 · 固定主流程",
+            "en": "Part 1 · Fixed program"
+          },
+          "optional": false
+        },
+        {
+          "type": "break",
+          "label": {
+            "zh-Hans": "VCR 1 +《摩天动物园》组合段 · 06:33",
+            "en": "VCR 1 + City Zoo combined segment · 06:33"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-zoo",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "与 VCR 1 共用 06:33 视频章节时长。",
+            "en": "Shares the 06:33 video chapter with VCR 1."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-wolf",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 02:50",
+            "en": "Video chapter · 02:50"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-devil",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:11",
+            "en": "Video chapter · 04:11"
+          },
+          "optional": false
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "Talk · 04:16",
+            "en": "Talk · 04:16"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-lightyears",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 05:19",
+            "en": "Video chapter · 05:19"
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-part-2",
+          "label": {
+            "zh-Hans": "Part 2 · 固定主流程",
+            "en": "Part 2 · Fixed program"
+          },
+          "optional": false
+        },
+        {
+          "type": "break",
+          "label": {
+            "zh-Hans": "VCR 2 · 02:47",
+            "en": "VCR 2 · 02:47"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-miss-similar",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:01",
+            "en": "Video chapter · 04:01"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-transparent",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:31",
+            "en": "Video chapter · 03:31"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-loneliness",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:49",
+            "en": "Video chapter · 03:49"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-ice-age",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:26",
+            "en": "Video chapter · 03:26"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-therefore",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:43",
+            "en": "Video chapter · 04:43"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-goodbye",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:44",
+            "en": "Video chapter · 04:44"
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-part-3",
+          "label": {
+            "zh-Hans": "Part 3 · 固定主流程",
+            "en": "Part 3 · Fixed program"
+          },
+          "optional": false
+        },
+        {
+          "type": "break",
+          "label": {
+            "zh-Hans": "VCR 3 · 02:40",
+            "en": "VCR 3 · 02:40"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-not-first",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:06",
+            "en": "Video chapter · 03:06"
+          },
+          "optional": false
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "串烧：《睡公主》+《爱你 A.I.N.Y. 2017》· 合计 02:56",
+            "en": "Medley: Sleeping Beauty + A.I.N.Y. 2017 · 02:56 total"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-sleeping-princess",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "02:56 组合章节的第一首。",
+            "en": "First song in the shared 02:56 medley chapter."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-ainy",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节原文为“爱你A.I.N.Y.2017”；02:56 组合章节的第二首。",
+            "en": "The source labels this “爱你A.I.N.Y.2017”; second song in the shared 02:56 medley chapter."
+          },
+          "optional": false
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "串烧：《Where Did U Go》+《等一个他》· 合计 02:34",
+            "en": "Medley: Where Did U Go + 等一个他 · 02:34 total"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-where",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "02:34 组合章节的第一首。",
+            "en": "First song in the shared 02:34 medley chapter."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-waiting-for-him",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "02:34 组合章节的第二首。",
+            "en": "Second song in the shared 02:34 medley chapter."
+          },
+          "optional": false
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "串烧：《All About U》+《Good to Be Bad》· 合计 02:43",
+            "en": "Medley: All About U + Good to Be Bad · 02:43 total"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-all-about-u",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "02:43 组合章节的第一首。",
+            "en": "First song in the shared 02:43 medley chapter."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-good-to-be-bad",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "02:43 组合章节的第二首；现场提示图写作“Good to Be Bad”。",
+            "en": "Second song in the shared 02:43 medley chapter; the on-site notice spells the title “Good to Be Bad”."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-someday-ill-fly",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 01:26",
+            "en": "Video chapter · 01:26"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-drunk",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 02:19",
+            "en": "Video chapter · 02:19"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-not-happy",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节标注为 Live · 02:39",
+            "en": "Video chapter marked Live · 02:39"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-tornado",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节标注为 Live · 01:28",
+            "en": "Video chapter marked Live · 01:28"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-rose",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 01:03",
+            "en": "Video chapter · 01:03"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-only",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:37",
+            "en": "Video chapter · 03:37"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-period",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:51",
+            "en": "Video chapter · 04:51"
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-part-4",
+          "label": {
+            "zh-Hans": "Part 4 · 固定主流程",
+            "en": "Part 4 · Fixed program"
+          },
+          "optional": false
+        },
+        {
+          "type": "break",
+          "label": {
+            "zh-Hans": "VCR 4 · 03:41",
+            "en": "VCR 4 · 03:41"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-gloria",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:57",
+            "en": "Video chapter · 03:57"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-raise",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 05:41",
+            "en": "Video chapter · 05:41"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-pause",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:47",
+            "en": "Video chapter · 04:47"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-oldsea",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:11",
+            "en": "Video chapter · 03:11"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-together",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 02:17",
+            "en": "Video chapter · 02:17"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-find",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:43",
+            "en": "Video chapter · 04:43"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-like-you",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:06",
+            "en": "Video chapter · 04:06"
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-part-5",
+          "label": {
+            "zh-Hans": "Part 5 · 固定主流程",
+            "en": "Part 5 · Fixed program"
+          },
+          "optional": false
+        },
+        {
+          "type": "break",
+          "label": {
+            "zh-Hans": "VCR 5 · 01:57",
+            "en": "VCR 5 · 01:57"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-kingdom",
+          "confidence": 0.7,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节标为“敲鼓”（01:41）；现场红外激光提示图列出 Kingdom Come。暂按该曲的打击乐／缩短现场段落映射，待音频或官方 cue sheet 核验。",
+            "en": "The video chapter says “drum segment” (01:41), while the on-site laser notice lists Kingdom Come. Provisionally mapped as a percussion-led or shortened live segment pending audio or an official cue sheet."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-night-end",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 05:11",
+            "en": "Video chapter · 05:11"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-countdown",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 03:40",
+            "en": "Video chapter · 03:40"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-heartbeat",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:02",
+            "en": "Video chapter · 04:02"
+          },
+          "optional": false
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "现场提示组合段：《G.E.M. / Walk On Water》· 视频章节合计 04:12",
+            "en": "On-site cue: G.E.M. / Walk On Water · shared video chapter 04:12"
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-water",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节标为 Walk On Water（04:12）；现场提示图写作组合 cue“G.E.M. / Walk On Water”。因视频未单列 G.E.M.，本记录不把它另算一首歌。",
+            "en": "The 04:12 video chapter says Walk On Water, while the on-site notice says “G.E.M. / Walk On Water”. Because the video does not list G.E.M. separately, this record does not count it as another song."
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-encore-open",
+          "label": {
+            "zh-Hans": "Encore · 固定新歌",
+            "en": "Encore · Fixed new song"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-free-you",
+          "confidence": 0.99,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-opening-night-official",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:51；官方工作室确认该晚首演未公开的新专辑先行曲。 当前固定主流程，备歌时保留。",
+            "en": "Video chapter · 04:51; the artist's official studio confirms the premiere of the unreleased album lead single that night. Part of the current fixed formal program; keep this song when preparing."
+          },
+          "optional": false
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-requests",
+          "label": {
+            "zh-Hans": "现场点歌 · 首场曲目供选备",
+            "en": "Live requests · Opening-night examples"
+          },
+          "optional": true
+        },
+        {
+          "type": "note",
+          "text": {
+            "zh-Hans": "现场点歌可选：《画》《失真》《让你知道》是首场清唱曲目，合计 04:31；正式主流程不受点歌选择影响。",
+            "en": "Optional live requests: 画, 失真, and 让你知道 were sung a cappella on opening night, 04:31 total. Request choices do not change the fixed formal program."
+          }
+        },
+        {
+          "type": "song",
+          "songId": "gem-paint",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "04:31 点歌清唱组合段的第一首。 现场点歌可选；这是首场点歌曲目，不保证每场都会点到。",
+            "en": "First song in the shared 04:31 request a cappella segment. Optional live request: an opening-night selection, not guaranteed on every date."
+          },
+          "optional": true
+        },
+        {
+          "type": "song",
+          "songId": "gem-distortion",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "04:31 点歌清唱组合段的第二首。 现场点歌可选；这是首场点歌曲目，不保证每场都会点到。",
+            "en": "Second song in the shared 04:31 request a cappella segment. Optional live request: an opening-night selection, not guaranteed on every date."
+          },
+          "optional": true
+        },
+        {
+          "type": "song",
+          "songId": "gem-let-you-know",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "04:31 点歌清唱组合段的第三首。 现场点歌可选；这是首场点歌曲目，不保证每场都会点到。",
+            "en": "Third song in the shared 04:31 request a cappella segment. Optional live request: an opening-night selection, not guaranteed on every date."
+          },
+          "optional": true
+        },
+        {
+          "type": "section",
+          "id": "shenzhen-preparation-encore-close",
+          "label": {
+            "zh-Hans": "Encore · 固定收尾",
+            "en": "Encore · Fixed closing songs"
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-bubble",
+          "confidence": 0.95,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-laser-cue-photo",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "视频章节 · 04:21 当前固定主流程，备歌时保留。",
+            "en": "Video chapter · 04:21 Part of the current fixed formal program; keep this song when preparing."
+          },
+          "optional": false
+        },
+        {
+          "type": "song",
+          "songId": "gem-sky",
+          "confidence": 0.9,
+          "sourceRefs": [
+            "gem-shenzhen-video-chapters",
+            "gem-shenzhen-video-chapters-supplement",
+            "gem-shenzhen-fixed-program-user-confirmation"
+          ],
+          "note": {
+            "zh-Hans": "补充的视频章节 · 05:01 当前固定主流程，备歌时保留。",
+            "en": "Supplementary video chapter · 05:01 Part of the current fixed formal program; keep this song when preparing."
+          },
+          "optional": false
+        }
+      ]
+    },
+    {
       "id": "gem-gloria-shenzhen-2026-09-11-observed",
       "title": {
         "zh-Hans": "I AM GLORIA 2.0 深圳终章首场（2026-09-11）",
@@ -1229,8 +1996,8 @@
         "en": "Shenzhen Universiade Sports Centre Stadium"
       },
       "notes": {
-        "zh-Hans": "这份首场实演记录以用户提供的视频章节顺序和时长为主，日期、场馆与《自由的你》首演由官方来源确认，并用用户提供的现场红外激光提示图核对部分舞台 cue。它不是官方 cue sheet；后续十一场可能轮换。“敲鼓”暂映射为 Kingdom Come；现场图中的 G.E.M. / Walk On Water 仅保留为待核验 cue，不额外加入视频章节未单列的歌曲。",
-        "en": "This opening-night record follows user-provided video chapters and timings. Official sources confirm the date, venue, and premiere of 自由的你, while a user-provided on-site laser warning corroborates selected stage cues. It is not an official cue sheet, and the remaining eleven shows may vary. The drum segment is provisionally mapped to Kingdom Come; G.E.M. / Walk On Water remains an unresolved cue and does not add a song absent from the video chapters."
+        "zh-Hans": "这份首场实演记录保留 9 月 11 日的视频章节顺序、时长和当晚点歌，点歌不代表每场必唱。准备后续场次请使用“深圳 2026 备歌版”，其中正式主流程固定、现场点歌可选。日期、场馆与《自由的你》首演另有官方来源确认。“敲鼓”暂映射为 Kingdom Come；现场图中的 G.E.M. / Walk On Water 仅保留为待核验 cue，不额外加入视频章节未单列的歌曲。",
+        "en": "This dated record preserves the 11 September chapter order, timings, and songs requested that night; those requests are not required songs for every performance. Use Shenzhen 2026 Preparation for the current fixed formal program with optional requests. Official sources separately confirm the date, venue, and premiere of 自由的你. The drum segment remains provisionally mapped to Kingdom Come; G.E.M. / Walk On Water remains an unresolved cue without adding a song absent from the chapters."
       },
       "items": [
         {
@@ -1768,10 +2535,10 @@
           "type": "song",
           "songId": "gem-sky",
           "confidence": 0.9,
-          "sourceRefs": ["gem-shenzhen-video-chapters"],
+          "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-video-chapters-supplement"],
           "note": {
-            "zh-Hans": "用户提供的章节清单未标时长。",
-            "en": "No duration was supplied for this final chapter."
+            "zh-Hans": "补充的视频章节 · 05:01",
+            "en": "Supplementary video chapter · 05:01"
           }
         }
       ]
@@ -1779,10 +2546,14 @@
     {
       "id": "gem-gloria-core",
       "title": {
-        "zh-Hans": "GLORIA 主流程示例",
-        "en": "GLORIA Core Example"
+        "zh-Hans": "GLORIA 旧版预测（归档）",
+        "en": "GLORIA Earlier Prediction (Archived)"
       },
-      "status": "prediction",
+      "status": "archive",
+      "notes": {
+        "zh-Hans": "保留作历史参考，不代表当前深圳安排。请使用“深圳 2026 备歌版”；《自由的你》《泡沫》《天空没有极限》属于当前固定主流程，现场点歌另列为可选。",
+        "en": "Historical reference, not the current Shenzhen program. Use Shenzhen 2026 Preparation: 自由的你, 泡沫, and 天空没有极限 belong to the fixed formal program, while live requests are optional."
+      },
       "items": [
         {
           "type": "section",
@@ -2078,7 +2849,7 @@
       }
     }
   ],
-  "activeSetlistId": "gem-gloria-shenzhen-2026-09-11-observed",
+  "activeSetlistId": "gem-gloria-shenzhen-2026-preparation",
   "activeThemeId": "builtin-studio-slate",
   "sources": [
     {
@@ -2099,6 +2870,26 @@
       "language": "zh-Hans",
       "confidence": 0.9,
       "notes": "User-pasted 42-segment sequence with 41 chapter durations. It is treated as observed performance evidence, not an official cue sheet. The final song has no supplied duration, and medley durations apply to the whole named segment."
+    },
+    {
+      "id": "gem-shenzhen-video-chapters-supplement",
+      "kind": "user-provided-list",
+      "title": "Complete Shenzhen opening-night video chapter list",
+      "publisher": "User-provided",
+      "retrievedAt": "2026-09-12T17:30:25Z",
+      "language": "zh-Hans",
+      "confidence": 0.9,
+      "notes": "The supplementary pasted video page includes the final 天空没有极限 chapter at 05:01. With this addition all 42 chapters have durations, totalling 2:33:22. Chapter lengths are not canonical song durations. Only performance metadata is retained; account details and unrelated comments are omitted."
+    },
+    {
+      "id": "gem-shenzhen-fixed-program-user-confirmation",
+      "kind": "user-confirmation",
+      "title": "Current Shenzhen fixed formal program and optional live requests",
+      "publisher": "User-provided",
+      "retrievedAt": "2026-09-12T17:30:25Z",
+      "language": "zh-Hans",
+      "confidence": 0.95,
+      "notes": "The user explicitly confirms that the current Shenzhen formal choices are consistent and that 自由的你, 泡沫, and 天空没有极限 are fixed, while live requests are optional. This supports the preparation classification, not an official or irrevocable promise for all twelve dates. The drum segment title remains unresolved."
     },
     {
       "id": "gem-shenzhen-laser-cue-photo",

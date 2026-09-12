@@ -586,6 +586,54 @@ a {
   white-space: nowrap;
 }
 
+.song-setlist-membership {
+  border: 1px solid color-mix(in srgb, var(--lb-muted) 40%, transparent);
+  border-radius: 5px;
+  padding: 3px 6px;
+  color: var(--lb-text);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.song-setlist-membership[data-membership="required"] {
+  background: color-mix(in srgb, var(--lb-accent) 14%, transparent);
+}
+
+.song-setlist-membership[data-membership="optional"] {
+  border-style: dashed;
+}
+
+.song-setlist-membership[data-membership="library"] {
+  color: var(--lb-muted);
+}
+
+.sidebar-setlist-summary {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  color: var(--lb-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.sidebar-setlist-summary strong {
+  color: var(--lb-text);
+}
+
+.setlist-evidence-note,
+.setlist-item-note {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.setlist-item-note {
+  margin: 6px 0 0;
+  color: var(--lb-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .tag-dot {
   width: 7px;
   height: 7px;

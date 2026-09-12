@@ -1,9 +1,11 @@
 import { DialogShell } from "@app/components/DialogShell";
 import { useI18n } from "@app/lib/i18n";
+import { SETLIST_STATUSES, setlistStatusLabel } from "@app/lib/setlistPresentation";
 import {
   applySetlistMarkdown,
   createId,
   getLocalized,
+  getSetlistSongEntries,
   type LyricBookProject,
   type Setlist,
   type SetlistItem,
@@ -77,6 +79,10 @@ export function SetlistDialog({
     [project.songs],
   );
   const setlistItems = useMemo(() => keyedItems(setlist?.items ?? []), [setlist?.items]);
+  const songEntries = useMemo(
+    () => new Map(getSetlistSongEntries(setlist).map((entry) => [entry.itemIndex, entry])),
+    [setlist],
+  );
 
   useEffect(() => {
     if (!open || !setlist || markdownSetlistId === setlist.id) return;
@@ -210,13 +216,14 @@ export function SetlistDialog({
                   updateSetlist((current) => ({ ...current, status }));
                 }}
               >
-                {["official", "observed", "prediction", "rotation", "draft", "archive"].map(
-                  (status) => (
-                    <option value={status} key={status}>
-                      {status}
-                    </option>
-                  ),
-                )}
+                {SETLIST_STATUSES.map((status) => (
+                  <option value={status} key={status}>
+                    {setlistStatusLabel(status, t)}
+                  </option>
+                ))}
+                {!SETLIST_STATUSES.includes(setlist.status) ? (
+                  <option value={setlist.status}>{setlist.status}</option>
+                ) : null}
               </select>
             </label>
           ) : null}
@@ -236,6 +243,9 @@ export function SetlistDialog({
               }}
             />
           </label>
+        ) : null}
+        {getLocalized(setlist?.notes, locale) ? (
+          <p className="notice setlist-evidence-note">{getLocalized(setlist?.notes, locale)}</p>
         ) : null}
       </section>
       <section className="modal-section">
@@ -297,6 +307,7 @@ export function SetlistDialog({
                 <div className="setlist-editor-list">
                   {setlistItems.map(({ item, key }, index) => {
                     const song = item.type === "song" ? songMap.get(item.songId) : undefined;
+                    const entry = songEntries.get(index);
                     const label =
                       item.type === "song"
                         ? getLocalized(song?.titles, locale) || item.songId
@@ -308,16 +319,34 @@ export function SetlistDialog({
                     return (
                       <div
                         className={`setlist-editor-row${item.type === "section" ? " section" : ""}`}
+                        data-item-index={index}
                         key={key}
                       >
                         <span className="song-number">{String(index + 1).padStart(2, "0")}</span>
                         <div style={{ minWidth: 0 }}>
                           <div className="song-title">{label}</div>
                           <div className="song-meta">
-                            {item.type}
-                            {item.type === "song" && item.optional ? ` · ${t("optional")}` : ""}
+                            {item.type === "song" ? (
+                              <span
+                                className="song-setlist-membership"
+                                data-membership={entry?.optional ? "optional" : "required"}
+                              >
+                                {t(
+                                  entry?.optional
+                                    ? "setlist-membership-optional"
+                                    : setlist.status === "observed"
+                                      ? "setlist-membership-observed"
+                                      : "setlist-membership-main",
+                                )}
+                              </span>
+                            ) : (
+                              t(`setlist-item-${item.type}`)
+                            )}
                           </div>
-                          {item.type === "song" ? (
+                          {item.type === "song" && getLocalized(item.note, locale) ? (
+                            <p className="setlist-item-note">{getLocalized(item.note, locale)}</p>
+                          ) : null}
+                          {item.type === "song" || item.type === "section" ? (
                             <label className="status-line" style={{ marginTop: 7 }}>
                               <input
                                 type="checkbox"
@@ -326,15 +355,23 @@ export function SetlistDialog({
                                   const optional = event.currentTarget.checked;
                                   setItems(
                                     setlist.items.map((value, itemIndex) =>
-                                      itemIndex === index && value.type === "song"
+                                      itemIndex === index &&
+                                      (value.type === "song" || value.type === "section")
                                         ? { ...value, optional }
                                         : value,
                                     ),
                                   );
                                 }}
                               />
-                              {t("optional")}
+                              {t(
+                                item.type === "song"
+                                  ? "setlist-optional-song"
+                                  : "setlist-optional-section",
+                              )}
                             </label>
+                          ) : null}
+                          {entry?.section?.optional ? (
+                            <p className="setlist-item-note">{t("setlist-optional-inherited")}</p>
                           ) : null}
                         </div>
                         <div className="row-actions">
@@ -377,6 +414,7 @@ export function SetlistDialog({
                   <div className="inline-actions">
                     <select
                       className="select"
+                      aria-label={t("add-song")}
                       style={{ flex: 1 }}
                       value={songDraft}
                       onChange={(event) => setSongDraft(event.currentTarget.value)}

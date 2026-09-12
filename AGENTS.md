@@ -17,6 +17,7 @@ Start with [docs/AI_WORKFLOW.md](docs/AI_WORKFLOW.md) for task routing, project 
 - A song may contain multiple versions; each version may contain original, translation, transliteration, and adaptation tracks.
 - Setlist sections are optional. Never require Part/Act records.
 - The active setlist drives immersive previous/next navigation.
+- Distinguish current preparation lists, dated performance records, and archived references. Audience-request optionality must agree between editor, library labels, and print; songs kept only in the library are not promised performances.
 - Production UI must not expose debug panels, test controls, stack traces, build paths, or internal developer notes.
 - Themes are data-only safe tokens. Never execute theme JavaScript, arbitrary HTML, arbitrary CSS, remote fonts, or active SVG supplied by users.
 

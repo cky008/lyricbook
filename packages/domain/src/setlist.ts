@@ -265,15 +265,38 @@ export function parseSetlistText(
   };
 }
 
-export function setlistSongIds(setlist: Setlist | undefined, includeOptional = true): string[] {
-  if (!setlist) return [];
-  const seen = new Set<string>();
-  const result: string[] = [];
-  for (const item of setlist.items) {
-    if (item.type !== "song" || (!includeOptional && item.optional) || seen.has(item.songId))
-      continue;
-    seen.add(item.songId);
-    result.push(item.songId);
+export interface SetlistSongEntry {
+  item: Extract<SetlistItem, { type: "song" }>;
+  itemIndex: number;
+  section?: Extract<SetlistItem, { type: "section" }>;
+  optional: boolean;
+}
+
+/** Each appearance inherits optionality until the next section, including across cues. */
+export function getSetlistSongEntries(setlist: Setlist | undefined): SetlistSongEntry[] {
+  const entries: SetlistSongEntry[] = [];
+  let section: SetlistSongEntry["section"];
+  for (const [itemIndex, item] of (setlist?.items ?? []).entries()) {
+    if (item.type === "section") section = item;
+    else if (item.type === "song") {
+      entries.push({
+        item,
+        itemIndex,
+        section,
+        optional: Boolean(section?.optional || item.optional),
+      });
+    }
   }
-  return result;
+  return entries;
+}
+
+export function setlistSongIds(setlist: Setlist | undefined, includeOptional = true): string[] {
+  const optionalBySong = new Map<string, boolean>();
+  for (const { item, optional } of getSetlistSongEntries(setlist)) {
+    // Keep first-seen ordering, but any required appearance makes the song required.
+    optionalBySong.set(item.songId, (optionalBySong.get(item.songId) ?? true) && optional);
+  }
+  return [...optionalBySong]
+    .filter(([, optional]) => includeOptional || !optional)
+    .map(([id]) => id);
 }

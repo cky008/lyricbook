@@ -20,6 +20,8 @@
 10. Recalculate song page numbers after the final contents count, then audit the page, inner region, content, body, local cover image, and footer gap. Unsafe output remains visible for review but cannot be printed.
 11. For booklet format, optionally prepend a generated, local-image, or local-image-with-text cover. Generated covers use sanitized theme print tokens and three measurable text regions. Then pad to four and impose logical pages into front/back sheet pairs.
 
+Active-setlist inclusion uses the shared `getSetlistSongEntries` interpretation: a section's optional flag applies until the next section, and combines with each song's flag. Any required appearance keeps a repeated song required. Optional request sections must end before required closing songs; library-only songs are excluded from active-setlist output.
+
 ## Booklet printing
 
 The PDF is already imposed. The optional cover is logical page 1 and appears on the right half of the first sheet front after imposition. Local raster covers are decoded, bounded, drawn to a canvas, and re-encoded before they enter project storage; original names and metadata are not retained. Use A4 landscape, duplex, short-edge flip, one PDF page per sheet side, and 100% actual size. Do not ask the printer driver to impose a booklet again.
@@ -27,3 +29,5 @@ The PDF is already imposed. The optional cover is logical page 1 and appears on 
 ## Regression invariants
 
 No clipped text, footer collision, missing translation/version, hidden optional status, wrong page order, sparse contents continuation, or broken TOC link. A short song should use the largest safe type size. Normal layouts paginate before they become unreadable and retry after real measurement if estimates are insufficient. Strict page limits may reduce type to 7pt but never delete text; if the complete page is still unsafe, the preview must explain the failure and keep printing disabled. Hidden overflow is never accepted as a successful layout.
+
+Automated PDF checks must trigger the final print action before exporting the browser page, so the final safety audit and format-specific `@page` rule both run. Validate physical PDF dimensions and internal destinations in addition to preview geometry. See [SETLIST_CLASSIFICATION_TEST_PLAN.md](SETLIST_CLASSIFICATION_TEST_PLAN.md) for request/fixed-finale inclusion cases.

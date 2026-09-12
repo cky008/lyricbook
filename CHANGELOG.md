@@ -6,6 +6,8 @@ All notable changes follow Keep a Changelog principles.
 
 ### Added
 
+- Added a Shenzhen preparation setlist with a fixed formal programme and optional audience requests, retaining the dated first-night record and archiving the older generic example.
+- Added localized setlist status, source notes, and main-programme/optional/library-only labels so retained lyrics are not mistaken for extra performance songs.
 - Added a source-reconciled observed setlist for the 11 September 2026 G.E.M. Shenzhen finale opening night, preserving all 42 supplied video segments, shared medley timings, stage cues, and eight new metadata-only song records.
 - Added a project import preview with lyric merging by default and explicit full-project restoration, including a summary of matched, added, and ambiguous songs.
 - Added agent guidance for task routing, privacy-preserving archive recovery, branch preparation, authorization continuity, and evidence-backed signed delivery.
@@ -17,6 +19,7 @@ All notable changes follow Keep a Changelog principles.
 
 ### Fixed
 
+- Unified section-level optionality across the editor, library, and print planner; excluding requests keeps the fixed finale intact.
 - Kept current setlists, project identity, themes, and preferences when importing lyrics from an older project, with conservative song matching, conflict preservation, duplicate detection, and a backup before persistence.
 - Stopped preset selection when private lyric matches are ambiguous, showing affected songs while keeping the entire current project intact.
 - Prevented dialog dismissal, editing, and stale autosaves from interfering with pending project backups and saves, while keeping file reading cancellable.
