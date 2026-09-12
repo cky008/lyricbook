@@ -4,6 +4,14 @@ All notable changes follow Keep a Changelog principles.
 
 ## [Unreleased]
 
+### Added
+
+- Added a source-reconciled observed setlist for the 11 September 2026 G.E.M. Shenzhen finale opening night, preserving all 42 supplied video segments, shared medley timings, stage cues, and eight new metadata-only song records.
+
+### Changed
+
+- Made the dated Shenzhen record the active G.E.M. preset setlist while retaining the earlier GLORIA prediction for comparison, with an explicit confidence note for the provisional `Kingdom Come` mapping and an unresolved `G.E.M. / Walk On Water` cue that does not add an unlisted song.
+
 ## [0.0.8] - 2026-09-03
 
 ### Added

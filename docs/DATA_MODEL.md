@@ -23,6 +23,8 @@ A setlist is an ordered list of:
 
 Sections are optional. Song items can be optional and can carry confidence/source evidence.
 
+The v1 schema has no canonical duration or medley-group field. Source-specific video chapter timings belong in the source matrix and localized item labels or notes. A combined cue keeps one shared duration while its constituent songs remain separate song items. VCR transitions and spoken segments remain `break` or `note` items rather than synthetic songs.
+
 ## Source
 
 Sources record id, kind, title, publisher, URL, retrieval time, language, confidence, and notes. Setlist research must retain source spelling and map aliases separately.
