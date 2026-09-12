@@ -33,7 +33,7 @@ LyricBook is a privacy-first, local-first concert lyric-book editor, immersive s
 - Supports theme-aware generated booklet covers or locally processed JPEG, PNG, and WebP cover images; selected files are never uploaded.
 - Keeps narrow headers usable through two direct actions and an accessible overflow menu.
 - Uses build-specific offline caches and network-first navigation so routine reloads move safely between deployments.
-- Ships offline snapshots for G.E.M. GLORIA and DIOR 大颖 London prediction validation.
+- Ships offline metadata snapshots for G.E.M. GLORIA—including a source-reconciled Shenzhen opening-night record—and the DIOR 大颖 London prediction.
 - Keeps AI/OCR/web research, paid model APIs, cloud backup, LRC import, and social-image generation out of the initial runtime; they are documented in [ROADMAP.md](ROADMAP.md).
 
 ## Architecture

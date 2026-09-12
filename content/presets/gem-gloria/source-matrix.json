@@ -1,0 +1,428 @@
+{
+  "setlistId": "gem-gloria-shenzhen-2026-09-11-observed",
+  "event": {
+    "artist": "G.E.M. 邓紫棋",
+    "tour": "I AM GLORIA 2.0",
+    "city": "深圳",
+    "date": "2026-09-11",
+    "venue": "深圳大运中心体育场",
+    "sourceRefs": [
+      "gem-shenzhen-official-tour",
+      "gem-shenzhen-opening-night-official",
+      "gem-shenzhen-government-event"
+    ]
+  },
+  "segments": [
+    {
+      "position": 1,
+      "part": 1,
+      "rawLabel": "VCR 1+摩天动物园",
+      "duration": "06:33",
+      "kind": "combined-cue",
+      "songIds": ["gem-zoo"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 2,
+      "part": 1,
+      "rawLabel": "灰狼",
+      "duration": "02:50",
+      "kind": "song",
+      "songIds": ["gem-wolf"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 3,
+      "part": 1,
+      "rawLabel": "来自天堂的魔鬼",
+      "duration": "04:11",
+      "kind": "song",
+      "songIds": ["gem-devil"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 4,
+      "part": 1,
+      "rawLabel": "Talk",
+      "duration": "04:16",
+      "kind": "talk",
+      "songIds": [],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 5,
+      "part": 1,
+      "rawLabel": "光年之外",
+      "duration": "05:19",
+      "kind": "song",
+      "songIds": ["gem-lightyears"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 6,
+      "part": 2,
+      "rawLabel": "VCR 2",
+      "duration": "02:47",
+      "kind": "vcr",
+      "songIds": [],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 7,
+      "part": 2,
+      "rawLabel": "差不多姑娘",
+      "duration": "04:01",
+      "kind": "song",
+      "songIds": ["gem-miss-similar"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 8,
+      "part": 2,
+      "rawLabel": "透明",
+      "duration": "03:31",
+      "kind": "song",
+      "songIds": ["gem-transparent"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 9,
+      "part": 2,
+      "rawLabel": "孤独",
+      "duration": "03:49",
+      "kind": "song",
+      "songIds": ["gem-loneliness"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 10,
+      "part": 2,
+      "rawLabel": "冰河时代",
+      "duration": "03:26",
+      "kind": "song",
+      "songIds": ["gem-ice-age"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 11,
+      "part": 2,
+      "rawLabel": "于是",
+      "duration": "04:43",
+      "kind": "song",
+      "songIds": ["gem-therefore"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 12,
+      "part": 2,
+      "rawLabel": "再见",
+      "duration": "04:44",
+      "kind": "song",
+      "songIds": ["gem-goodbye"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 13,
+      "part": 3,
+      "rawLabel": "VCR 3",
+      "duration": "02:40",
+      "kind": "vcr",
+      "songIds": [],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 14,
+      "part": 3,
+      "rawLabel": "你不是第一个离开的人",
+      "duration": "03:06",
+      "kind": "song",
+      "songIds": ["gem-not-first"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 15,
+      "part": 3,
+      "rawLabel": "睡公主+爱你A.I.N.Y.2017",
+      "duration": "02:56",
+      "kind": "medley",
+      "songIds": ["gem-sleeping-princess", "gem-ainy"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 16,
+      "part": 3,
+      "rawLabel": "Where Did U Go+等一个他",
+      "duration": "02:34",
+      "kind": "medley",
+      "songIds": ["gem-where", "gem-waiting-for-him"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 17,
+      "part": 3,
+      "rawLabel": "All About U+Good to be Bad",
+      "duration": "02:43",
+      "kind": "medley",
+      "songIds": ["gem-all-about-u", "gem-good-to-be-bad"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 18,
+      "part": 3,
+      "rawLabel": "Someday I'll Fly",
+      "duration": "01:26",
+      "kind": "song",
+      "songIds": ["gem-someday-ill-fly"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 19,
+      "part": 3,
+      "rawLabel": "你把我灌醉",
+      "duration": "02:19",
+      "kind": "song",
+      "songIds": ["gem-drunk"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 20,
+      "part": 3,
+      "rawLabel": "你不是真正的快乐 (Live)",
+      "duration": "02:39",
+      "kind": "live-song",
+      "songIds": ["gem-not-happy"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 21,
+      "part": 3,
+      "rawLabel": "龙卷风 (Live)",
+      "duration": "01:28",
+      "kind": "live-song",
+      "songIds": ["gem-tornado"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 22,
+      "part": 3,
+      "rawLabel": "红蔷薇白玫瑰",
+      "duration": "01:03",
+      "kind": "song",
+      "songIds": ["gem-rose"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 23,
+      "part": 3,
+      "rawLabel": "唯一",
+      "duration": "03:37",
+      "kind": "song",
+      "songIds": ["gem-only"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 24,
+      "part": 3,
+      "rawLabel": "句号",
+      "duration": "04:51",
+      "kind": "song",
+      "songIds": ["gem-period"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 25,
+      "part": 4,
+      "rawLabel": "VCR 4",
+      "duration": "03:41",
+      "kind": "vcr",
+      "songIds": [],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 26,
+      "part": 4,
+      "rawLabel": "GLORIA",
+      "duration": "03:57",
+      "kind": "song",
+      "songIds": ["gem-gloria"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 27,
+      "part": 4,
+      "rawLabel": "You Raise Me Up",
+      "duration": "05:41",
+      "kind": "song",
+      "songIds": ["gem-raise"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 28,
+      "part": 4,
+      "rawLabel": "让世界暂停一分钟",
+      "duration": "04:47",
+      "kind": "song",
+      "songIds": ["gem-pause"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 29,
+      "part": 4,
+      "rawLabel": "老人与海",
+      "duration": "03:11",
+      "kind": "song",
+      "songIds": ["gem-oldsea"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 30,
+      "part": 4,
+      "rawLabel": "多远都要在一起",
+      "duration": "02:17",
+      "kind": "song",
+      "songIds": ["gem-together"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 31,
+      "part": 4,
+      "rawLabel": "FIND YOU",
+      "duration": "04:43",
+      "kind": "song",
+      "songIds": ["gem-find"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 32,
+      "part": 4,
+      "rawLabel": "喜欢你",
+      "duration": "04:06",
+      "kind": "song",
+      "songIds": ["gem-like-you"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 33,
+      "part": 5,
+      "rawLabel": "VCR 5",
+      "duration": "01:57",
+      "kind": "vcr",
+      "songIds": [],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 34,
+      "part": 5,
+      "rawLabel": "敲鼓",
+      "duration": "01:41",
+      "kind": "reconciled-cue",
+      "songIds": ["gem-kingdom"],
+      "confidence": 0.7,
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"],
+      "notes": "The on-site laser notice names Kingdom Come; the video chapter only says drum segment."
+    },
+    {
+      "position": 35,
+      "part": 5,
+      "rawLabel": "夜的尽头",
+      "duration": "05:11",
+      "kind": "song",
+      "songIds": ["gem-night-end"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 36,
+      "part": 5,
+      "rawLabel": "倒数",
+      "duration": "03:40",
+      "kind": "song",
+      "songIds": ["gem-countdown"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    },
+    {
+      "position": 37,
+      "part": 5,
+      "rawLabel": "新的心跳",
+      "duration": "04:02",
+      "kind": "song",
+      "songIds": ["gem-heartbeat"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 38,
+      "part": 5,
+      "rawLabel": "Walk On Water",
+      "duration": "04:12",
+      "kind": "reconciled-cue",
+      "songIds": ["gem-water"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"],
+      "notes": "The on-site notice labels the cue G.E.M./Walk on water; the video chapters list only Walk On Water. G.E.M. remains an unresolved cue and is not counted as a separate observed song."
+    },
+    {
+      "position": 39,
+      "part": 5,
+      "rawLabel": "自由的你（新专辑先行曲）",
+      "duration": "04:51",
+      "kind": "song",
+      "songIds": ["gem-free-you"],
+      "sourceRefs": [
+        "gem-shenzhen-video-chapters",
+        "gem-shenzhen-laser-cue-photo",
+        "gem-shenzhen-opening-night-official"
+      ]
+    },
+    {
+      "position": 40,
+      "part": 5,
+      "rawLabel": "点歌清唱：画+失真+让你知道",
+      "duration": "04:31",
+      "kind": "request-medley",
+      "songIds": ["gem-paint", "gem-distortion", "gem-let-you-know"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"],
+      "notes": "Observed on 11 September; request selections may vary on later Shenzhen nights."
+    },
+    {
+      "position": 41,
+      "part": 5,
+      "rawLabel": "泡沫",
+      "duration": "04:21",
+      "kind": "song",
+      "songIds": ["gem-bubble"],
+      "sourceRefs": ["gem-shenzhen-video-chapters", "gem-shenzhen-laser-cue-photo"]
+    },
+    {
+      "position": 42,
+      "part": 5,
+      "rawLabel": "天空没有极限",
+      "duration": null,
+      "kind": "song",
+      "songIds": ["gem-sky"],
+      "sourceRefs": ["gem-shenzhen-video-chapters"]
+    }
+  ],
+  "durationSummary": {
+    "segmentsWithDuration": 41,
+    "knownDurationSeconds": 8901,
+    "knownDuration": "2:28:21",
+    "excludedSegments": [42]
+  },
+  "contextClaims": [
+    {
+      "claim": "The event was the first of twelve Shenzhen finale shows on 11 September 2026 at Shenzhen Universiade Sports Centre Stadium.",
+      "sourceRefs": [
+        "gem-shenzhen-official-tour",
+        "gem-shenzhen-opening-night-official",
+        "gem-shenzhen-government-event"
+      ]
+    },
+    {
+      "claim": "自由的你 premiered on the opening night as an unreleased album lead single.",
+      "sourceRefs": ["gem-shenzhen-opening-night-official"]
+    },
+    {
+      "claim": "Community screenshots speculate that all twelve shows use a fixed setlist.",
+      "sourceRefs": ["gem-shenzhen-community-screenshots"],
+      "status": "unverified-context-only"
+    }
+  ]
+}

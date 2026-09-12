@@ -37,7 +37,9 @@ For every web source, record its title, publisher, URL, retrieval time, language
 - When evidence conflicts, create clearly named candidate setlists instead of presenting one false certainty.
 - Keep setlist sections optional. Use song- or section-level `optional` data only when the evidence supports it so print contents can label optional material correctly.
 - Preserve stable ids and every song/source reference. Do not create a duplicate standalone setlist fragment when `project.json` is the source of truth.
-- Model alternate studio, live, acoustic, shortened, or medley forms as lyric versions. Give every track an explicit role and language; use `alignedTo` only when a real semantic alignment is known.
+- Model alternate studio, live, acoustic, shortened, or medley forms as lyric versions when evidence establishes a distinct lyric or arrangement version. A source-only performance label may remain an alias or item note until that distinction is known, avoiding empty speculative versions. Give every track an explicit role and language; use `alignedTo` only when a real semantic alignment is known.
+- Treat pasted video timestamps as source-specific chapter durations, not canonical song lengths. Record one duration for a combined cue, expand its songs for lyric editing, and preserve VCR or talk blocks as non-song items.
+- When a user timeline and an on-site production cue imply different labels, retain both sources, explain the reconciliation in item notes, and lower confidence instead of silently turning a stage description into a song alias.
 - Leave lyric tracks empty unless the user supplies text they are authorized to use. Never research, scrape, infer, or redistribute full copyrighted lyrics.
 
 Before delivery, inspect long titles, CJK titles, sectionless setlists, optional entries, multiple versions, and original/translation tracks. These structures must remain complete when the user later creates A4, A5, or folded-booklet output.
@@ -61,7 +63,7 @@ source-matrix.json
 theme.json                 # only when explicitly requested
 ```
 
-The research summary must identify confirmed facts, assumptions, unresolved conflicts, omitted copyrighted content, and which user-provided images or notes were used. The source matrix must map each claim and setlist item to source ids present in `project.json`.
+The research summary must identify confirmed facts, assumptions, unresolved conflicts, omitted copyrighted content, and which user-provided images or notes were used. The source matrix must map every raw source segment and contextual claim to source ids present in `project.json`; the dated setlist must preserve the corresponding song, cue, and grouping order.
 
 ## Validation
 
