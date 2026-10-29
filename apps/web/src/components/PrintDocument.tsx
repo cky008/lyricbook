@@ -177,7 +177,7 @@ function PageBody({ page, idPrefix }: { page: LogicalPrintPage; idPrefix: string
       <div className="print-page-content print-info-content" data-print-content="info">
         <h1 className="print-song-title">{page.title}</h1>
         <p className="print-info-copy">{page.body}</p>
-        <p className="print-info-license">Copyright © 2026 iocky.com · Apache-2.0</p>
+        <p className="print-info-license">Copyright © 2026 iocky.com · AGPL-3.0</p>
       </div>
     );
   }
