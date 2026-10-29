@@ -7,6 +7,7 @@ for (const path of [
   "test-results",
   "target",
   "packages/wasm/pkg",
+  "offline-check-report.json",
 ]) {
   await rm(path, { recursive: true, force: true });
 }
