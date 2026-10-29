@@ -15,7 +15,7 @@ repository = "https://github.com/cky008/lyricbook"
 authors = ["iocky.com"]
 
 [workspace.dependencies]
-clap = { version = "=4.6.6", features = ["derive"] }
+clap = { version = "=4.6.7", features = ["derive"] }
 console_error_panic_hook = "=0.1.7"
 proptest = "=1.11.0"
 serde = { version = "=1.0.229", features = ["derive"] }
