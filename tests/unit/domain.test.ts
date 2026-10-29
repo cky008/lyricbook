@@ -400,7 +400,7 @@ describe("setlist parser branches", () => {
     expect(songItems[1]?.songId).toBe(songItems[2]?.songId);
   });
 
-  it("deduplicates setlist song ids and can exclude optional entries", async () => {
+  it("deduplicates setlist song ids in first-seen order and keeps required appearances", async () => {
     const { setlistSongIds } = await import("@domain/index");
     expect(setlistSongIds(undefined)).toEqual([]);
     const setlist = {
@@ -415,6 +415,6 @@ describe("setlist parser branches", () => {
       ],
     };
     expect(setlistSongIds(setlist)).toEqual(["a", "b"]);
-    expect(setlistSongIds(setlist, false)).toEqual(["b", "a"]);
+    expect(setlistSongIds(setlist, false)).toEqual(["a", "b"]);
   });
 });

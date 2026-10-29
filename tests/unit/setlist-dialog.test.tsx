@@ -1,6 +1,6 @@
 import { SetlistDialog } from "@app/features/SetlistDialog";
 import { createBlankProject, createEmptySong, type LyricBookProject } from "@domain/index";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -41,6 +41,14 @@ vi.mock("@app/lib/i18n", () => {
     "move-up": "Move up",
     "new-setlist": "New setlist",
     optional: "Optional",
+    "setlist-membership-main": "Main programme",
+    "setlist-membership-optional": "Optional song",
+    "setlist-optional-song": "Optional song entry",
+    "setlist-optional-section": "Optional section",
+    "setlist-optional-inherited": "Optional because this section is optional.",
+    "setlist-status-observed": "Observed performance",
+    "setlist-status-confirmed": "Confirmed",
+    "setlist-status-archive": "Archived setlist",
     "reset-markdown": "Reset Markdown",
     "select-song": "Select song",
     "setlist-description": "Edit the active setlist.",
@@ -58,6 +66,67 @@ vi.mock("@app/lib/i18n", () => {
       },
     }),
   };
+});
+
+describe("SetlistDialog membership and evidence", () => {
+  it("localizes the confirmed preparation status and names the add-song selector", () => {
+    const project = fixtureProject();
+    const setlist = project.setlists[0];
+    if (!setlist) throw new Error("Expected setlist");
+    setlist.status = "confirmed";
+    renderDialog(project);
+    expect(screen.getByRole("option", { name: "Confirmed", selected: true })).toHaveValue(
+      "confirmed",
+    );
+    expect(screen.getByRole("combobox", { name: "Add song" })).toBeInTheDocument();
+  });
+
+  it("shows localized evidence notes, statuses, and section-inherited optional membership", async () => {
+    const project = fixtureProject();
+    const setlist = project.setlists[0];
+    if (!setlist) throw new Error("Expected setlist");
+    setlist.status = "observed";
+    setlist.notes = {
+      en: "One performance, not a promise for other dates.",
+      "zh-Hans": "仅记录当晚。",
+    };
+    setlist.items = [
+      { type: "section", label: { en: "Requests" }, optional: true },
+      {
+        type: "song",
+        songId: "known-song",
+        optional: false,
+        note: { en: "Request choices may change.", "zh-Hans": "点歌曲目可能变化。" },
+      },
+    ];
+    const { onChange } = renderDialog(project);
+
+    expect(screen.getByRole("option", { name: "Observed performance" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Archived setlist" })).toBeInTheDocument();
+    expect(screen.getByText("One performance, not a promise for other dates.")).toBeInTheDocument();
+    expect(screen.getByText("Request choices may change.")).toBeInTheDocument();
+    const row = screen
+      .getByText("Optional because this section is optional.")
+      .closest(".setlist-editor-row");
+    if (!(row instanceof HTMLElement)) throw new Error("Expected optional song row");
+    expect(within(row).getByText("Optional song")).toBeInTheDocument();
+    expect(within(row).getByRole("checkbox", { name: "Optional song entry" })).not.toBeChecked();
+    await userEvent.setup().click(screen.getByRole("checkbox", { name: "Optional section" }));
+    expect(onChange.mock.calls.at(-1)?.[0].setlists[0]?.items[0]).toMatchObject({
+      optional: false,
+    });
+  });
+
+  it("retains unfamiliar imported status labels instead of displaying a blank selection", () => {
+    const project = fixtureProject();
+    const setlist = project.setlists[0];
+    if (!setlist) throw new Error("Expected setlist");
+    setlist.status = "custom-tour-status";
+    renderDialog(project);
+    expect(screen.getByRole("option", { name: "custom-tour-status" })).toHaveValue(
+      "custom-tour-status",
+    );
+  });
 });
 
 function fixtureProject(): LyricBookProject {

@@ -48,7 +48,7 @@ add(
   packageJson.devDependencies["babel-plugin-react-compiler"] === "1.0.0",
 );
 add("babel-8", packageJson.devDependencies["@babel/core"] === "8.0.1");
-add("vite-8", packageJson.devDependencies.vite === "8.2.2");
+add("vite-8", packageJson.devDependencies.vite === "8.3.5");
 add("typescript-7", packageJson.devDependencies.typescript === "7.0.2");
 add("tailwind-4", packageJson.devDependencies.tailwindcss === "4.3.3");
 add("rust-1.98", toolchain.rust === "1.98.0");

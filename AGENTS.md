@@ -17,6 +17,7 @@ Start with [docs/AI_WORKFLOW.md](docs/AI_WORKFLOW.md) for task routing, project 
 - A song may contain multiple versions; each version may contain original, translation, transliteration, and adaptation tracks.
 - Setlist sections are optional. Never require Part/Act records.
 - The active setlist drives immersive previous/next navigation.
+- Distinguish current preparation lists, dated performance records, and archived references. Audience-request optionality must agree between editor, library labels, and print; songs kept only in the library are not promised performances.
 - Production UI must not expose debug panels, test controls, stack traces, build paths, or internal developer notes.
 - Themes are data-only safe tokens. Never execute theme JavaScript, arbitrary HTML, arbitrary CSS, remote fonts, or active SVG supplied by users.
 
@@ -26,14 +27,14 @@ Version 0.0.8 uses the pinned toolchain below:
 
 - Node.js 26.8.1 and npm 12.0.2
 - React and React DOM 19.2.8
-- Vite 8.2.2, `@vitejs/plugin-react` 6.1.1, and `@rolldown/plugin-babel` 0.2.3
+- Vite 8.3.5, `@vitejs/plugin-react` 6.1.1, and `@rolldown/plugin-babel` 0.2.3
 - TypeScript 7.0.2
 - Tailwind CSS and `@tailwindcss/vite` 4.3.3
 - React Compiler 1.0.0
 - Babel 8.0.1 through `@rolldown/plugin-babel` 0.2.3
 - Radix unified package 1.6.7
 - Biome 2.5.11
-- Vitest 4.1.11
+- Vitest 4.1.12
 - Playwright 1.62.1
 - Rust 1.98.0, edition 2024
 - wasm-pack 0.15.0, wasm-bindgen 0.2.127, and cargo-audit 0.22.2

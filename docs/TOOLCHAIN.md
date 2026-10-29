@@ -12,12 +12,12 @@ LyricBook 0.0.8 uses the pinned, reproducible toolchain below. Exact versions ar
 | React Compiler | 1.0.0 | compile-time React optimization |
 | Babel core | 8.0.1 | compiler pipeline |
 | `@rolldown/plugin-babel` | 0.2.3 | Babel integration for Vite 8 |
-| Vite | 8.2.2 | development server and production bundler |
+| Vite | 8.3.5 | development server and production bundler |
 | TypeScript | 7.0.2 | strict type checking |
 | Tailwind CSS / Vite plugin | 4.3.3 | utility CSS and design-token build |
 | Radix UI | 1.6.7 | accessible headless UI primitives |
 | Biome | 2.5.11 | formatting and linting |
-| Vitest | 4.1.11 | unit tests and coverage |
+| Vitest | 4.1.12 | unit tests and coverage |
 | Playwright | 1.62.1 | Chromium, Firefox, WebKit, mobile, accessibility, and print regression |
 | Rust | 1.98.0, edition 2024 | deterministic domain core, CLI, and WASM adapter |
 | Rust toolchain action | `6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772` | immutable GitHub Actions setup revision |

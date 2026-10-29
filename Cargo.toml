@@ -10,7 +10,7 @@ resolver = "3"
 version = "0.0.8"
 edition = "2024"
 rust-version = "1.98"
-license = "Apache-2.0"
+license = "AGPL-3.0"
 repository = "https://github.com/cky008/lyricbook"
 authors = ["iocky.com"]
 

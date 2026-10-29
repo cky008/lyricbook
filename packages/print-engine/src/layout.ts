@@ -11,7 +11,7 @@ import type {
   Theme,
   UiLocale,
 } from "@domain/index";
-import { getLocalized, resolveActiveTheme } from "@domain/index";
+import { getLocalized, getSetlistSongEntries, resolveActiveTheme } from "@domain/index";
 import { type BookletSheet, imposeBooklet, paddedBookletPageCount } from "./booklet";
 
 export interface PrintTrackBlock {
@@ -284,16 +284,9 @@ function setlistSongPlacements(
   if (!setlist) return [];
   const ordered: SetlistSongPlacement[] = [];
   const bySong = new Map<string, SetlistSongPlacement>();
-  let section = "";
-  let sectionOptional = false;
-  for (const item of setlist.items) {
-    if (item.type === "section") {
-      section = getLocalized(item.label, locale) || section;
-      sectionOptional = Boolean(item.optional);
-      continue;
-    }
-    if (item.type !== "song") continue;
-    const optional = sectionOptional || Boolean(item.optional);
+  for (const { item, section: heading, optional } of getSetlistSongEntries(setlist)) {
+    const section = getLocalized(heading?.label, locale);
+    const sectionOptional = Boolean(heading?.optional);
     const existing = bySong.get(item.songId);
     if (!existing) {
       const placement = { songId: item.songId, section, sectionOptional, optional };
@@ -313,19 +306,8 @@ function setlistSongPlacements(
 }
 
 function includedSetlistSlotCount(setlist: Setlist | undefined, includeOptional: boolean): number {
-  if (!setlist) return 0;
-  let sectionOptional = false;
-  let count = 0;
-  for (const item of setlist.items) {
-    if (item.type === "section") {
-      sectionOptional = Boolean(item.optional);
-      continue;
-    }
-    if (item.type === "song" && (includeOptional || !(sectionOptional || item.optional))) {
-      count += 1;
-    }
-  }
-  return count;
+  return getSetlistSongEntries(setlist).filter((entry) => includeOptional || !entry.optional)
+    .length;
 }
 
 function songIdsForScope(context: BuildContext): string[] {

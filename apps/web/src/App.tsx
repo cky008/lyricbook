@@ -11,9 +11,9 @@ import { ThemeDialog } from "@app/features/ThemeDialog";
 import { useLyricBookProject } from "@app/hooks/useLyricBookProject";
 import {
   APPEARANCE_STORAGE_KEY,
-  applyInterfaceStyle,
   type AppearanceMode,
   applyAppearance,
+  applyInterfaceStyle,
   DEFAULT_INTERFACE_STYLE,
   type InterfaceStyle,
   persistInterfaceStyle,
@@ -28,6 +28,7 @@ import {
   songTitle,
 } from "@app/lib/projectHelpers";
 import { forceReleaseScrollLocks } from "@app/lib/scrollLock";
+import { setlistStatusLabel } from "@app/lib/setlistPresentation";
 import {
   createEmptySong,
   getLocalized,
@@ -237,6 +238,7 @@ export default function App({ initialInterfaceStyle = DEFAULT_INTERFACE_STYLE }:
 
   const sidebarProps = {
     songs: filteredSongs,
+    setlist: liveSetlist,
     selectedSongId,
     locale,
     query,
@@ -324,7 +326,8 @@ export default function App({ initialInterfaceStyle = DEFAULT_INTERFACE_STYLE }:
                 </div>
                 <strong>{getLocalized(liveSetlist?.title, locale) || t("new-setlist")}</strong>
                 <div className="panel-copy">
-                  {liveSetlist?.status ?? "draft"} · {setlistIds.length} {t("all-songs")}
+                  {setlistStatusLabel(liveSetlist?.status, t)} ·{" "}
+                  {t("setlist-song-count", { count: setlistIds.length })}
                 </div>
                 <div className="setlist-mini">
                   {readingIds

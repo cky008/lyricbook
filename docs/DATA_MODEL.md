@@ -23,6 +23,10 @@ A setlist is an ordered list of:
 
 Sections are optional. Song items can be optional and can carry confidence/source evidence.
 
+For inclusion, a song appearance is optional when either its own flag or its current section's flag is true. Notes and breaks do not reset that section; the next section does. `getSetlistSongEntries` supplies this shared interpretation to the editor, library, and print planner. If a song appears more than once, any required appearance makes it required while first-seen order is retained.
+
+Optionality is a choice within a particular setlist, not a claim about historical performance or the probability of a future show. Keep dated `observed` records separate from preparation lists. A current confirmed preparation list may contain optional audience-request songs; archive superseded examples rather than presenting them as current instructions. Songs outside the active setlist remain in the library and are not added to its performance order.
+
 The v1 schema has no canonical duration or medley-group field. Source-specific video chapter timings belong in the source matrix and localized item labels or notes. A combined cue keeps one shared duration while its constituent songs remain separate song items. VCR transitions and spoken segments remain `break` or `note` items rather than synthetic songs.
 
 ## Source

@@ -3,7 +3,7 @@
   "version": "0.0.8",
   "private": true,
   "description": "Privacy-first, local-first concert lyric book and printable booklet generator.",
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0",
   "type": "module",
   "author": "iocky.com",
   "homepage": "https://lyricbook.iocky.com/",
@@ -52,7 +52,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwind-merge": "3.6.0",
-    "zod": "4.5.4"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -69,17 +69,18 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "6.1.1",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "4.1.12",
     "babel-plugin-react-compiler": "1.0.0",
-    "happy-dom": "20.12.0",
+    "happy-dom": "21.0.4",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
-    "vitest": "4.1.11"
+    "vite": "8.3.5",
+    "vitest": "4.1.12"
   },
   "overrides": {
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-is": "19.2.8"
+    "react-is": "19.2.8",
+    "source-map-js": "1.2.2"
   }
 }

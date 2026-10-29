@@ -4,7 +4,7 @@
 [![Deploy GitHub Pages](https://github.com/cky008/lyricbook/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/cky008/lyricbook/actions/workflows/deploy-pages.yml)
 [![Full quality](https://github.com/cky008/lyricbook/actions/workflows/full-quality.yml/badge.svg)](https://github.com/cky008/lyricbook/actions/workflows/full-quality.yml)
 [![Security](https://github.com/cky008/lyricbook/actions/workflows/security.yml/badge.svg)](https://github.com/cky008/lyricbook/actions/workflows/security.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
 [中文说明](README.zh-CN.md) · [🌐 Open LyricBook](https://lyricbook.iocky.com/) · [GitHub Pages fallback](https://cky008.github.io/lyricbook/) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md)
 
@@ -120,6 +120,6 @@ Every merge to `main` must pass web, Rust, content, browser, accessibility, and 
 
 ## License
 
-Code is licensed under Apache-2.0. UI catalog and documentation contributions are accepted under the repository license unless a file states otherwise. User-imported lyrics and translations retain their own rights and are not relicensed by LyricBook.
+Code is licensed under AGPL-3.0. UI catalog and documentation contributions are accepted under the repository license unless a file states otherwise. User-imported lyrics and translations retain their own rights and are not relicensed by LyricBook.
 
 Copyright © 2026 iocky.com.

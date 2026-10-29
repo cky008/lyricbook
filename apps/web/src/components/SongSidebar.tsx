@@ -1,11 +1,18 @@
-import { ArrowUpDown, Check, Menu, Plus, Search, X } from "lucide-react";
-import { useEffect, useMemo } from "react";
-import { getLocalized, type Song, type UiLocale } from "@domain/index";
 import { useI18n } from "@app/lib/i18n";
 import { lockBodyScroll } from "@app/lib/scrollLock";
+import {
+  getLocalized,
+  getSetlistSongEntries,
+  type Setlist,
+  type Song,
+  type UiLocale,
+} from "@domain/index";
+import { ArrowUpDown, Check, Menu, Plus, Search, X } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
 interface SongSidebarProps {
   songs: Song[];
+  setlist: Setlist | undefined;
   selectedSongId: string | undefined;
   locale: UiLocale;
   query: string;
@@ -23,6 +30,7 @@ interface SongSidebarProps {
 
 function SidebarBody({
   songs,
+  setlist,
   selectedSongId,
   locale,
   query,
@@ -39,6 +47,17 @@ function SidebarBody({
     () => [...new Set(songs.flatMap((song) => song.tags))].sort((a, b) => a.localeCompare(b)),
     [songs],
   );
+  const membership = useMemo(() => {
+    const result = new Map<string, "required" | "optional">();
+    for (const entry of getSetlistSongEntries(setlist)) {
+      const existing = result.get(entry.item.songId);
+      result.set(
+        entry.item.songId,
+        !entry.optional || existing === "required" ? "required" : "optional",
+      );
+    }
+    return result;
+  }, [setlist]);
   return (
     <div className="sidebar-inner">
       <div className="sidebar-heading">
@@ -52,6 +71,12 @@ function SidebarBody({
           <Plus size={15} />
         </button>
       </div>
+      {setlist ? (
+        <p className="sidebar-setlist-summary">
+          <strong>{getLocalized(setlist.title, locale) || setlist.id}</strong>
+          <span>{t("setlist-membership-help")}</span>
+        </p>
+      ) : null}
       <button type="button" className="button sidebar-transfer-button" onClick={onTransfer}>
         <ArrowUpDown size={15} /> {t("transfer-data")}
       </button>
@@ -99,10 +124,12 @@ function SidebarBody({
               .flatMap((version) => version.tracks)
               .find((track) => track.role === "original");
             const hasLyrics = Boolean(original?.text.trim());
+            const songMembership = membership.get(song.id) ?? "library";
             return (
               <button
                 type="button"
                 key={song.id}
+                data-song-id={song.id}
                 className={`song-row${song.id === selectedSongId ? " active" : ""}`}
                 onClick={() => onSelectSong(song.id)}
               >
@@ -110,6 +137,17 @@ function SidebarBody({
                 <span className="song-row-copy">
                   <span className="song-title">{getLocalized(song.titles, locale) || song.id}</span>
                   <span className="song-meta">
+                    <span className="song-setlist-membership" data-membership={songMembership}>
+                      {t(
+                        songMembership === "required"
+                          ? setlist?.status === "observed"
+                            ? "setlist-membership-observed"
+                            : "setlist-membership-main"
+                          : songMembership === "optional"
+                            ? "setlist-membership-optional"
+                            : "setlist-membership-library",
+                      )}
+                    </span>
                     <span>
                       {song.lyricVersions.length} {t("versions")}
                     </span>

@@ -66,4 +66,4 @@ npm run dev
 
 歌词默认只保存在浏览器中。仓库不得提交私人歌词备份、带歌词 `.lyricbook`、含歌词 HTML 或私人 PDF。请仅导入、翻译和打印你有权使用的内容。
 
-Copyright © 2026 iocky.com. 代码使用 Apache-2.0 许可证。
+Copyright © 2026 iocky.com. 代码使用 AGPL-3.0 许可证。

@@ -52,7 +52,7 @@ const toolchain = JSON.parse(await readFile(path.join(root, "toolchain.json"), "
 const exactVersions = {
   react: "19.2.8",
   "react-dom": "19.2.8",
-  vite: "8.2.2",
+  vite: "8.3.5",
   typescript: "7.0.2",
   tailwindcss: "4.3.3",
   "@tailwindcss/vite": "4.3.3",
@@ -62,7 +62,7 @@ const exactVersions = {
   "babel-plugin-react-compiler": "1.0.0",
   "radix-ui": "1.6.7",
   "@biomejs/biome": "2.5.11",
-  vitest: "4.1.11",
+  vitest: "4.1.12",
   "@playwright/test": "1.62.1",
 };
 for (const [name, expected] of Object.entries(exactVersions)) {
