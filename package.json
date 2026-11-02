@@ -46,7 +46,7 @@
     "@fluent/bundle": "0.19.1",
     "clsx": "2.1.1",
     "fflate": "0.8.3",
-    "idb": "8.0.3",
+    "idb": "8.0.4",
     "lucide-react": "1.61.0",
     "radix-ui": "1.6.7",
     "react": "19.2.8",
